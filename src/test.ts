@@ -62,7 +62,7 @@ const RECOMMENDED_RUNES: ChampionRuneRecEntry[] = JSON.parse(
       (request) => {
         console.log(
           `➡️ Request: ${(request.method ?? "UNKNOWN").toUpperCase()} ${
-            request.url
+            request.url ?? "<no-url>"
           }`
         );
         if (request.data) {
@@ -70,7 +70,7 @@ const RECOMMENDED_RUNES: ChampionRuneRecEntry[] = JSON.parse(
         } else {
           console.log("Payload: <none>");
         }
-        return request; // important to return the request
+        return request; // Important to return the request
       },
       (error) => {
         // Log request error if any
