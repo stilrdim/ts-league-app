@@ -4,5 +4,4 @@ node_modules/
 *.rar
 test*.js
 output*/
-data/countries.json
 dist/types

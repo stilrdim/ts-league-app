@@ -9,21 +9,30 @@ import {
   recRunesConfigPath,
   champPrefsConfigPath,
 } from "./leveler_module.js";
-import { CloseFriend, Friend, Player, RunePage } from "./types/index.js";
+import {
+  ChampionRuneRecEntry,
+  ChampPreference,
+  CloseFriend,
+  Friend,
+  Player,
+  RunePage,
+} from "./types/index.js";
 
 // #region Implementation Detail
 
 // Keep logic just in case we want to send this back to the main file
 let endpointsWereTested = false;
 
-const RUNEPAGES = JSON.parse(fs.readFileSync(allRunesConfigPath).toString());
-const CHAMP_PREFERENCES = JSON.parse(
+const RUNEPAGES: RunePage[] = JSON.parse(
+  fs.readFileSync(allRunesConfigPath).toString()
+);
+const CHAMP_PREFERENCES: ChampPreference[] = JSON.parse(
   fs.readFileSync(champPrefsConfigPath).toString()
 );
 const FRIENDS: CloseFriend[] = JSON.parse(
   fs.readFileSync(friendsConfigPath).toString()
 );
-const RECOMMENDED_RUNES = JSON.parse(
+const RECOMMENDED_RUNES: ChampionRuneRecEntry[] = JSON.parse(
   fs.readFileSync(recRunesConfigPath).toString()
 );
 
