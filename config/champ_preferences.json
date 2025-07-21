@@ -28,5 +28,11 @@
         "prio": "W-E-Q",
         "mode": "ARAM",
         "prefType": "PRIO"
+    },
+    {
+        "name": "Morgana",
+        "prio": "Q-W-E",
+        "mode": "ARAM",
+        "prefType": "PRIO"
     }
 ]
