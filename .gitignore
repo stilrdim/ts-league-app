@@ -5,3 +5,4 @@ node_modules/
 test*.js
 output*/
 data/countries.json
+dist/types
