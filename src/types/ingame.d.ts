@@ -8,85 +8,152 @@ export interface ChampPreference {
 
 export interface AllGameData {
   activePlayer: ActivePlayer;
-  allPlayers: Player[];
+  allPlayers: AllPlayer[];
+  events: Events;
   gameData: GameData;
-  events: GameEvents;
-  // ... can include other props depending on version, but these are main
 }
 
 export interface ActivePlayer {
-  summonerName: string;
-  summonerId: string;
-  riotId: string;
-  puuid: string;
-  team: number;
-  championName: string;
-  championId: number;
-  skinID: number;
+  abilities: Record<SkillKey, Ability>;
+  championStats: ChampionStats;
   currentGold: number;
+  fullRunes: FullRunes;
   level: number;
-  position: string;
-
-  // In-game stats
-  kills: number;
-  deaths: number;
-  assists: number;
-  cs: number; // creep score
-  wardScore: number;
-  items: number[]; // item IDs
-  summonerSpells: SummonerSpell[];
-  perks: PerkInfo;
+  riotId: string;
+  summonerName: string;
+  team: string;
 }
 
-export interface Player {
-  summonerName: string;
-  summonerId: string;
-  riotId: string;
-  puuid: string;
-  team: number;
+export interface Ability {
+  id: string;
+  rawDescription: string;
+  rawDisplayName: string;
+}
+
+export interface ChampionStats {
+  abilityHaste: number;
+  abilityPower: number;
+  armor: number;
+  armorPenetrationFlat: number;
+  armorPenetrationPercent: number;
+  attackDamage: number;
+  attackRange: number;
+  attackSpeed: number;
+  bonusArmorPenetrationPercent: number;
+  bonusMagicPenetrationPercent: number;
+  cooldownReduction: number;
+  critChance: number;
+  critDamage: number;
+  currentHealth: number;
+  healthRegenRate: number;
+  lifeSteal: number;
+  magicLethality: number;
+  magicPenetrationFlat: number;
+  magicPenetrationPercent: number;
+  magicResist: number;
+  maxHealth: number;
+  moveSpeed: number;
+  physicalLethality: number;
+  resourceMax: number;
+  resourceRegenRate: number;
+  resourceType: string;
+  resourceValue: number;
+  spellVamp: number;
+  tenacity: number;
+}
+
+export interface FullRunes {
+  generalRunes: Rune[];
+  keystone: Rune;
+  primaryRuneTree: string;
+  secondaryRuneTree: string;
+}
+
+export interface Rune {
+  displayName: string;
+  id: number;
+  rawDescription: string;
+  rawDisplayName: string;
+}
+
+export interface AllPlayer {
   championName: string;
-  championId: number;
-  skinID: number;
+  isBot: boolean;
+  isDead: boolean;
+  items: Item[];
   level: number;
   position: string;
-  kills: number;
-  deaths: number;
+  rawChampionName: string;
+  respawnTimer: number;
+  riotId: string;
+  runes: Runes;
+  scores: Scores;
+  skinID: number;
+  summonerName: string;
+  summonerSpells: SummonerSpells;
+  team: string;
+}
+
+export interface Item {
+  canUse: boolean;
+  consumable: boolean;
+  count: number;
+  displayName: string;
+  itemID: number;
+  price: number;
+  rawDescription: string;
+  rawDisplayName: string;
+  slot: number;
+}
+
+export interface Runes {
+  generalRunes: Rune[];
+  keystone: Rune;
+  primaryRuneTree: string;
+  secondaryRuneTree: string;
+}
+
+export interface Scores {
   assists: number;
-  cs: number;
+  creepScore: number;
+  deaths: number;
+  kills: number;
   wardScore: number;
-  items: number[];
-  summonerSpells: SummonerSpell[];
-  perks: PerkInfo;
-  // Possibly more fields like rawChampionStats, rune stats, etc.
+}
+
+export interface SummonerSpells {
+  summonerSpellOne: Spell;
+  summonerSpellTwo: Spell;
+}
+
+export interface Spell {
+  displayName: string;
+  rawDescription: string;
+  rawDisplayName: string;
+}
+
+export interface Events {
+  Events: GameEvent[];
+}
+
+export interface GameEvent {
+  EventID: number;
+  EventName: string;
+  EventTime: number;
+  KillerName?: string;
+  VictimName?: string;
+  Assisters?: string[];
+  TurretKilled?: string;
+  InhibKilled?: string;
+  GoldGranted?: number;
 }
 
 export interface GameData {
-  map: MapInfo;
-  gameTime: number; // seconds since game start
   gameMode: string;
-  gameState: string;
-}
-
-export interface MapInfo {
-  mapId: number;
+  gameTime: number;
   mapName: string;
-}
-
-export interface GameEvents {
-  // event array or keyed event lists; varies by API version
-}
-
-export interface SummonerSpell {
-  id: number;
-  name: string;
-  cooldown: number;
-}
-
-export interface PerkInfo {
-  keystone: number; // keystone perk id
-  primaryStyle: number;
-  secondaryStyle: number;
-  shards: number[];
+  mapNumber: number;
+  mapTerrain: string;
 }
 
 export type SkillKey = "Q" | "W" | "E" | "R";
