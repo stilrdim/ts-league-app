@@ -1,10 +1,12 @@
 import { authenticate } from "league-connect";
 import axios, { AxiosResponse, isAxiosError } from "axios";
 import fs from "fs";
-import prompt from "prompt-sync";
+import promptSync from "prompt-sync";
 import { Agent } from "https";
 import { rootDir } from "./leveler_module.js";
 import { RunePage, RunePagePayload } from "./types/runes.js";
+
+const prompt = promptSync();
 
 (async () => {
   const credentials = await authenticate({ awaitConnection: true });
