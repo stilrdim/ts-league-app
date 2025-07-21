@@ -23,6 +23,8 @@ import {
 // Keep logic just in case we want to send this back to the main file
 let endpointsWereTested = false;
 
+const DEBUGGING_MODE = false;
+
 const RUNEPAGES: RunePage[] = JSON.parse(
   fs.readFileSync(allRunesConfigPath).toString()
 );
@@ -55,22 +57,27 @@ const RECOMMENDED_RUNES: ChampionRuneRecEntry[] = JSON.parse(
   });
 
   // Interceptor for future debugging
-  // leagueRequest.interceptors.request.use(
-  //   (request) => {
-  //     console.log(`➡️ Request: ${request.method.toUpperCase()} ${request.url}`);
-  //     if (request.data) {
-  //       console.log("Payload:", JSON.stringify(request.data, null, 2));
-  //     } else {
-  //       console.log("Payload: <none>");
-  //     }
-  //     return request; // important to return the request
-  //   },
-  //   (error) => {
-  //     // Log request error if any
-  //     console.error("Request error:", error);
-  //     return Promise.reject(error);
-  //   }
-  // );
+  if (DEBUGGING_MODE)
+    leagueRequest.interceptors.request.use(
+      (request) => {
+        console.log(
+          `➡️ Request: ${(request.method ?? "UNKNOWN").toUpperCase()} ${
+            request.url
+          }`
+        );
+        if (request.data) {
+          console.log("Payload:", JSON.stringify(request.data, null, 2));
+        } else {
+          console.log("Payload: <none>");
+        }
+        return request; // important to return the request
+      },
+      (error) => {
+        // Log request error if any
+        console.error("Request error:", error);
+        return Promise.reject(error);
+      }
+    );
 
   const cDragonRequest = axios.create({
     baseURL: `https://raw.communitydragon.org/pbe`,
