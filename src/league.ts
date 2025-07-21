@@ -37,9 +37,6 @@ const AUTO_SELECT_RECOMMENDED_RUNES = true;
 const POLLING_INTERVAL_IN_SECONDS = 1; // Time between each client state update
 
 // #region Constants and Flags
-const champsDir = rootDir + "/config/champs.json";
-const recRunesDir = rootDir + "/config/recommended_runepages.json";
-
 const FRIENDS: Record<string, CloseFriend> = JSON.parse(
   fs.readFileSync(friendsConfigPath).toString()
 );

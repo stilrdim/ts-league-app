@@ -2,7 +2,7 @@ import { authenticate } from "league-connect";
 import axios, { isAxiosError } from "axios";
 import fs from "fs";
 import { Agent } from "https";
-import { handleLeveling, resetLevelingFlags, rootDir, hasReachedMaxLevel, friendsConfigPath, champsConfigPath, recRunesConfigPath, } from "./leveler_module.js";
+import { handleLeveling, resetLevelingFlags, hasReachedMaxLevel, friendsConfigPath, champsConfigPath, recRunesConfigPath, } from "./leveler_module.js";
 // CONFIG
 const AUTO_LEVEL_ABILITIES = true;
 const SKIP_ENDGAME_SCREEN = true;
@@ -13,8 +13,6 @@ const AUTO_SELECT_RUNES = true;
 const AUTO_SELECT_RECOMMENDED_RUNES = true;
 const POLLING_INTERVAL_IN_SECONDS = 1; // Time between each client state update
 // #region Constants and Flags
-const champsDir = rootDir + "/config/champs.json";
-const recRunesDir = rootDir + "/config/recommended_runepages.json";
 const FRIENDS = JSON.parse(fs.readFileSync(friendsConfigPath).toString());
 const CHAMPS = JSON.parse(fs.readFileSync(champsConfigPath).toString());
 const RECOMMENDED_RUNES = JSON.parse(fs.readFileSync(recRunesConfigPath).toString());

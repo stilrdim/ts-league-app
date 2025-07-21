@@ -67,6 +67,7 @@ export let hasReachedMaxLevel = false;
 let champNameFetched = false;
 
 let GAMEMODE = "";
+let CHAMP_NAME = "";
 
 const httpsAgent = new Agent({
   rejectUnauthorized: false, // Disable SSL cert verification
@@ -336,9 +337,8 @@ export const handleLeveling = async () => {
     if (isInLoadingScreen) return;
 
     // Figure out the champ name using summoner ID etc...
-    let champName = "";
-    if (!champNameFetched) champName = getChampName(allGameData);
-    if (!champName) return;
+    if (!champNameFetched) CHAMP_NAME = getChampName(allGameData);
+    if (!CHAMP_NAME) return;
 
     const champLevel = summonerInfo.level;
 
@@ -349,16 +349,16 @@ export const handleLeveling = async () => {
     prevChampLevel = champLevel;
 
     // Fetch our current game mode from the LiveClientData
-    if (!isGamemodeFetched) GAMEMODE = fetchGamemode(gameInfo, champName);
+    if (!isGamemodeFetched) GAMEMODE = fetchGamemode(gameInfo, CHAMP_NAME);
     if (!GAMEMODE) return;
 
     // Fetch our skill order from U.GG
     if (!isSkillOrderReceived && GAMEMODE)
-      await getSkillOrder(champName, GAMEMODE);
+      await getSkillOrder(CHAMP_NAME, GAMEMODE);
 
     // Know we're in an active game and check if the user has special preferences for this champ
     if (!isInActiveGame && GAMEMODE)
-      handleChampPreferences(champName, GAMEMODE);
+      handleChampPreferences(CHAMP_NAME, GAMEMODE);
 
     // Level all first 3 skills
     if (GAMEMODE?.toLowerCase() === "aram" && champLevel === 3)
