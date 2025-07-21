@@ -90,6 +90,7 @@ export interface AllPlayer {
   scores: Scores;
   skinID: number;
   summonerName: string;
+  summonerId: string;
   summonerSpells: SummonerSpells;
   team: string;
 }

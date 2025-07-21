@@ -47,34 +47,39 @@ const addPoint = (key, skill) => {
     SKILL_ORDER[key].push(skill);
 };
 const normalizeChampionName = (champName) => {
-    // Store in a new variable to avoid mutating the initial champName
-    let cleanedChampName = champName;
-    cleanedChampName = cleanedChampName.toLowerCase();
-    cleanedChampName = cleanedChampName.replace(".", "");
-    cleanedChampName = cleanedChampName.replace("'", "");
-    // Instead of removing the space handle one-name champs like Renata Glasc being 'renata-aram'
-    const firstName = cleanedChampName.split(" ")[0];
+    // Store in a new variable clearing all instances of ' and .
+    if (champName === "") {
+        console.log("Something went wrong when getting the champion name. Received empty string.");
+        return;
+    }
+    const normalizedName = champName.toLowerCase().replace(/[.'"]/g, "");
+    const firstName = normalizedName.split(" ")[0];
     if (!firstName)
         return;
-    // Try to get an exact match first        Reason: "Vi" returns "Sivir"
+    // Try to find exact match --- in case of "vi" returning "sivir"
     let champFound = CHAMP_NAMES.find((champ) => champ === firstName);
-    // No exact match, try to find the name in more broad terms
-    if (!champFound)
-        cleanedChampName = CHAMP_NAMES.find((champ) => champ.includes(firstName));
-    if (!cleanedChampName) {
+    // If that doesn't work, resort to a broader search with just the first name
+    if (!champFound) {
+        champFound = CHAMP_NAMES.find((champ) => champ.includes(firstName));
+    }
+    if (!champFound) {
         console.log("The champion name seems to be undefined or not valid. Is it a new champ release? Add it to config/leveler_champs_array.json!");
     }
-    return cleanedChampName;
+    return champFound;
 };
 const getSkillOrder = async (champName, gameMode) => {
     isSkillOrderReceived = true;
     let url;
     // Filter out useless symbols in name
     let matchedChampName = normalizeChampionName(champName);
-    if (matchedChampName && gameMode.toLowerCase() === "aram")
+    if (matchedChampName && gameMode.toLowerCase() === "aram") {
+        console.log("Getting ARAM skill order");
         url = `https://u.gg/lol/champions/aram/${matchedChampName}-aram`;
-    else
+    }
+    else {
+        console.log("Getting normal skill order");
         url = `https://u.gg/lol/champions/${matchedChampName}/build`;
+    }
     await fetch(url)
         .then((res) => res.text())
         .then((body) => {
@@ -179,21 +184,24 @@ const handleChampPreferences = (champName, gameMode) => {
     isInActiveGame = true; // Run all of this only once
     console.log(`Checking champ preferences for:\n${champName}`); // Keep this for debugging purposes
     const targetChamp = CHAMP_PREFERENCES.find((champ) => champ.name === champName);
-    if (!targetChamp)
-        return;
-    // If it has no "mode" field consider it as "ALL"
-    const champMode = targetChamp.mode?.toUpperCase() ?? "ALL";
-    const preferenceType = targetChamp.prefType?.toUpperCase() ?? "PRIO";
-    // Check if mode preferences for that champ match and if the champ exists
-    if (champMode === "ALL" || champMode === gameMode.toUpperCase()) {
-        switch (preferenceType) {
-            case "PRIO":
-                handleSkillPrio(targetChamp);
-                break;
-            case "SWAP":
-                handleSkillSwap(targetChamp);
-                break;
+    if (targetChamp) {
+        // If it has no "mode" field consider it as "ALL"
+        const champMode = targetChamp.mode?.toUpperCase() ?? "ALL";
+        const preferenceType = targetChamp.prefType?.toUpperCase() ?? "PRIO";
+        // Check if mode preferences for that champ match and if the champ exists
+        if (champMode === "ALL" || champMode === gameMode.toUpperCase()) {
+            switch (preferenceType) {
+                case "PRIO":
+                    handleSkillPrio(targetChamp);
+                    break;
+                case "SWAP":
+                    handleSkillSwap(targetChamp);
+                    break;
+            }
         }
+    }
+    else {
+        console.log("No special skill priority preferences detected");
     }
     console.log(`\nSkill priority:`);
     console.log(SKILL_ORDER); // List separately - avoid [Object object] and keep syntax highlight

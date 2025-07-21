@@ -10,11 +10,11 @@ import {
   champPrefsConfigPath,
 } from "./leveler_module.js";
 import {
+  AllPlayer,
   ChampionRuneRecEntry,
   ChampPreference,
   CloseFriend,
   Friend,
-  Player,
   RunePage,
 } from "./types/index.js";
 
@@ -280,7 +280,7 @@ const RECOMMENDED_RUNES: ChampionRuneRecEntry[] = JSON.parse(
       const eligibleAllies = res.eligibleAllies;
 
       const formattedPlayers = eligibleAllies.map(
-        (player: Player) => `${player.championName}: (${player.summonerId})`
+        (player: AllPlayer) => `${player.championName}: (${player.summonerId})`
       );
 
       console.log(

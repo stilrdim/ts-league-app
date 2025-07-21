@@ -85,30 +85,34 @@ const addPoint = (key: string, skill: string) => {
 };
 
 const normalizeChampionName = (champName: string): string | undefined => {
-  // Store in a new variable to avoid mutating the initial champName
-  let cleanedChampName: string | undefined = champName;
-  cleanedChampName = cleanedChampName.toLowerCase();
-  cleanedChampName = cleanedChampName.replace(".", "");
-  cleanedChampName = cleanedChampName.replace("'", "");
+  // Store in a new variable clearing all instances of ' and .
+  if (champName === "") {
+    console.log(
+      "Something went wrong when getting the champion name. Received empty string."
+    );
+    return;
+  }
 
-  // Instead of removing the space handle one-name champs like Renata Glasc being 'renata-aram'
-  const firstName = cleanedChampName.split(" ")[0];
+  const normalizedName = champName.toLowerCase().replace(/[.'"]/g, "");
+  const firstName = normalizedName.split(" ")[0];
+
   if (!firstName) return;
 
-  // Try to get an exact match first        Reason: "Vi" returns "Sivir"
+  // Try to find exact match --- in case of "vi" returning "sivir"
   let champFound = CHAMP_NAMES.find((champ) => champ === firstName);
 
-  // No exact match, try to find the name in more broad terms
-  if (!champFound)
-    cleanedChampName = CHAMP_NAMES.find((champ) => champ.includes(firstName));
+  // If that doesn't work, resort to a broader search with just the first name
+  if (!champFound) {
+    champFound = CHAMP_NAMES.find((champ) => champ.includes(firstName));
+  }
 
-  if (!cleanedChampName) {
+  if (!champFound) {
     console.log(
       "The champion name seems to be undefined or not valid. Is it a new champ release? Add it to config/leveler_champs_array.json!"
     );
   }
 
-  return cleanedChampName;
+  return champFound;
 };
 
 const getSkillOrder = async (champName: string, gameMode: string) => {
@@ -118,10 +122,13 @@ const getSkillOrder = async (champName: string, gameMode: string) => {
   // Filter out useless symbols in name
   let matchedChampName: string | undefined = normalizeChampionName(champName);
 
-  if (matchedChampName && gameMode.toLowerCase() === "aram")
+  if (matchedChampName && gameMode.toLowerCase() === "aram") {
+    console.log("Getting ARAM skill order");
     url = `https://u.gg/lol/champions/aram/${matchedChampName}-aram`;
-  else url = `https://u.gg/lol/champions/${matchedChampName}/build`;
-
+  } else {
+    console.log("Getting normal skill order");
+    url = `https://u.gg/lol/champions/${matchedChampName}/build`;
+  }
   await fetch(url)
     .then((res) => res.text())
     .then((body) => {
@@ -272,24 +279,26 @@ const handleChampPreferences = (champName: string, gameMode: string) => {
     (champ) => champ.name === champName
   );
 
-  if (!targetChamp) return;
+  if (targetChamp) {
+    // If it has no "mode" field consider it as "ALL"
+    const champMode = targetChamp.mode?.toUpperCase() ?? "ALL";
 
-  // If it has no "mode" field consider it as "ALL"
-  const champMode = targetChamp.mode?.toUpperCase() ?? "ALL";
+    const preferenceType = targetChamp.prefType?.toUpperCase() ?? "PRIO";
 
-  const preferenceType = targetChamp.prefType?.toUpperCase() ?? "PRIO";
+    // Check if mode preferences for that champ match and if the champ exists
+    if (champMode === "ALL" || champMode === gameMode.toUpperCase()) {
+      switch (preferenceType) {
+        case "PRIO":
+          handleSkillPrio(targetChamp);
+          break;
 
-  // Check if mode preferences for that champ match and if the champ exists
-  if (champMode === "ALL" || champMode === gameMode.toUpperCase()) {
-    switch (preferenceType) {
-      case "PRIO":
-        handleSkillPrio(targetChamp);
-        break;
-
-      case "SWAP":
-        handleSkillSwap(targetChamp);
-        break;
+        case "SWAP":
+          handleSkillSwap(targetChamp);
+          break;
+      }
     }
+  } else {
+    console.log("No special skill priority preferences detected");
   }
 
   console.log(`\nSkill priority:`);
