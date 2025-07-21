@@ -1,0 +1,7 @@
+node_modules/
+*.exe
+*.bat
+*.rar
+test*.js
+output*/
+data/countries.json

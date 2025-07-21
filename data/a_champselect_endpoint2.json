@@ -1,0 +1,13 @@
+{
+  "GET": {
+    "successes": {
+      "/lol-lobby-team-builder/champ-select/v1/subset-champion-list": {
+        "data": [
+          157,
+          62
+        ]
+      }
+    },
+    "failures": {}
+  }
+}

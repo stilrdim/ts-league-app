@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Miss Fortune",
+        "prio": "E-Q-W",
+        "mode": "ARAM",
+        "prefType": "PRIO"
+    },
+    {
+        "name": "Nautilus",
+        "prio": "E-W-Q",
+        "mode": "ALL",
+        "prefType": "PRIO"
+    },
+    {
+        "name": "Milio",
+        "prio": "Q-W-E",
+        "mode": "ARAM",
+        "prefType": "PRIO"
+    },
+    {
+        "name": "Janna",
+        "prio": "Q-E-W",
+        "mode": "ARAM",
+        "prefType": "PRIO"
+    },
+    {
+        "name": "Ashe",
+        "prio": "W-E-Q",
+        "mode": "ARAM",
+        "prefType": "PRIO"
+    }
+]

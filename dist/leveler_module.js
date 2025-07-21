@@ -1,0 +1,279 @@
+import axios from "axios";
+import { Agent } from "https";
+import { activeWindow } from "active-win";
+import fetch from "node-fetch";
+import * as cheerio from "cheerio";
+import { keyboard, Key } from "@nut-tree-fork/nut-js";
+import * as fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+// Manually define __dirname and export paths
+const __filename = fileURLToPath(import.meta.url);
+export const __dirname = path.dirname(__filename);
+export const rootDir = __dirname + "/..";
+export const friendsConfigPath = path.join(rootDir, "config", "friends.json");
+export const champsConfigPath = path.join(rootDir, "config", "champs.json");
+export const champPrefsConfigPath = path.join(rootDir, "config", "champ_preferences.json");
+export const recRunesConfigPath = path.join(rootDir, "config", "recommended_runepages.json");
+export const allRunesConfigPath = path.join(rootDir, "data", "all_runepages.json");
+const champNamesConfigPath = path.join(rootDir, "config", "leveler_champs_array.json");
+// CONSTANTS
+let SKILL_ORDER = {
+    Q: [],
+    W: [],
+    E: [],
+    R: [],
+};
+const CHAMP_PREFERENCES = JSON.parse(fs.readFileSync(champPrefsConfigPath).toString());
+const CHAMP_NAMES = JSON.parse(fs.readFileSync(champNamesConfigPath).toString());
+// FLAGS
+let isLaunched = false; // If the auto-leveling script itself has been launched
+let isSkillOrderReceived = false;
+let isGamemodeFetched = false;
+let isInActiveGame = false;
+export let hasReachedMaxLevel = false;
+let champNameFetched = false;
+let GAMEMODE = "";
+const httpsAgent = new Agent({
+    rejectUnauthorized: false, // Disable SSL cert verification
+});
+const liveClientData = axios.create({
+    baseURL: "https://127.0.0.1:2999/liveclientdata",
+    httpsAgent,
+});
+let prevChampLevel = null;
+const addPoint = (key, skill) => {
+    SKILL_ORDER[key].push(skill);
+};
+const normalizeChampionName = (champName) => {
+    // Store in a new variable to avoid mutating the initial champName
+    let cleanedChampName = champName;
+    cleanedChampName = cleanedChampName.toLowerCase();
+    cleanedChampName = cleanedChampName.replace(".", "");
+    cleanedChampName = cleanedChampName.replace("'", "");
+    // Instead of removing the space handle one-name champs like Renata Glasc being 'renata-aram'
+    const firstName = cleanedChampName.split(" ")[0];
+    if (!firstName)
+        return;
+    // Try to get an exact match first        Reason: "Vi" returns "Sivir"
+    let champFound = CHAMP_NAMES.find((champ) => champ === firstName);
+    // No exact match, try to find the name in more broad terms
+    if (!champFound)
+        cleanedChampName = CHAMP_NAMES.find((champ) => champ.includes(firstName));
+    if (!cleanedChampName) {
+        console.log("The champion name seems to be undefined or not valid. Is it a new champ release? Add it to config/leveler_champs_array.json!");
+    }
+    return cleanedChampName;
+};
+const getSkillOrder = async (champName, gameMode) => {
+    isSkillOrderReceived = true;
+    let url;
+    // Filter out useless symbols in name
+    let matchedChampName = normalizeChampionName(champName);
+    if (matchedChampName && gameMode.toLowerCase() === "aram")
+        url = `https://u.gg/lol/champions/aram/${matchedChampName}-aram`;
+    else
+        url = `https://u.gg/lol/champions/${matchedChampName}/build`;
+    await fetch(url)
+        .then((res) => res.text())
+        .then((body) => {
+        const $ = cheerio.load(body);
+        const skillOrderDiv = $("div.skill-order");
+        const children = skillOrderDiv.children();
+        children.each((i, el) => {
+            const level = i + 1;
+            const skill = $(el).text().trim();
+            // U.GG returns the entire html element including all the boxes for each level
+            // + 1 for passive (73 total)
+            // Sort out skills by order
+            if (level >= 1 && level <= 18) {
+                if (skill)
+                    addPoint("Q", skill);
+            }
+            else if (level >= 19 && level <= 36) {
+                if (skill)
+                    addPoint("W", skill);
+            }
+            else if (level >= 37 && level <= 54) {
+                if (skill)
+                    addPoint("E", skill);
+            }
+            else if (level >= 55 && level <= 72) {
+                if (skill)
+                    addPoint("R", skill);
+            }
+        });
+    })
+        .catch((err) => console.error("Error while fetching skill order: ", err));
+};
+const fetchGamemode = (gameData, champName) => {
+    isGamemodeFetched = true;
+    const gameMode = gameData.gameMode;
+    console.log(`[Auto-lvler]\nGamemode: ${gameMode}\nChampion: ${champName}\n`);
+    return gameMode;
+};
+const ctrlTapKey = async (letter) => {
+    const key = Key[letter]; // Key.Q / Key.W / Key.E / Key.R
+    await keyboard.pressKey(Key.LeftControl);
+    await keyboard.pressKey(key);
+    await keyboard.releaseKey(Key.LeftControl);
+    await keyboard.releaseKey(key);
+    console.log(`Sent Ctrl+${letter}`);
+};
+const changeSkillPrio = (skillOne, skillTwo) => {
+    const firstSkill = SKILL_ORDER[skillOne]; // Ex.          Q:  1, 4,  5,  7,  9
+    const secondSkill = SKILL_ORDER[skillTwo]; // Ex.         W:  2, 8, 10, 12, 13
+    SKILL_ORDER[skillOne] = secondSkill; //                   Apply W order to Q
+    SKILL_ORDER[skillTwo] = firstSkill; //                    Apply Q order to W
+    console.log(`Swapping priority for abilities [${skillOne}] - [${skillTwo}]`);
+};
+const getChampName = (allGameData) => {
+    champNameFetched = true;
+    const summonerName = allGameData.activePlayer.riotId;
+    const allPlayers = allGameData.allPlayers;
+    const player = allPlayers.find((p) => p.riotId === summonerName);
+    if (!player) {
+        console.log(`Something is wrong with you receiving ingame data.\n Summoner name ${summonerName} not found.`);
+        return "";
+    }
+    return player.championName;
+};
+const handleAramStart = async () => {
+    const ability1 = Object.entries(SKILL_ORDER).find(([_, levels]) => levels.includes("1"))?.[0];
+    const ability2 = Object.entries(SKILL_ORDER).find(([_, levels]) => levels.includes("2"))?.[0];
+    const ability3 = Object.entries(SKILL_ORDER).find(([_, levels]) => levels.includes("3"))?.[0];
+    if (!ability1 || !ability2 || !ability3) {
+        return console.log("Something went wrong when trying to find where to put your first 3 skillpoints");
+    }
+    console.log(`[ARAM] Putting points into your [${ability1}] [${ability2}] [${ability3}]`);
+    await ctrlTapKey(ability1);
+    await ctrlTapKey(ability2);
+    await ctrlTapKey(ability3);
+};
+const handleSkillPrio = (targetChamp) => {
+    // If the R isn't as expected, it's probably a unique champ like udyr jayce etc, just a failsafe
+    if (SKILL_ORDER.R.join(",") !== "6,11,16")
+        return console.log("Unique champ detected - [R] leveling isn't as expected.");
+    const firstPrio = Object.values(SKILL_ORDER).find((arr) => arr.includes("9"));
+    const secondPrio = Object.values(SKILL_ORDER).find((arr) => arr.includes("13"));
+    const thirdPrio = Object.values(SKILL_ORDER).find((arr) => arr.includes("18"));
+    if (!firstPrio || !secondPrio || !thirdPrio) {
+        return console.warn("Failed to find skill levels 9, 13 or 18 in current SKILL_ORDER");
+    }
+    const newSkillOrder = targetChamp.prio.split("-");
+    SKILL_ORDER[newSkillOrder[0]] = firstPrio;
+    SKILL_ORDER[newSkillOrder[1]] = secondPrio;
+    SKILL_ORDER[newSkillOrder[2]] = thirdPrio;
+    console.log(`Rearranged skill prio to ${newSkillOrder.join(" -> ")}`);
+};
+const handleSkillSwap = (targetChamp) => {
+    // Example: E-Q
+    targetChamp.skillSwaps?.forEach((s) => {
+        const [fromSkill, toSkill] = s.split("-");
+        if (fromSkill && toSkill)
+            changeSkillPrio(fromSkill, toSkill);
+    });
+};
+const handleChampPreferences = (champName, gameMode) => {
+    isInActiveGame = true; // Run all of this only once
+    console.log(`Checking champ preferences for:\n${champName}`); // Keep this for debugging purposes
+    const targetChamp = CHAMP_PREFERENCES.find((champ) => champ.name === champName);
+    if (!targetChamp)
+        return;
+    // If it has no "mode" field consider it as "ALL"
+    const champMode = targetChamp.mode?.toUpperCase() ?? "ALL";
+    const preferenceType = targetChamp.prefType?.toUpperCase() ?? "PRIO";
+    // Check if mode preferences for that champ match and if the champ exists
+    if (champMode === "ALL" || champMode === gameMode.toUpperCase()) {
+        switch (preferenceType) {
+            case "PRIO":
+                handleSkillPrio(targetChamp);
+                break;
+            case "SWAP":
+                handleSkillSwap(targetChamp);
+                break;
+        }
+    }
+    console.log(`\nSkill priority:`);
+    console.log(SKILL_ORDER); // List separately - avoid [Object object] and keep syntax highlight
+    console.log("\n\n");
+};
+export const resetLevelingFlags = () => {
+    isSkillOrderReceived = false;
+    isGamemodeFetched = false;
+    isInActiveGame = false;
+    hasReachedMaxLevel = false;
+    champNameFetched = false;
+    GAMEMODE = "";
+    SKILL_ORDER = {
+        Q: [],
+        W: [],
+        E: [],
+        R: [],
+    };
+};
+export const handleLeveling = async () => {
+    if (!isLaunched) {
+        isLaunched = true;
+        console.log("League auto-leveler launched!");
+    }
+    // Ensure we're tabbed in, otherwise don't bother doing anything at all
+    const activeWin = await activeWindow();
+    if (!activeWin?.title.toLowerCase().includes("league of legends"))
+        return;
+    try {
+        const { data: allGameData } = await liveClientData.get("/allgamedata");
+        const summonerInfo = allGameData.activePlayer;
+        const gameInfo = allGameData.gameData;
+        // Check if game has begun
+        const isInLoadingScreen = gameInfo.gameTime < 15;
+        if (isInLoadingScreen)
+            return;
+        // Figure out the champ name using summoner ID etc...
+        let champName = "";
+        if (!champNameFetched)
+            champName = getChampName(allGameData);
+        if (!champName)
+            return;
+        const champLevel = summonerInfo.level;
+        // Ensure the level has changed compared to the last poll
+        if (!champLevel || prevChampLevel === champLevel || champLevel === 0)
+            return;
+        prevChampLevel = champLevel;
+        // Fetch our current game mode from the LiveClientData
+        if (!isGamemodeFetched)
+            GAMEMODE = fetchGamemode(gameInfo, champName);
+        if (!GAMEMODE)
+            return;
+        // Fetch our skill order from U.GG
+        if (!isSkillOrderReceived && GAMEMODE)
+            await getSkillOrder(champName, GAMEMODE);
+        // Know we're in an active game and check if the user has special preferences for this champ
+        if (!isInActiveGame && GAMEMODE)
+            handleChampPreferences(champName, GAMEMODE);
+        // Level all first 3 skills
+        if (GAMEMODE?.toLowerCase() === "aram" && champLevel === 3)
+            return await handleAramStart();
+        // Grab current ability to upgrade based on our new level
+        const resultForAbility = Object.entries(SKILL_ORDER).find(([_, levels]) => levels.includes(champLevel.toString()));
+        const abilityToLevel = resultForAbility
+            ? resultForAbility[0]
+            : null;
+        if (!abilityToLevel)
+            return;
+        console.log(`Level [${champLevel}] Putting points into your [${abilityToLevel}]`);
+        await ctrlTapKey(abilityToLevel);
+        if (champLevel === 18) {
+            hasReachedMaxLevel = true;
+            console.log(`Level 18 reached. Turning off auto-leveler!\n`);
+        }
+    }
+    catch (err) {
+        // Most likely just haven't started a game yet, might be a port issue or more
+        if (isInActiveGame)
+            isInActiveGame = false;
+        else
+            return;
+        console.log("Not in an active game.");
+    }
+};

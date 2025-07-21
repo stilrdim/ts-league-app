@@ -1,0 +1,22 @@
+{
+  "GET": {
+    "successes": {
+      "/lol-honor-v2/v1/ballot": {
+        "data": {
+          "eligibleAllies": [],
+          "eligibleOpponents": [],
+          "gameId": 0,
+          "honoredPlayers": [],
+          "votePool": {
+            "fromGamePlayed": 1,
+            "fromHighHonor": 0,
+            "fromRecentHonors": 0,
+            "fromRollover": 0,
+            "votes": 1
+          }
+        }
+      }
+    },
+    "failures": {}
+  }
+}

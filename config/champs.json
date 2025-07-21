@@ -1,0 +1,122 @@
+{
+  "TANK_CHAMPS": {
+    "champList": [
+      "Nautilus",
+      "Braum",
+      "Leona",
+      "Yorick",
+      "Thresh",
+      "Rakan",
+      "Blitzcrank",
+      "Amumu",
+      "Tahm Kench",
+      "Rell",
+      "Maokai",
+      "Shen",
+      "Alistar",
+      "Galio",
+      "Rammus",
+      "Garen",
+      "Volibear",
+      "Sejuani",
+      "Cho'Gath",
+      "Dr. Mundo",
+      "Sion",
+      "Zac",
+      "Rek'Sai",
+      "Poppy",
+      "Skarner",
+      "Ornn",
+      "Gnar",
+      "Sylas",
+      "Diana",
+      "Shyvana"
+    ],
+    "categoryName": "TANK CHAMP",
+    "role": "TANK",
+    "runePageName": "ARAM TANKS",
+    "runesSimplified": "GRASP + MAX HP + MANA REGEN"
+  },
+  "BASIC_MAGE_CHAMPS": {
+    "champList": [
+      "Xerath",
+      "Elise",
+      "Nidalee",
+      "Shaco",
+      "Ekko",
+      "LeBlanc",
+      "Fizz",
+      "Ahri",
+      "Aurora",
+      "Morgana",
+      "Brand",
+      "Malzahar",
+      "Miss fortune",
+      "Aurelion Sol",
+      "Hwei",
+      "Karma",
+      "Zyra",
+      "Kai'Sa",
+      "Lux",
+      "Ziggs",
+      "Heimerdinger",
+      "Veigar",
+      "Syndra",
+      "Seraphine",
+      "Neeko",
+      "Vel'Koz",
+      "Twisted Fate",
+      "Bard",
+      "Zoe",
+      "Zilean",
+      "Anivia",
+      "Viktor",
+      "Malzahar",
+      "Taliyah",
+      "Cassiopeia",
+      "Vex"
+    ],
+    "categoryName": "BASIC MAGE CHAMP",
+    "role": "MAGE",
+    "runePageName": "ARAM BASIC MAGES",
+    "runesSimplified": "ARCANE COMET + MANA REGEN"
+  },
+  "BASIC_SUPPORT_CHAMPS": {
+    "champList": [
+      "Janna",
+      "Milio",
+      "Lulu",
+      "Sona",
+      "Ivern",
+      "Yuumi",
+      "Soraka"
+    ],
+    "categoryName": "BASIC SUPPORT CHAMP",
+    "role": "SUPPORT",
+    "runePageName": "ARAM BASIC SUPP",
+    "runesSimplified": "SUMMON AERY + SHIELD/HEALING POWER"
+  },
+  "ULT_MAGE_CHAMPS": {
+    "champList": [
+      "Karthus",
+      "Rumble",
+      "Ashe",
+      "Teemo",
+      "Malphite"
+    ],
+    "categoryName": "ULT MAGE CHAMP",
+    "role": "ULT MAGE",
+    "runePageName": "ARAM ULT MAGES",
+    "runesSimplified": "DARK HARVEST + ULT HUNTER + AXIOM MAX CDR"
+  },
+  "ULT_SUPPORT_CHAMPS": {
+    "champList": [
+      "Nami",
+      "Renata Glasc"
+    ],
+    "categoryName": "ULT SUPPORT CHAMP",
+    "role": "ULT SUPPORT",
+    "runePageName": "ARAM ULT SUPP",
+    "runesSimplified": "SUMMON AERY + ULTIMATE HUNTER"
+  }
+}

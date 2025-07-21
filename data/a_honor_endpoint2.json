@@ -1,0 +1,111 @@
+{
+  "GET": {
+    "successes": {
+      "/lol-honor-v2/v1/ballot": {
+        "data": {
+          "eligibleAllies": [
+            {
+              "botPlayer": false,
+              "championName": "Illaoi",
+              "puuid": "2184beda-203a-5dae-ae2b-908437685802",
+              "role": "",
+              "skinSplashPath": "/lol-game-data/assets/ASSETS/Characters/Illaoi/Skins/Base/Images/illaoi_splash_centered_0.jpg",
+              "summonerId": 2957208967014112,
+              "summonerName": ""
+            },
+            {
+              "botPlayer": false,
+              "championName": "Cho'Gath",
+              "puuid": "3a6915f2-b848-57a6-92c4-89f99b6c7984",
+              "role": "",
+              "skinSplashPath": "/lol-game-data/assets/ASSETS/Characters/Chogath/skins/base/Images/chogath_splash_centered_0.jpg",
+              "summonerId": 3478727875503552,
+              "summonerName": ""
+            },
+            {
+              "botPlayer": false,
+              "championName": "Xayah",
+              "puuid": "ee51d845-48c0-5965-82d6-8f7657d503f9",
+              "role": "",
+              "skinSplashPath": "/lol-game-data/assets/ASSETS/Characters/Xayah/Skins/Skin02/Images/xayah_splash_centered_2.jpg",
+              "summonerId": 145878247,
+              "summonerName": ""
+            },
+            {
+              "botPlayer": false,
+              "championName": "Ziggs",
+              "puuid": "a0c12ee4-7b34-50e6-87dc-02772ccad700",
+              "role": "",
+              "skinSplashPath": "/lol-game-data/assets/ASSETS/Characters/Ziggs/Skins/Base/Images/ziggs_splash_centered_0.jpg",
+              "summonerId": 96388600,
+              "summonerName": ""
+            }
+          ],
+          "eligibleOpponents": [
+            {
+              "botPlayer": false,
+              "championName": "Lux",
+              "puuid": "114414b3-a200-54a5-94e1-bbf9bd05ab0a",
+              "role": "",
+              "skinSplashPath": "/lol-game-data/assets/ASSETS/Characters/Lux/Skins/Skin18/Images/lux_splash_centered_18.jpg",
+              "summonerId": 109757333,
+              "summonerName": ""
+            },
+            {
+              "botPlayer": false,
+              "championName": "Ashe",
+              "puuid": "361b6ca0-685f-5ea4-b2fb-ad70e0843273",
+              "role": "",
+              "skinSplashPath": "/lol-game-data/assets/ASSETS/Characters/Ashe/Skins/Skin63/Images/ashe_splash_centered_63.jpg",
+              "summonerId": 3404659699762688,
+              "summonerName": ""
+            },
+            {
+              "botPlayer": false,
+              "championName": "Nidalee",
+              "puuid": "6954cb3d-3344-563d-abb4-2aee6df788f1",
+              "role": "",
+              "skinSplashPath": "/lol-game-data/assets/ASSETS/Characters/Nidalee/Skins/Base/Images/nidalee_splash_centered_0.jpg",
+              "summonerId": 3386481640752192,
+              "summonerName": ""
+            },
+            {
+              "botPlayer": false,
+              "championName": "Sejuani",
+              "puuid": "71276007-a7fe-59c8-80db-5870e3a56e81",
+              "role": "",
+              "skinSplashPath": "/lol-game-data/assets/ASSETS/Characters/Sejuani/Skins/Skin16/Images/sejuani_splash_centered_16.jpg",
+              "summonerId": 20718451,
+              "summonerName": ""
+            },
+            {
+              "botPlayer": false,
+              "championName": "Kennen",
+              "puuid": "879934e8-306d-5ac3-a21c-4cad8d627700",
+              "role": "",
+              "skinSplashPath": "/lol-game-data/assets/ASSETS/Characters/Kennen/Skins/Skin08/Images/kennen_splash_centered_8.jpg",
+              "summonerId": 36839598,
+              "summonerName": ""
+            }
+          ],
+          "gameId": 7464753811,
+          "honoredPlayers": [],
+          "votePool": {
+            "fromGamePlayed": 1,
+            "fromHighHonor": 0,
+            "fromRecentHonors": 1,
+            "fromRollover": 4,
+            "votes": 4
+          }
+        }
+      },
+      "/lol-honor-v2/v1/vote-completion": {
+        "data": {
+          "fullTeamVote": false,
+          "gameId": 7464714911
+        }
+      }
+    },
+    "failures": {}
+  }
+}

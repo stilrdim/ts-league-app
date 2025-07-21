@@ -1,0 +1,110 @@
+{
+  "GET": {
+    "successes": {
+      "/lol-honor-v2/v1/ballot": {
+        "data": {
+          "eligibleAllies": [
+            {
+              "botPlayer": false,
+              "championName": "Gragas",
+              "puuid": "2184beda-203a-5dae-ae2b-908437685802",
+              "role": "",
+              "skinSplashPath": "/lol-game-data/assets/ASSETS/Characters/Gragas/Skins/Skin02/Images/gragas_splash_centered_2.jpg",
+              "summonerId": 2957208967014112,
+              "summonerName": ""
+            },
+            {
+              "botPlayer": false,
+              "championName": "Nidalee",
+              "puuid": "3a6915f2-b848-57a6-92c4-89f99b6c7984",
+              "role": "",
+              "skinSplashPath": "/lol-game-data/assets/ASSETS/Characters/Nidalee/Skins/Base/Images/nidalee_splash_centered_0.jpg",
+              "summonerId": 3478727875503552,
+              "summonerName": ""
+            },
+            {
+              "botPlayer": false,
+              "championName": "Shaco",
+              "puuid": "3e16f863-c1d1-509c-8f04-7485c3ed65a3",
+              "role": "",
+              "skinSplashPath": "/lol-game-data/assets/ASSETS/Characters/Shaco/Skins/Skin23/Images/shaco_splash_centered_23.jpg",
+              "summonerId": 3078560481289760,
+              "summonerName": ""
+            },
+            {
+              "botPlayer": false,
+              "championName": "Zilean",
+              "puuid": "a0c12ee4-7b34-50e6-87dc-02772ccad700",
+              "role": "",
+              "skinSplashPath": "/lol-game-data/assets/ASSETS/Characters/Zilean/Skins/Skin01/Images/zilean_splash_centered_1.jpg",
+              "summonerId": 96388600,
+              "summonerName": ""
+            }
+          ],
+          "eligibleOpponents": [
+            {
+              "botPlayer": false,
+              "championName": "Sett",
+              "puuid": "3a3d5134-cd40-5c47-b3bb-8b8ed1c35cac",
+              "role": "",
+              "skinSplashPath": "/lol-game-data/assets/ASSETS/Characters/Sett/Skins/Skin10/Images/sett_splash_centered_10.jpg",
+              "summonerId": 42338872,
+              "summonerName": ""
+            },
+            {
+              "botPlayer": false,
+              "championName": "Mel",
+              "puuid": "b7761279-2e63-59ae-8598-23ff1ee67a10",
+              "role": "",
+              "skinSplashPath": "/lol-game-data/assets/ASSETS/Characters/Mel/Skins/Base/Images/Mel_splash_centered_0.Mel.jpg",
+              "summonerId": 43367195,
+              "summonerName": ""
+            },
+            {
+              "botPlayer": false,
+              "championName": "Mordekaiser",
+              "puuid": "01a65d1b-c096-5a8a-a322-88752c1e5b4d",
+              "role": "",
+              "skinSplashPath": "/lol-game-data/assets/ASSETS/Characters/Mordekaiser/Skins/Skin13/Images/mordekaiser_splash_centered_13.jpg",
+              "summonerId": 135359592,
+              "summonerName": ""
+            },
+            {
+              "botPlayer": false,
+              "championName": "Yasuo",
+              "puuid": "8511b4e7-c55a-5293-84f9-b4b8d55194ba",
+              "role": "",
+              "skinSplashPath": "/lol-game-data/assets/ASSETS/Characters/Yasuo/Skins/Base/Images/yasuo_splash_centered_0.jpg",
+              "summonerId": 150540339,
+              "summonerName": ""
+            },
+            {
+              "botPlayer": false,
+              "championName": "Darius",
+              "puuid": "7ad031bc-6857-50c0-8802-8acac4178785",
+              "role": "",
+              "skinSplashPath": "/lol-game-data/assets/ASSETS/Characters/Darius/Skins/Skin16/Images/darius_splash_centered_16.jpg",
+              "summonerId": 43559829,
+              "summonerName": ""
+            }
+          ],
+          "gameId": 7464385166,
+          "honoredPlayers": [
+            {
+              "honorType": "HEART",
+              "recipientPuuid": "a0c12ee4-7b34-50e6-87dc-02772ccad700"
+            }
+          ],
+          "votePool": {
+            "fromGamePlayed": 1,
+            "fromHighHonor": 0,
+            "fromRecentHonors": 1,
+            "fromRollover": 1,
+            "votes": 3
+          }
+        }
+      }
+    },
+    "failures": {}
+  }
+}

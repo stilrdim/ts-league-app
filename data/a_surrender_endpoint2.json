@@ -1,0 +1,79 @@
+{
+  "GET": {
+    "successes": {
+      "/lol-chat/v1/conversations": {
+        "data": [
+          {
+            "gameName": "Kittzie",
+            "gameTag": "EUW",
+            "id": "7419a143-6f1f-5893-b8f4-dfdd07e55da6@eu1.pvp.net",
+            "inviterId": "",
+            "isMuted": false,
+            "lastMessage": {
+              "body": "but ofc",
+              "fromId": "2000043d-17d5-53e7-9480-166b0d96e425@eu1.pvp.net",
+              "fromObfuscatedSummonerId": 0,
+              "fromPid": "2000043d-17d5-53e7-9480-166b0d96e425@eu1.pvp.net",
+              "fromSummonerId": 42941196,
+              "id": "1752509704020:4",
+              "isHistorical": true,
+              "timestamp": "2025-07-14T16:14:57.930Z",
+              "type": "chat"
+            },
+            "mucJwtDto": {
+              "channelClaim": "",
+              "domain": "",
+              "jwt": "",
+              "targetRegion": ""
+            },
+            "name": "",
+            "password": "",
+            "pid": "7419a143-6f1f-5893-b8f4-dfdd07e55da6@eu1.pvp.net",
+            "targetRegion": "eu1",
+            "type": "chat",
+            "unreadMessageCount": 0
+          },
+          {
+            "gameName": "Darkstar2160",
+            "gameTag": "04488",
+            "id": "76671f0e-d7c8-59fb-bb30-0abe217e867e@eu1.pvp.net",
+            "inviterId": "",
+            "isMuted": false,
+            "lastMessage": {
+              "body": "bet",
+              "fromId": "2000043d-17d5-53e7-9480-166b0d96e425@eu1.pvp.net",
+              "fromObfuscatedSummonerId": 0,
+              "fromPid": "2000043d-17d5-53e7-9480-166b0d96e425@eu1.pvp.net",
+              "fromSummonerId": 42941196,
+              "id": "1752590115107:15",
+              "isHistorical": true,
+              "timestamp": "2025-07-15T14:35:10.686Z",
+              "type": "chat"
+            },
+            "mucJwtDto": {
+              "channelClaim": "",
+              "domain": "",
+              "jwt": "",
+              "targetRegion": ""
+            },
+            "name": "",
+            "password": "",
+            "pid": "76671f0e-d7c8-59fb-bb30-0abe217e867e@eu1.pvp.net",
+            "targetRegion": "eu1",
+            "type": "chat",
+            "unreadMessageCount": 0
+          }
+        ]
+      }
+    },
+    "failures": {
+      "/lol-chat/v1/game-messages": {
+        "data": {
+          "message": "Request failed with status code 404",
+          "code": "ERR_BAD_REQUEST",
+          "status": 404
+        }
+      }
+    }
+  }
+}

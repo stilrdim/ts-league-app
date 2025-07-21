@@ -1,0 +1,29 @@
+{
+  "name": "test-league-app",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "league": "node dist/league.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@nut-tree-fork/nut-js": "^4.2.6",
+    "active-win": "^9.0.0",
+    "axios": "^1.10.0",
+    "cheerio": "^1.1.0",
+    "eventsource": "^1.1.0",
+    "https": "^1.0.0",
+    "league-connect": "^6.0.0-rc13",
+    "node-fetch": "^3.3.2",
+    "prompt-sync": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.15",
+    "typescript": "^5.8.3"
+  }
+}
