@@ -160,26 +160,26 @@ const RECOMMENDED_RUNES: ChampionRuneRecEntry[] = JSON.parse(
     // Build our file name and directory
     let isPlural = false;
     const pluralSuffix = isPlural ? "s" : "";
-    const attempt = 2;
+    const attempt = 1;
     const targetFolder = "./data";
-    const currentTestType = "recommended_runes";
+    const currentTestType = "lobby";
 
     // const champId = 22;
 
     let success = false;
 
     const endpoints: string[] = [
-      // CHAMP SELECT ENDPOINTS
+      // ----- CHAMP SELECT ENDPOINTS
       // "/lol-champ-select/v1/session",
       // "/lol-lobby-team-builder/champ-select/v1/subset-champion-list", // GET - new cards in ARAM
       // `/lol-perks/v1/perks-from-backed-recommendations/${champId}/NONE`, // GET - Recommended runes
       // "/lol-game-data/assets/v1/champions/22.json", // GET - Champ data
       // "/plugins/rcp-be-lol-game-data/global/default/v1/champion-rune-recommendations.json" // GET - Up to date rune recommendations
-      // TEST SURRENDER ENDPOINTS
+      // ----- TEST SURRENDER ENDPOINTS
       // "/lol-end-of-game/v1/surrender", // DEAD
       // "/lol-chat/v1/conversations", // DMS
       // "/lol-chat/v1/game-messages", // DEAD
-      // HONOR ENDPOINTS
+      // ----- HONOR ENDPOINTS
       // "/lol-honor-v2/v1/ballot",             //   GET   - List of players to honor
       // "/lol-honor-v2/v1/vote-completion",    //   GET   - Check if voting phase complete
       // "/lol-honor-v2/v1/config",             //   GET   - Honor system config and flags
@@ -194,8 +194,8 @@ const RECOMMENDED_RUNES: ChampionRuneRecEntry[] = JSON.parse(
       // "/lol-honor-v2/v1/recognition-enabled",//   GET   - If honor enabled (Deprecated)
       // "/lol-honor-v2/v1/profile-summary",    //   GET   - Honor profile summary (Deprecated)
       // "/lol-honor-v2/v1/full-team-vote",     //   GET   - Full team vote status (Deprecated)
-      // OLD TESTING ENDPOINTS
-      // "/lol-gameflow/v1/session", //              GET   - Session type ChampSelect Lobby etc
+      // ----- OLD TESTING ENDPOINTS
+      "/lol-gameflow/v1/session", //              GET   - Session type ChampSelect Lobby etc
       // "/lol-end-of-game/v1/eog-stats-block", //   GET   - End of game stats
       // "/lol-chat/v1/friends", //                  GET   - Friend list
       // "/lol-chat/v1/me", //                       GET   - My own info
