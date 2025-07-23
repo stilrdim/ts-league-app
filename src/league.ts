@@ -34,6 +34,7 @@ const AUTO_ACCEPT_QUEUE = true;
 const AUTO_INVITE_FRIENDS = true;
 const AUTO_SELECT_RUNES = true;
 const AUTO_SELECT_RECOMMENDED_RUNES = true;
+const ONLY_FOR_ARAMS = true;
 const POLLING_INTERVAL_IN_SECONDS = 1; // Time between each client state update
 
 // #region Constants and Flags
@@ -407,7 +408,10 @@ let lastChampId: number | null = null; // Track champion changes during ChampSel
     }
   };
 
-  const handleLobby = async (isAutoInviting: boolean) => {
+  const handleLobby = async (
+    gameflow: GameFlowSession,
+    isAutoInviting: boolean
+  ) => {
     // When we first go to lobby this triggers only once
     if (!isInLobby) {
       isInLobby = true;
@@ -417,6 +421,8 @@ let lastChampId: number | null = null; // Track champion changes during ChampSel
 
       if (AUTO_LEVEL_ABILITIES) resetLevelingFlags(); // Ensure we still get auto-leveling next game
     }
+
+    if (ONLY_FOR_ARAMS && gameflow.gameData.queue.gameMode !== "ARAM") return;
 
     try {
       const { data: res } = await leagueRequest.get<Party>(
@@ -537,7 +543,7 @@ let lastChampId: number | null = null; // Track champion changes during ChampSel
           // Reset necessary flags to avoid useless requests
           if (playAgainTriggered) playAgainTriggered = false;
           if (honorTriggered) honorTriggered = false;
-          if (AUTO_QUEUE_UP) await handleLobby(AUTO_INVITE_FRIENDS);
+          if (AUTO_QUEUE_UP) await handleLobby(gameflow, AUTO_INVITE_FRIENDS);
           break;
 
         case "Matchmaking":
@@ -563,8 +569,13 @@ let lastChampId: number | null = null; // Track champion changes during ChampSel
       }
     } catch (error) {
       if (isAxiosError(error)) {
-        if (error.response?.status !== 404)
+        if (error.response?.status === 404) {
+          // Probably in League's Home screen
+          if (isInLobby) isInLobby = false;
+          if (isInGame) isInGame = false; // Might need it for custom games or practice tool
+        } else {
           console.error("Can't connect to League Client\n", error.code);
+        }
       } else {
         console.error("Unknown error: ", error);
       }

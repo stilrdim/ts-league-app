@@ -315,6 +315,10 @@ export const resetLevelingFlags = () => {
   champNameFetched = false;
 
   GAMEMODE = "";
+  CHAMP_NAME = "";
+
+  prevChampLevel = null;
+
   SKILL_ORDER = {
     Q: [],
     W: [],

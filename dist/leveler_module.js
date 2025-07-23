@@ -214,6 +214,8 @@ export const resetLevelingFlags = () => {
     hasReachedMaxLevel = false;
     champNameFetched = false;
     GAMEMODE = "";
+    CHAMP_NAME = "";
+    prevChampLevel = null;
     SKILL_ORDER = {
         Q: [],
         W: [],

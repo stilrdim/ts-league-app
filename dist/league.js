@@ -11,6 +11,7 @@ const AUTO_ACCEPT_QUEUE = true;
 const AUTO_INVITE_FRIENDS = true;
 const AUTO_SELECT_RUNES = true;
 const AUTO_SELECT_RECOMMENDED_RUNES = true;
+const ONLY_FOR_ARAMS = true;
 const POLLING_INTERVAL_IN_SECONDS = 1; // Time between each client state update
 // #region Constants and Flags
 const FRIENDS = JSON.parse(fs.readFileSync(friendsConfigPath).toString());
@@ -258,7 +259,7 @@ let lastChampId = null; // Track champion changes during ChampSelect stage
             }
         }
     };
-    const handleLobby = async (isAutoInviting) => {
+    const handleLobby = async (gameflow, isAutoInviting) => {
         // When we first go to lobby this triggers only once
         if (!isInLobby) {
             isInLobby = true;
@@ -268,6 +269,8 @@ let lastChampId = null; // Track champion changes during ChampSelect stage
             if (AUTO_LEVEL_ABILITIES)
                 resetLevelingFlags(); // Ensure we still get auto-leveling next game
         }
+        if (ONLY_FOR_ARAMS && gameflow.gameData.queue.gameMode !== "ARAM")
+            return;
         try {
             const { data: res } = await leagueRequest.get("/lol-lobby/v2/lobby");
             isLobbyFull = res.gameConfig.isLobbyFull;
@@ -367,7 +370,7 @@ let lastChampId = null; // Track champion changes during ChampSelect stage
                     if (honorTriggered)
                         honorTriggered = false;
                     if (AUTO_QUEUE_UP)
-                        await handleLobby(AUTO_INVITE_FRIENDS);
+                        await handleLobby(gameflow, AUTO_INVITE_FRIENDS);
                     break;
                 case "Matchmaking":
                     await handleInQueue();
@@ -392,8 +395,16 @@ let lastChampId = null; // Track champion changes during ChampSelect stage
         }
         catch (error) {
             if (isAxiosError(error)) {
-                if (error.response?.status !== 404)
+                if (error.response?.status === 404) {
+                    // Probably in League's Home screen
+                    if (isInLobby)
+                        isInLobby = false;
+                    if (isInGame)
+                        isInGame = false; // Might need it for custom games or practice tool
+                }
+                else {
                     console.error("Can't connect to League Client\n", error.code);
+                }
             }
             else {
                 console.error("Unknown error: ", error);
