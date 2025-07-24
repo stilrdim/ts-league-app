@@ -5,8 +5,6 @@ import { FriendlistFriend, PartyMember } from "./types/index.js";
 
 const { FRIENDS } = COLLECTIONS;
 
-let { inviteTriggered, hasFriendsToInvite } = FLAGS;
-
 const findUninvitedFriends = async (partyMembers: PartyMember[]) => {
   // Get the summoner IDs of people already in our lobby
   const partyMembersIds = partyMembers.map((p) => p.summonerId);
@@ -47,7 +45,7 @@ export const tryInviteFriends = async (
   isLobbyFull: boolean
 ) => {
   // Ensure we havent already invited people
-  if (inviteTriggered) return;
+  if (FLAGS.inviteTriggered) return;
 
   try {
     // Skip checking for online friends if the lobby has no space for them
@@ -58,7 +56,7 @@ export const tryInviteFriends = async (
     // Somebody is actually available and not already in lobby
     if (uninvitedFriends.length > 0) {
       console.log("You have more friends that are online!");
-      hasFriendsToInvite = true;
+      FLAGS.hasFriendsToInvite = true;
       uninvitedFriends.forEach((friend) =>
         console.log(`Inviting ${friend.gameName}...`)
       );
@@ -75,7 +73,7 @@ export const tryInviteFriends = async (
       );
 
       // Change our flag to avoid spamming invites
-      inviteTriggered = true;
+      FLAGS.inviteTriggered = true;
     } else {
       await queueUp();
     }

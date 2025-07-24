@@ -2,7 +2,6 @@ import { isAxiosError } from "axios";
 import { COLLECTIONS, FLAGS } from "./config/constants.js";
 import { leagueRequest } from "./connection.js";
 const { FRIENDS } = COLLECTIONS;
-let { inviteTriggered, hasFriendsToInvite } = FLAGS;
 const findUninvitedFriends = async (partyMembers) => {
     // Get the summoner IDs of people already in our lobby
     const partyMembersIds = partyMembers.map((p) => p.summonerId);
@@ -26,7 +25,7 @@ const queueUp = async () => {
 };
 export const tryInviteFriends = async (partyMembers, isLobbyFull) => {
     // Ensure we havent already invited people
-    if (inviteTriggered)
+    if (FLAGS.inviteTriggered)
         return;
     try {
         // Skip checking for online friends if the lobby has no space for them
@@ -36,7 +35,7 @@ export const tryInviteFriends = async (partyMembers, isLobbyFull) => {
         // Somebody is actually available and not already in lobby
         if (uninvitedFriends.length > 0) {
             console.log("You have more friends that are online!");
-            hasFriendsToInvite = true;
+            FLAGS.hasFriendsToInvite = true;
             uninvitedFriends.forEach((friend) => console.log(`Inviting ${friend.gameName}...`));
             // Format it the way the league client expects it to be
             const invitePayload = uninvitedFriends.map((friend) => ({
@@ -45,7 +44,7 @@ export const tryInviteFriends = async (partyMembers, isLobbyFull) => {
             // Send the invite
             await leagueRequest.post("/lol-lobby/v2/lobby/invitations", invitePayload);
             // Change our flag to avoid spamming invites
-            inviteTriggered = true;
+            FLAGS.inviteTriggered = true;
         }
         else {
             await queueUp();
