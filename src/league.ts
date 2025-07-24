@@ -36,14 +36,12 @@ const {
   SKIP_ENDGAME_SCREEN,
 } = CONFIG;
 
-// #endregion Constants and Flags
-
 // Create Client
 await connectToLeagueClient();
 
 // #region Handle States
 
-// Handle ChampSelect
+// Handle State changes (gameflow-phase)
 ws.subscribe(
   "/lol-gameflow/v1/gameflow-phase",
   async (state: ClientState | null) => {
@@ -55,6 +53,7 @@ ws.subscribe(
   }
 );
 
+// Handle ChampSelect
 if (CONFIG.AUTO_SELECT_RUNES)
   ws.subscribe(
     "/lol-champ-select/v1/session",
