@@ -30,17 +30,31 @@ export interface PartyMember {
   // Only the necessary props
 }
 
-export interface Friend {
+export interface FriendlistFriend {
   summonerId: number;
   gameName: string;
   availability: string | "online" | "offline" | "mobile" | "dnd";
   // Only the necessary props
 }
 
-export interface CloseFriend {
+export interface CloseFriends {
+  Jasmy: CloseFriendInfo;
+  babyclaps: CloseFriendInfo;
+  bopped: CloseFriendInfo;
+  Ghettoven: CloseFriendInfo;
+  Farewell: CloseFriendInfo;
+  Ecci: CloseFriendInfo;
+  Twelve: CloseFriendInfo;
+  maidcafe: CloseFriendInfo;
+  Kittzie: CloseFriendInfo;
+  Onixy: CloseFriendInfo;
+  Magdora: CloseFriendInfo;
+}
+
+export interface CloseFriendInfo {
   name: string;
   actualName: string;
-  id: number;
+  summonerId: number;
 }
 
 export interface ChampSelectPlayer {
