@@ -3,6 +3,7 @@ node_modules/
 *.bat
 *.rar
 test*.js
+test_*.ts
 output*/
 dist/types
 *.js.map
