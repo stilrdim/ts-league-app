@@ -6,7 +6,6 @@ import {
   handleLeveling,
   resetLevelingFlags,
   __dirname,
-  rootDir,
   hasReachedMaxLevel,
   friendsConfigPath,
   champsConfigPath,
@@ -15,8 +14,8 @@ import {
 import {
   ChampInfo,
   ChampSelectSession,
-  CloseFriend,
-  Friend,
+  CloseFriends,
+  FriendlistFriend,
   Party,
   PartyMember,
   ChampionRuneRecEntry,
@@ -24,11 +23,15 @@ import {
   RunePagePayload,
   GameFlowSession,
   ReadyCheck,
+  Ballot,
+  BallotPlayer,
+  HonorRequestBody,
 } from "./types/index.js";
 
 // CONFIG
 const AUTO_LEVEL_ABILITIES = true;
 const SKIP_ENDGAME_SCREEN = true;
+const AUTO_HONOR_FRIENDS = true;
 const AUTO_QUEUE_UP = true;
 const AUTO_ACCEPT_QUEUE = true;
 const AUTO_INVITE_FRIENDS = true;
@@ -38,7 +41,7 @@ const ONLY_FOR_ARAMS = true;
 const POLLING_INTERVAL_IN_SECONDS = 1; // Time between each client state update
 
 // #region Constants and Flags
-const FRIENDS: Record<string, CloseFriend> = JSON.parse(
+const FRIENDS: CloseFriends = JSON.parse(
   fs.readFileSync(friendsConfigPath).toString()
 );
 const CHAMPS = JSON.parse(fs.readFileSync(champsConfigPath).toString());
@@ -64,6 +67,7 @@ let canStartGame = false; // If we can start at all, someone might have penalty,
 let isLobbyFull = false; // If lobby is full to avoid inviting even if more people are online
 
 let lastChampId: number | null = null; // Track champion changes during ChampSelect stage
+let honorVotesRemaining: number = -1;
 
 // #endregion Constants and Flags
 
@@ -248,7 +252,7 @@ let lastChampId: number | null = null; // Track champion changes during ChampSel
       timeout: 3000,
     });
 
-    const allFriends = (friendRes.data as Friend[]) || [];
+    const allFriends = (friendRes.data as FriendlistFriend[]) || [];
 
     // Filter through the entire friendlist and obtain the ones that matter
     const closeFriends = allFriends.filter((friend) =>
@@ -384,6 +388,95 @@ let lastChampId: number | null = null; // Track champion changes during ChampSel
       isInGame = true;
     } catch (err) {
       console.error("InProgress error: ", err);
+    }
+  };
+
+  // Handle PreEndOfGame
+  const handleHonorPlayers = async () => {
+    // Ensure we only trigger this once
+    honorTriggered = true;
+
+    try {
+      const { data: res } = await leagueRequest.get<Ballot>(
+        "/lol-honor-v2/v1/ballot"
+      );
+
+      const { gameId } = res;
+      honorVotesRemaining = res.votePool.votes;
+
+      const eligibleAllies = res.eligibleAllies;
+
+      const formattedPlayers = eligibleAllies.map(
+        (player) => `${player.championName}: (${player.summonerId})`
+      );
+
+      console.log(
+        `\nGame ID: ${gameId}\nAvailable votes: ${honorVotesRemaining}\nYour Team:`,
+        formattedPlayers
+      );
+
+      const priorityList = [
+        FRIENDS.Jasmy,
+        FRIENDS.babyclaps,
+        FRIENDS.bopped,
+        FRIENDS.Farewell,
+        FRIENDS.Ghettoven,
+        FRIENDS.Ecci,
+      ];
+
+      for (const friend of priorityList) {
+        const targetPlayer = eligibleAllies.find(
+          (ally) => ally.summonerId === friend.summonerId
+        );
+
+        // If the friend isn't available, check for the next one
+        if (!targetPlayer) {
+          console.log(
+            `[PreEndOfGame/Honor/NotFound] ${friend.summonerId} is not in this game`
+          );
+          continue;
+        }
+
+        if (honorVotesRemaining > 0) {
+          try {
+            console.log(
+              `[PreEndOfGame/Honor] Attempting to honor ${targetPlayer.championName}`
+            );
+
+            const payload: HonorRequestBody = {
+              recipientPuuid: targetPlayer.puuid,
+              honorType: "HEART",
+            };
+
+            // Send the honor
+            await leagueRequest
+              .post("/lol-honor/v1/honor", payload)
+              .then((data) => {
+                honorVotesRemaining--;
+                console.log(data);
+              });
+            console.log(
+              `[PreEndOfGame/Honor] Honored ${targetPlayer.championName}!`
+            );
+          } catch (err) {
+            if (isAxiosError(err)) {
+              console.error(
+                `[Axios] Couldn't honor ${friend.summonerId} `,
+                err.response?.data || err.message
+              );
+            } else {
+              console.error(`[Unknown] Couldn't honor ${friend.summonerId}`);
+            }
+          }
+        }
+      }
+    } catch (err) {
+      if (isAxiosError(err))
+        console.error(
+          "[Axios] PreEndOfGame error: ",
+          err.response?.data || err.message
+        );
+      else console.error("[Unknown] PreEndOfGame error: ", err);
     }
   };
 
@@ -531,6 +624,7 @@ let lastChampId: number | null = null; // Track champion changes during ChampSel
           break;
 
         case "PreEndOfGame":
+          if (AUTO_HONOR_FRIENDS && !honorTriggered) await handleHonorPlayers();
           break;
 
         case "EndOfGame":

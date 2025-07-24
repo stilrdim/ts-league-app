@@ -13,8 +13,8 @@ import {
   AllPlayer,
   ChampionRuneRecEntry,
   ChampPreference,
-  CloseFriend,
-  Friend,
+  CloseFriends,
+  FriendlistFriend,
   RunePage,
 } from "./types/index.js";
 
@@ -31,7 +31,7 @@ const RUNEPAGES: RunePage[] = JSON.parse(
 const CHAMP_PREFERENCES: ChampPreference[] = JSON.parse(
   fs.readFileSync(champPrefsConfigPath).toString()
 );
-const FRIENDS: CloseFriend[] = JSON.parse(
+const FRIENDS: CloseFriends = JSON.parse(
   fs.readFileSync(friendsConfigPath).toString()
 );
 const RECOMMENDED_RUNES: ChampionRuneRecEntry[] = JSON.parse(
@@ -92,7 +92,7 @@ const RECOMMENDED_RUNES: ChampionRuneRecEntry[] = JSON.parse(
     new Promise((r) => setTimeout(r, secs * 1000));
 
   const findFriend = async (targetName: string) => {
-    const { data: friends } = await leagueRequest.get<Friend[]>(
+    const { data: friends } = await leagueRequest.get<FriendlistFriend[]>(
       "/lol-chat/v1/friends"
     );
     const targetFriend = friends.find((f) => f.gameName === targetName);
