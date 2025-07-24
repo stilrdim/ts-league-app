@@ -129,11 +129,12 @@ export const handleHonorPlayers = async () => {
           // Send the honor
           await leagueRequest
             .post("/lol-honor/v1/honor", payload)
-            .then((data) => {
+            .then((response) => {
               STATE_VARS.honorVotesRemaining--;
-              console.log(data);
+              if (response.status === 204) {
+                console.log(`[Honor] Honored ${friend.name}`);
+              }
             });
-          console.log(`[Honor] Honored ${friend.name}!`);
         } catch (err) {
           if (isAxiosError(err)) {
             console.error(

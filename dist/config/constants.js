@@ -42,7 +42,23 @@ export const FLAGS = {
     canStartGame: false, // If we can start at all, someone might have penalty, etc
     isLobbyFull: false, // If lobby is full to avoid inviting even if more people are online
 };
+// STATE VARIABLES
 export const STATE_VARS = {
     lastChampId: null, // Track champion changes during ChampSelect stage
     honorVotesRemaining: -1,
+};
+export const HONOR = {
+    priorityList: [
+        FRIENDS.Jasmy,
+        FRIENDS.babyclaps,
+        FRIENDS.bopped,
+        FRIENDS.Farewell,
+        FRIENDS.Ghettoven,
+        FRIENDS.Ecci,
+        FRIENDS.Magdora,
+        FRIENDS.Kittzie,
+        FRIENDS.Onixy,
+        FRIENDS.Twelve,
+        FRIENDS.maidcafe,
+    ],
 };

@@ -1,4 +1,4 @@
-import { CONFIG, COLLECTIONS, STATE_VARS, FLAGS } from "./config/constants.js";
+import { CONFIG, COLLECTIONS, STATE_VARS, FLAGS, HONOR, } from "./config/constants.js";
 import { leagueRequest } from "./connection.js";
 import { isAxiosError } from "axios";
 import { resetLevelingFlags } from "./leveler_module.js";
@@ -60,25 +60,15 @@ export const handleHonorPlayers = async () => {
         const eligibleAllies = res.eligibleAllies;
         const formattedPlayers = eligibleAllies.map((player) => `${player.championName}: (${player.summonerId})`);
         console.log(`\nGame ID: ${gameId}\nAvailable votes: ${STATE_VARS.honorVotesRemaining}\nYour Team:`, formattedPlayers);
-        const priorityList = [
-            FRIENDS.Jasmy,
-            FRIENDS.babyclaps,
-            FRIENDS.bopped,
-            FRIENDS.Farewell,
-            FRIENDS.Ghettoven,
-            FRIENDS.Ecci,
-            FRIENDS.Magdora,
-        ];
+        const priorityList = HONOR.priorityList;
         for (const friend of priorityList) {
             const targetPlayer = eligibleAllies.find((ally) => ally.summonerId === friend.summonerId);
             // If the friend isn't available, check for the next one
-            if (!targetPlayer) {
-                console.log(`[PreEndOfGame/Honor/NotFound] ${friend.name} is not in this game`);
+            if (!targetPlayer)
                 continue;
-            }
             if (STATE_VARS.honorVotesRemaining > 0) {
                 try {
-                    console.log(`[PreEndOfGame/Honor] Attempting to honor ${friend.name}`);
+                    console.log(`[Honor] Attempting to honor ${friend.name}`);
                     const payload = {
                         recipientPuuid: targetPlayer.puuid,
                         honorType: "HEART",
@@ -86,11 +76,12 @@ export const handleHonorPlayers = async () => {
                     // Send the honor
                     await leagueRequest
                         .post("/lol-honor/v1/honor", payload)
-                        .then((data) => {
+                        .then((response) => {
                         STATE_VARS.honorVotesRemaining--;
-                        console.log(data);
+                        if (response.status === 204) {
+                            console.log(`[Honor] Honored ${friend.name}`);
+                        }
                     });
-                    console.log(`[PreEndOfGame/Honor] Honored ${friend.name}!`);
                 }
                 catch (err) {
                     if (isAxiosError(err)) {
@@ -112,7 +103,7 @@ export const handleHonorPlayers = async () => {
 };
 // Handles EndOfGame
 export const handleBackToLobby = async () => {
-    console.log("[EndOfGame]\nPost-game screen finished!");
+    console.log("Post-game screen finished!");
     try {
         if (!FLAGS.playAgainTriggered) {
             await leagueRequest.post("/lol-lobby/v2/play-again");
@@ -133,7 +124,6 @@ export const handleLobby = async (gameflow, isAutoInviting) => {
     // When we first go to lobby this triggers only once
     if (!FLAGS.isInLobby) {
         FLAGS.isInLobby = true;
-        console.log("[Lobby]\nWe're in the lobby!");
         FLAGS.inviteTriggered = false;
         FLAGS.isQueuedUp = false;
         if (AUTO_LEVEL_ABILITIES)
