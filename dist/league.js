@@ -4,11 +4,10 @@ import { handleLeveling, hasReachedMaxLevel, } from "./leveler_module.js";
 import { CONFIG, FLAGS, STATE_VARS } from "./config/constants.js";
 import { handleAcceptQueue, handleBackToLobby, handleChampSelect, handleHonorPlayers, handleInAnActiveGame, handleInQueue, handleLobby, } from "./gameflowHandler.js";
 const { AUTO_ACCEPT_QUEUE, AUTO_HONOR_FRIENDS, AUTO_INVITE_FRIENDS, AUTO_LEVEL_ABILITIES, AUTO_QUEUE_UP, POLLING_INTERVAL_IN_SECONDS, SKIP_ENDGAME_SCREEN, } = CONFIG;
-// #endregion Constants and Flags
 // Create Client
 await connectToLeagueClient();
 // #region Handle States
-// Handle ChampSelect
+// Handle State changes (gameflow-phase)
 ws.subscribe("/lol-gameflow/v1/gameflow-phase", async (state) => {
     if (!state)
         return; // Empty
@@ -18,6 +17,7 @@ ws.subscribe("/lol-gameflow/v1/gameflow-phase", async (state) => {
     CLIENT.state = state;
     await poll();
 });
+// Handle ChampSelect
 if (CONFIG.AUTO_SELECT_RUNES)
     ws.subscribe("/lol-champ-select/v1/session", async (event) => {
         if (!event)
