@@ -1,0 +1,10 @@
+{
+  "GET": {
+    "successes": {
+      "/lol-gameflow/v1/gameflow-phase": {
+        "data": "Lobby"
+      }
+    },
+    "failures": {}
+  }
+}
