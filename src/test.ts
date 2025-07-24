@@ -162,7 +162,7 @@ const RECOMMENDED_RUNES: ChampionRuneRecEntry[] = JSON.parse(
     const pluralSuffix = isPlural ? "s" : "";
     const attempt = 1;
     const targetFolder = "./data";
-    const currentTestType = "lobby";
+    const currentTestType = "phase";
 
     // const champId = 22;
 
@@ -195,7 +195,8 @@ const RECOMMENDED_RUNES: ChampionRuneRecEntry[] = JSON.parse(
       // "/lol-honor-v2/v1/profile-summary",    //   GET   - Honor profile summary (Deprecated)
       // "/lol-honor-v2/v1/full-team-vote",     //   GET   - Full team vote status (Deprecated)
       // ----- OLD TESTING ENDPOINTS
-      "/lol-gameflow/v1/session", //              GET   - Session type ChampSelect Lobby etc
+      // "/lol-gameflow/v1/session", //              GET   - Session type ChampSelect Lobby etc
+      // "/lol-gameflow/v1/gameflow-phase"           GET   - Only a game phase string
       // "/lol-end-of-game/v1/eog-stats-block", //   GET   - End of game stats
       // "/lol-chat/v1/friends", //                  GET   - Friend list
       // "/lol-chat/v1/me", //                       GET   - My own info

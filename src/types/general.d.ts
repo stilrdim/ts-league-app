@@ -1,17 +1,5 @@
 export interface GameFlowSession {
-  phase:
-    | "None"
-    | "Lobby"
-    | "Matchmaking"
-    | "ReadyCheck"
-    | "ChampSelect"
-    | "GameStart"
-    | "InProgress"
-    | "Reconnect"
-    | "WaitingForStats"
-    | "PreEndOfGame"
-    | "EndOfGame";
-
+  phase: ClientState;
   gameData: {
     gameId: number;
     queue: {
@@ -36,6 +24,19 @@ export interface GameFlowSession {
     commandLine: string;
   };
 }
+
+export type ClientState =
+  | "None"
+  | "Lobby"
+  | "Matchmaking"
+  | "ReadyCheck"
+  | "ChampSelect"
+  | "GameStart"
+  | "InProgress"
+  | "Reconnect"
+  | "WaitingForStats"
+  | "PreEndOfGame"
+  | "EndOfGame";
 
 type GameflowPlayer = {
   summonerId: number;
