@@ -144,6 +144,9 @@ export const handleHonorPlayers = async () => {
             console.error(`[Unknown] Couldn't honor ${friend.name}: `, err);
           }
         }
+      } else {
+        console.log("[Honor] Ran out of honors to give\n\n");
+        break;
       }
     }
   } catch (err) {
