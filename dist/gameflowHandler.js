@@ -77,10 +77,10 @@ export const handleHonorPlayers = async () => {
                     const res = await leagueRequest.post("/lol-honor/v1/honor", payload);
                     if (res.status === 204) {
                         STATE_VARS.honorVotesRemaining--;
-                        console.log(`[Honor] Honored ${friend.name}`);
+                        console.log(`[Honor] Honored ${friend.name}\n`);
                     }
                     else {
-                        console.log(`[Honor] Failed honoring ${friend.name}`);
+                        console.log(`[Honor] Failed honoring ${friend.name}\n`);
                     }
                 }
                 catch (err) {
