@@ -1,5 +1,3 @@
-import { LobbyMemberState } from "../config/constants.ts";
-
 export interface GameFlowSession {
   phase: ClientState;
   gameData: {
