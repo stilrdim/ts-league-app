@@ -92,6 +92,10 @@ export const handleHonorPlayers = async () => {
                     }
                 }
             }
+            else {
+                console.log("[Honor] Ran out of honors to give\n\n");
+                break;
+            }
         }
     }
     catch (err) {
