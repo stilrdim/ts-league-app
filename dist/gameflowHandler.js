@@ -74,14 +74,14 @@ export const handleHonorPlayers = async () => {
                         honorType: "HEART",
                     };
                     // Send the honor
-                    await leagueRequest
-                        .post("/lol-honor/v1/honor", payload)
-                        .then((response) => {
+                    const res = await leagueRequest.post("/lol-honor/v1/honor", payload);
+                    if (res.status === 204) {
                         STATE_VARS.honorVotesRemaining--;
-                        if (response.status === 204) {
-                            console.log(`[Honor] Honored ${friend.name}`);
-                        }
-                    });
+                        console.log(`[Honor] Honored ${friend.name}`);
+                    }
+                    else {
+                        console.log(`[Honor] Failed honoring ${friend.name}`);
+                    }
                 }
                 catch (err) {
                     if (isAxiosError(err)) {
