@@ -88,3 +88,27 @@ export const HONOR = {
     FRIENDS.maidcafe,
   ],
 };
+
+export enum HttpStatus {
+  NO_CONTENT = 204,
+  NOT_FOUND = 404,
+}
+export enum RuneStyle {
+  PRECISION = 8000,
+  DOMINATION = 8100,
+  SORCERY = 8200,
+  RESOLVE = 8400,
+  INSPIRATION = 8300,
+}
+export enum SummonerSpell {
+  FLASH = 4,
+  IGNITE = 14,
+  SMITE = 11,
+  TELEPORT = 12,
+}
+export enum LobbyMemberState {
+  NOT_READY = "NotReady",
+  READY = "Ready",
+  IN_GAME = "InGame",
+  AFK = "Afk",
+}

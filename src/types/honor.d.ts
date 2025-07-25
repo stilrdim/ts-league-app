@@ -31,5 +31,7 @@ export interface HonoredPlayers {
 
 export interface HonorRequestBody {
   recipientPuuid: string;
-  honorType: "HEART";
+  honorType: HonorType;
 }
+
+export type HonorType = "STAYED_COOL" | "GREAT_SHOT_CALLING" | "HEART";

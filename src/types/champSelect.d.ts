@@ -91,3 +91,4 @@ export interface Action {
   pickTurn: number;
   type: "pick" | "ban";
 }
+export type ChampSelectActionType = "ban" | "pick" | "trade" | "hover";

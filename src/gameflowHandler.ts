@@ -1,12 +1,5 @@
-import {
-  CONFIG,
-  COLLECTIONS,
-  STATE_VARS,
-  FLAGS,
-  HONOR,
-} from "./config/constants.js";
+import { CONFIG, STATE_VARS, FLAGS, HONOR } from "./config/constants.js";
 import { leagueRequest } from "./connection.js";
-import { ws } from "./connection.js";
 import { isAxiosError } from "axios";
 import {
   ChampSelectSession,
@@ -22,8 +15,6 @@ import {
 import { resetLevelingFlags } from "./leveler_module.js";
 import { handleRunepage } from "./runepageHandler.js";
 import { tryInviteFriends } from "./inviteHandler.js";
-
-const { FRIENDS } = COLLECTIONS;
 
 const { AUTO_LEVEL_ABILITIES, ONLY_FOR_ARAMS } = CONFIG;
 
