@@ -26,6 +26,8 @@ const {
   SKIP_ENDGAME_SCREEN,
 } = CONFIG;
 
+console.log("League app started!");
+
 // Create Client
 await connectToLeagueClient();
 

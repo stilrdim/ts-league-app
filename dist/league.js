@@ -4,6 +4,7 @@ import { handleLeveling, hasReachedMaxLevel, } from "./leveler_module.js";
 import { CONFIG, FLAGS, STATES } from "./config/constants.js";
 import { handleAcceptQueue, handleBackToLobby, handleHonorPlayers, handleInAnActiveGame, handleInQueue, handleLobby, } from "./gameflowHandler.js";
 const { AUTO_ACCEPT_QUEUE, AUTO_HONOR_FRIENDS, AUTO_INVITE_FRIENDS, AUTO_LEVEL_ABILITIES, AUTO_QUEUE_UP, POLLING_INTERVAL_IN_SECONDS, SKIP_ENDGAME_SCREEN, } = CONFIG;
+console.log("League app started!");
 // Create Client
 await connectToLeagueClient();
 // #region Polling
