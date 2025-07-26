@@ -1,4 +1,4 @@
-import { CONFIG, STATE_VARS, FLAGS, HONOR } from "./config/constants.js";
+import { CONFIG, STATES, FLAGS, HONOR } from "./config/constants.js";
 import { leagueRequest } from "./connection.js";
 import { HttpStatusCode, isAxiosError } from "axios";
 import {
@@ -32,14 +32,14 @@ export const handleChampSelect = async (event: ChampSelectSession) => {
 
     if (
       !myPick ||
-      currentChampId === STATE_VARS.lastChampId ||
+      currentChampId === STATES.lastChampId ||
       currentChampId === 0
     )
       return;
 
     console.log(`Current champion id: ${currentChampId}`);
 
-    STATE_VARS.lastChampId = currentChampId;
+    STATES.lastChampId = currentChampId;
 
     const { data: champInfo } = await leagueRequest.get<ChampInfo>(
       `/lol-game-data/assets/v1/champions/${currentChampId}.json`
@@ -86,7 +86,7 @@ export const handleHonorPlayers = async () => {
     );
 
     const { gameId } = res;
-    STATE_VARS.honorVotesRemaining = res.votePool.votes;
+    STATES.honorVotesRemaining = res.votePool.votes;
 
     const eligibleAllies = res.eligibleAllies;
 
@@ -95,7 +95,7 @@ export const handleHonorPlayers = async () => {
     );
 
     console.log(
-      `\nGame ID: ${gameId}\nAvailable votes: ${STATE_VARS.honorVotesRemaining}\nYour Team:`,
+      `\nGame ID: ${gameId}\nAvailable votes: ${STATES.honorVotesRemaining}\nYour Team:`,
       formattedPlayers
     );
 
@@ -109,7 +109,7 @@ export const handleHonorPlayers = async () => {
       // If the friend isn't available, check for the next one
       if (!targetPlayer) continue;
 
-      if (STATE_VARS.honorVotesRemaining > 0) {
+      if (STATES.honorVotesRemaining > 0) {
         try {
           console.log(`[Honor] Attempting to honor ${friend.name}`);
 
@@ -121,7 +121,7 @@ export const handleHonorPlayers = async () => {
           // Send the honor
           const res = await leagueRequest.post("/lol-honor/v1/honor", payload);
           if (res.status === HttpStatusCode.NoContent) {
-            STATE_VARS.honorVotesRemaining--;
+            STATES.honorVotesRemaining--;
             console.log(`[Honor] Honored ${friend.name}\n`);
           } else {
             console.log(`[Honor] Failed honoring ${friend.name}\n`);

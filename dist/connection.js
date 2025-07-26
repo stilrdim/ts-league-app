@@ -1,12 +1,13 @@
 import { authenticate, createWebSocketConnection, } from "league-connect";
 import axios from "axios";
 import { Agent } from "https";
+import { CONFIG, STATES } from "./config/constants.js";
+import { poll } from "./league.js";
+import { handleChampSelect } from "./gameflowHandler.js";
 export let leagueRequest;
-export let ws;
+let ws;
+let sleep = async (secs) => new Promise((r) => setTimeout(r, secs * 1000));
 // Client state with getter and setter
-export const CLIENT = {
-    state: "None",
-};
 export const connectToLeagueClient = async () => {
     const credentials = await authenticate({ awaitConnection: true });
     const httpsAgent = new Agent({ rejectUnauthorized: false });
@@ -21,15 +22,41 @@ export const connectToLeagueClient = async () => {
         authenticationOptions: { awaitConnection: true },
     });
     ws.on("close", async () => {
-        console.warn("WebSocket closed. Attempting to reconnect in 5s...");
-        setTimeout(connectToLeagueClient, 5000);
+        console.warn("WebSocket closed. Attempting to reconnect in 30s...");
+        setTimeout(async () => {
+            await connectToLeagueClient();
+        }, 30000);
     });
     ws.on("error", (err) => {
         console.error("Websocket error: ", err);
     });
     console.log("Connected to League Client on port " + credentials.port);
     console.log("WebSocket connected on " + ws.url);
+    await sleep(2);
     const { data: phase } = await leagueRequest.get("/lol-gameflow/v1/gameflow-phase");
-    CLIENT.state = phase;
-    console.log("Initial state: ", CLIENT.state);
+    STATES.clientState = phase;
+    console.log("Initial state: ", STATES.clientState);
+    await subscribeToWebSocketEvents();
+};
+const subscribeToWebSocketEvents = async () => {
+    // Wait 2 sec to avoid vanguard flagging on reconnect
+    await sleep(2);
+    // Initialize state
+    await poll();
+    ws.subscribe("/lol-gameflow/v1/gameflow-phase", async (state) => {
+        if (!state)
+            return; // Empty
+        if (STATES.clientState === state)
+            return; // No change
+        console.log(`[STATE] ${STATES.clientState} -> ${state}`);
+        STATES.clientState = state;
+        await poll();
+    });
+    // Handle ChampSelect
+    if (CONFIG.AUTO_SELECT_RUNES)
+        ws.subscribe("/lol-champ-select/v1/session", async (event) => {
+            if (!event)
+                return;
+            await handleChampSelect(event);
+        });
 };

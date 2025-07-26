@@ -1,34 +1,15 @@
-import { isAxiosError } from "axios";
-import { CLIENT, connectToLeagueClient, leagueRequest, ws, } from "./connection.js";
+import { HttpStatusCode, isAxiosError } from "axios";
+import { connectToLeagueClient, leagueRequest } from "./connection.js";
 import { handleLeveling, hasReachedMaxLevel, } from "./leveler_module.js";
-import { CONFIG, FLAGS, STATE_VARS } from "./config/constants.js";
-import { handleAcceptQueue, handleBackToLobby, handleChampSelect, handleHonorPlayers, handleInAnActiveGame, handleInQueue, handleLobby, } from "./gameflowHandler.js";
+import { CONFIG, FLAGS, STATES } from "./config/constants.js";
+import { handleAcceptQueue, handleBackToLobby, handleHonorPlayers, handleInAnActiveGame, handleInQueue, handleLobby, } from "./gameflowHandler.js";
 const { AUTO_ACCEPT_QUEUE, AUTO_HONOR_FRIENDS, AUTO_INVITE_FRIENDS, AUTO_LEVEL_ABILITIES, AUTO_QUEUE_UP, POLLING_INTERVAL_IN_SECONDS, SKIP_ENDGAME_SCREEN, } = CONFIG;
 // Create Client
 await connectToLeagueClient();
-// #region Handle States
-// Handle State changes (gameflow-phase)
-ws.subscribe("/lol-gameflow/v1/gameflow-phase", async (state) => {
-    if (!state)
-        return; // Empty
-    if (CLIENT.state === state)
-        return; // No change
-    console.log(`[STATE] ${CLIENT.state} -> ${state}`);
-    CLIENT.state = state;
-    await poll();
-});
-// Handle ChampSelect
-if (CONFIG.AUTO_SELECT_RUNES)
-    ws.subscribe("/lol-champ-select/v1/session", async (event) => {
-        if (!event)
-            return;
-        await handleChampSelect(event);
-    });
-// #endregion Handle States
 // #region Polling
-const poll = async () => {
+export async function poll() {
     try {
-        switch (CLIENT.state) {
+        switch (STATES.clientState) {
             case "ChampSelect":
                 if (FLAGS.isGameAccepted)
                     FLAGS.isGameAccepted = false;
@@ -77,14 +58,14 @@ const poll = async () => {
             default:
                 if (FLAGS.isInChampSelect) {
                     FLAGS.isInChampSelect = false;
-                    STATE_VARS.lastChampId = null;
+                    STATES.lastChampId = null;
                 }
                 break;
         }
     }
     catch (error) {
         if (isAxiosError(error)) {
-            if (error.response?.status === 404) {
+            if (error.response?.status === HttpStatusCode.NotFound) {
                 // Probably in League's Home screen
                 if (FLAGS.isInLobby)
                     FLAGS.isInLobby = false;
@@ -99,7 +80,7 @@ const poll = async () => {
             console.error("Unknown error: ", error);
         }
     }
-};
+}
 // Poll once on startup
 await poll();
 // #endregion Polling

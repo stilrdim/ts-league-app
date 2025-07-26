@@ -43,9 +43,10 @@ export const FLAGS = {
     isLobbyFull: false, // If lobby is full to avoid inviting even if more people are online
 };
 // STATE VARIABLES
-export const STATE_VARS = {
+export const STATES = {
     lastChampId: null, // Track champion changes during ChampSelect stage
     honorVotesRemaining: -1,
+    clientState: "Disconnected",
 };
 export const HONOR = {
     priorityList: [
@@ -62,3 +63,23 @@ export const HONOR = {
         FRIENDS.maidcafe,
     ],
 };
+export var HttpStatus;
+(function (HttpStatus) {
+    HttpStatus[HttpStatus["NO_CONTENT"] = 204] = "NO_CONTENT";
+    HttpStatus[HttpStatus["NOT_FOUND"] = 404] = "NOT_FOUND";
+})(HttpStatus || (HttpStatus = {}));
+export var RuneStyle;
+(function (RuneStyle) {
+    RuneStyle[RuneStyle["PRECISION"] = 8000] = "PRECISION";
+    RuneStyle[RuneStyle["DOMINATION"] = 8100] = "DOMINATION";
+    RuneStyle[RuneStyle["SORCERY"] = 8200] = "SORCERY";
+    RuneStyle[RuneStyle["RESOLVE"] = 8400] = "RESOLVE";
+    RuneStyle[RuneStyle["INSPIRATION"] = 8300] = "INSPIRATION";
+})(RuneStyle || (RuneStyle = {}));
+export var SummonerSpell;
+(function (SummonerSpell) {
+    SummonerSpell[SummonerSpell["FLASH"] = 4] = "FLASH";
+    SummonerSpell[SummonerSpell["IGNITE"] = 14] = "IGNITE";
+    SummonerSpell[SummonerSpell["SMITE"] = 11] = "SMITE";
+    SummonerSpell[SummonerSpell["TELEPORT"] = 12] = "TELEPORT";
+})(SummonerSpell || (SummonerSpell = {}));

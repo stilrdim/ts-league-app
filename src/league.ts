@@ -1,25 +1,15 @@
 import { HttpStatusCode, isAxiosError } from "axios";
-import {
-  CLIENT,
-  connectToLeagueClient,
-  leagueRequest,
-  ws,
-} from "./connection.js";
+import { connectToLeagueClient, leagueRequest } from "./connection.js";
 import {
   handleLeveling,
   __dirname,
   hasReachedMaxLevel,
 } from "./leveler_module.js";
-import {
-  ChampSelectSession,
-  GameFlowSession,
-  ClientState,
-} from "./types/index.js";
-import { CONFIG, FLAGS, STATE_VARS } from "./config/constants.js";
+import { GameFlowSession } from "./types/index.js";
+import { CONFIG, FLAGS, STATES } from "./config/constants.js";
 import {
   handleAcceptQueue,
   handleBackToLobby,
-  handleChampSelect,
   handleHonorPlayers,
   handleInAnActiveGame,
   handleInQueue,
@@ -39,38 +29,11 @@ const {
 // Create Client
 await connectToLeagueClient();
 
-// #region Handle States
-
-// Handle State changes (gameflow-phase)
-ws.subscribe(
-  "/lol-gameflow/v1/gameflow-phase",
-  async (state: ClientState | null) => {
-    if (!state) return; // Empty
-    if (CLIENT.state === state) return; // No change
-    console.log(`[STATE] ${CLIENT.state} -> ${state}`);
-    CLIENT.state = state;
-    await poll();
-  }
-);
-
-// Handle ChampSelect
-if (CONFIG.AUTO_SELECT_RUNES)
-  ws.subscribe(
-    "/lol-champ-select/v1/session",
-    async (event: ChampSelectSession | null) => {
-      if (!event) return;
-
-      await handleChampSelect(event);
-    }
-  );
-
-// #endregion Handle States
-
 // #region Polling
 
-const poll = async () => {
+export async function poll() {
   try {
-    switch (CLIENT.state) {
+    switch (STATES.clientState) {
       case "ChampSelect":
         if (FLAGS.isGameAccepted) FLAGS.isGameAccepted = false;
         break;
@@ -125,7 +88,7 @@ const poll = async () => {
       default:
         if (FLAGS.isInChampSelect) {
           FLAGS.isInChampSelect = false;
-          STATE_VARS.lastChampId = null;
+          STATES.lastChampId = null;
         }
         break;
     }
@@ -142,7 +105,7 @@ const poll = async () => {
       console.error("Unknown error: ", error);
     }
   }
-};
+}
 
 // Poll once on startup
 await poll();

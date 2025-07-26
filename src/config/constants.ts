@@ -5,6 +5,7 @@ import {
   friendsConfigPath,
   recRunesConfigPath,
 } from "../leveler_module.js";
+import { ClientState } from "../types/general.js";
 import { ChampPreference } from "../types/ingame.js";
 import { RunePage } from "../types/runes.js";
 import { CloseFriends } from "../types/users.js";
@@ -68,9 +69,10 @@ export const FLAGS = {
 };
 
 // STATE VARIABLES
-export const STATE_VARS = {
+export const STATES = {
   lastChampId: null as number | null, // Track champion changes during ChampSelect stage
   honorVotesRemaining: -1 as number,
+  clientState: "Disconnected" as ClientState,
 };
 
 export const HONOR = {

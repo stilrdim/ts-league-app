@@ -72,7 +72,7 @@ const getSkillOrder = async (champName, gameMode) => {
     let url;
     // Filter out useless symbols in name
     let matchedChampName = normalizeChampionName(champName);
-    if (matchedChampName && gameMode.toLowerCase() === "aram") {
+    if (matchedChampName && gameMode === "ARAM") {
         console.log("Getting ARAM skill order");
         url = `https://u.gg/lol/champions/aram/${matchedChampName}-aram`;
     }

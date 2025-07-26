@@ -1,10 +1,9 @@
-import { CONFIG, COLLECTIONS, STATE_VARS, FLAGS, HONOR, } from "./config/constants.js";
+import { CONFIG, STATES, FLAGS, HONOR } from "./config/constants.js";
 import { leagueRequest } from "./connection.js";
-import { isAxiosError } from "axios";
+import { HttpStatusCode, isAxiosError } from "axios";
 import { resetLevelingFlags } from "./leveler_module.js";
 import { handleRunepage } from "./runepageHandler.js";
 import { tryInviteFriends } from "./inviteHandler.js";
-const { FRIENDS } = COLLECTIONS;
 const { AUTO_LEVEL_ABILITIES, ONLY_FOR_ARAMS } = CONFIG;
 export const handleChampSelect = async (event) => {
     if (!FLAGS.isInChampSelect)
@@ -16,11 +15,11 @@ export const handleChampSelect = async (event) => {
             return;
         const currentChampId = myPick.championId;
         if (!myPick ||
-            currentChampId === STATE_VARS.lastChampId ||
+            currentChampId === STATES.lastChampId ||
             currentChampId === 0)
             return;
         console.log(`Current champion id: ${currentChampId}`);
-        STATE_VARS.lastChampId = currentChampId;
+        STATES.lastChampId = currentChampId;
         const { data: champInfo } = await leagueRequest.get(`/lol-game-data/assets/v1/champions/${currentChampId}.json`);
         const { data: allRunePages } = await leagueRequest.get("/lol-perks/v1/pages");
         const champName = champInfo.name;
@@ -56,27 +55,27 @@ export const handleHonorPlayers = async () => {
     try {
         const { data: res } = await leagueRequest.get("/lol-honor-v2/v1/ballot");
         const { gameId } = res;
-        STATE_VARS.honorVotesRemaining = res.votePool.votes;
+        STATES.honorVotesRemaining = res.votePool.votes;
         const eligibleAllies = res.eligibleAllies;
         const formattedPlayers = eligibleAllies.map((player) => `${player.championName}: (${player.summonerId})`);
-        console.log(`\nGame ID: ${gameId}\nAvailable votes: ${STATE_VARS.honorVotesRemaining}\nYour Team:`, formattedPlayers);
+        console.log(`\nGame ID: ${gameId}\nAvailable votes: ${STATES.honorVotesRemaining}\nYour Team:`, formattedPlayers);
         const priorityList = HONOR.priorityList;
         for (const friend of priorityList) {
             const targetPlayer = eligibleAllies.find((ally) => ally.summonerId === friend.summonerId);
             // If the friend isn't available, check for the next one
             if (!targetPlayer)
                 continue;
-            if (STATE_VARS.honorVotesRemaining > 0) {
+            if (STATES.honorVotesRemaining > 0) {
                 try {
                     console.log(`[Honor] Attempting to honor ${friend.name}`);
                     const payload = {
                         recipientPuuid: targetPlayer.puuid,
-                        honorType: "HEART",
+                        honorType: "HEART", // Only HEART is known to work on allies
                     };
                     // Send the honor
                     const res = await leagueRequest.post("/lol-honor/v1/honor", payload);
-                    if (res.status === 204) {
-                        STATE_VARS.honorVotesRemaining--;
+                    if (res.status === HttpStatusCode.NoContent) {
+                        STATES.honorVotesRemaining--;
                         console.log(`[Honor] Honored ${friend.name}\n`);
                     }
                     else {
@@ -191,7 +190,7 @@ export const handleAcceptQueue = async () => {
     }
     catch (err) {
         if (isAxiosError(err)) {
-            if (err.response?.status !== 404) {
+            if (err.response?.status !== HttpStatusCode.NotFound) {
                 console.error("[Axios] ReadyCheck error: ", err.response?.data || err.message);
             }
         }
