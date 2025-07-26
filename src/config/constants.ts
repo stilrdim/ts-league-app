@@ -1,28 +1,62 @@
-import {
-  allRunesConfigPath,
-  champPrefsConfigPath,
-  champsConfigPath,
-  friendsConfigPath,
-  recRunesConfigPath,
-} from "../leveler_module.js";
+import { fileURLToPath } from "url";
 import { ClientState } from "../types/general.js";
 import { ChampPreference } from "../types/ingame.js";
 import { RunePage } from "../types/runes.js";
 import { CloseFriends } from "../types/users.js";
 import fs from "fs";
+import ini from "ini";
+import path from "path";
 
+// Manually define __dirname and export paths
+const __filename = fileURLToPath(import.meta.url);
+export const __dirname = path.dirname(__filename);
+export const rootDir = __dirname + "/../..";
+
+export const friendsConfigPath = path.join(rootDir, "config", "friends.json");
+export const champsConfigPath = path.join(rootDir, "config", "champs.json");
+export const champPrefsConfigPath = path.join(
+  rootDir,
+  "config",
+  "champ_preferences.json"
+);
+export const recRunesConfigPath = path.join(
+  rootDir,
+  "config",
+  "recommended_runepages.json"
+);
+export const allRunesConfigPath = path.join(
+  rootDir,
+  "data",
+  "all_runepages.json"
+);
+export const champNamesConfigPath = path.join(
+  rootDir,
+  "config",
+  "leveler_champs_array.json"
+);
+const configFilePath = path.join(rootDir, "config", "CONFIG.ini");
+
+const rawConfigData = fs.readFileSync(configFilePath, "utf-8");
+const parsedConfigData = ini.parse(rawConfigData);
+console.log(`configfilepath: `, configFilePath);
+console.log(`rawConfigData: `, rawConfigData);
+console.log(`parsedConfigData`, parsedConfigData);
 // CONFIG
 export const CONFIG = {
-  AUTO_LEVEL_ABILITIES: true,
-  SKIP_ENDGAME_SCREEN: true,
-  AUTO_HONOR_FRIENDS: true,
-  AUTO_QUEUE_UP: true,
-  AUTO_ACCEPT_QUEUE: true,
-  AUTO_INVITE_FRIENDS: true,
-  AUTO_SELECT_RUNES: true,
-  AUTO_SELECT_RECOMMENDED_RUNES: true,
-  ONLY_FOR_ARAMS: true,
-  POLLING_INTERVAL_IN_SECONDS: 1,
+  AUTO_LEVEL_ABILITIES: Boolean(parsedConfigData.AUTO_LEVEL_ABILITIES ?? true),
+  SKIP_ENDGAME_SCREEN: Boolean(parsedConfigData.SKIP_ENDGAME_SCREEN ?? true),
+  AUTO_HONOR_FRIENDS: Boolean(parsedConfigData.AUTO_HONOR_FRIENDS ?? true),
+  AUTO_QUEUE_UP: Boolean(parsedConfigData.AUTO_QUEUE_UP ?? true),
+  AUTO_ACCEPT_QUEUE: Boolean(parsedConfigData.AUTO_ACCEPT_QUEUE ?? true),
+  AUTO_INVITE_FRIENDS: Boolean(parsedConfigData.AUTO_INVITE_FRIENDS ?? true),
+  AUTO_SELECT_RUNES: Boolean(parsedConfigData.AUTO_SELECT_RUNES ?? true),
+  AUTO_SELECT_RECOMMENDED_RUNES: Boolean(
+    parsedConfigData.AUTO_SELECT_RECOMMENDED_RUNES ?? true
+  ),
+  ONLY_FOR_ARAMS: Boolean(parsedConfigData.ONLY_FOR_ARAMS ?? true),
+  POLLING_INTERVAL_IN_SECONDS: Number(
+    parsedConfigData.POLLING_INTERVAL_IN_SECONDS
+  ),
 };
 
 // Collections

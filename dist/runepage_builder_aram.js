@@ -3,7 +3,7 @@ import axios, { isAxiosError } from "axios";
 import fs from "fs";
 import promptSync from "prompt-sync";
 import { Agent } from "https";
-import { rootDir } from "./leveler_module.js";
+import { rootDir } from "./config/constants.js";
 const prompt = promptSync();
 (async () => {
     const credentials = await authenticate({ awaitConnection: true });

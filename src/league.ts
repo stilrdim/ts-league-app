@@ -1,10 +1,6 @@
 import { HttpStatusCode, isAxiosError } from "axios";
 import { connectToLeagueClient, leagueRequest } from "./connection.js";
-import {
-  handleLeveling,
-  __dirname,
-  hasReachedMaxLevel,
-} from "./leveler_module.js";
+import { handleLeveling, hasReachedMaxLevel } from "./leveler_module.js";
 import { GameFlowSession } from "./types/index.js";
 import { CONFIG, FLAGS, STATES } from "./config/constants.js";
 import {

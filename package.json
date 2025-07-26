@@ -18,11 +18,13 @@
     "cheerio": "^1.1.0",
     "eventsource": "^1.1.0",
     "https": "^1.0.0",
+    "ini": "^5.0.0",
     "league-connect": "^6.0.0-rc13",
     "node-fetch": "^3.3.2",
     "prompt-sync": "^4.2.0"
   },
   "devDependencies": {
+    "@types/ini": "^4.1.1",
     "@types/node": "^24.0.15",
     "@types/prompt-sync": "^4.2.3",
     "typescript": "^5.8.3"

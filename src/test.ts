@@ -3,13 +3,6 @@ import axios, { isAxiosError } from "axios";
 import fs from "fs";
 import { Agent } from "https";
 import {
-  rootDir,
-  friendsConfigPath,
-  allRunesConfigPath,
-  recRunesConfigPath,
-  champPrefsConfigPath,
-} from "./leveler_module.js";
-import {
   AllPlayer,
   ChampionRuneRecEntry,
   ChampPreference,
@@ -17,6 +10,13 @@ import {
   FriendlistFriend,
   RunePage,
 } from "./types/index.js";
+import {
+  allRunesConfigPath,
+  champPrefsConfigPath,
+  friendsConfigPath,
+  recRunesConfigPath,
+  rootDir,
+} from "./config/constants.js";
 
 // #region Implementation Detail
 

@@ -3,8 +3,8 @@ import axios, { AxiosResponse, isAxiosError } from "axios";
 import fs from "fs";
 import promptSync from "prompt-sync";
 import { Agent } from "https";
-import { rootDir } from "./leveler_module.js";
 import { RunePage, RunePagePayload } from "./types/runes.js";
+import { rootDir } from "./config/constants.js";
 
 const prompt = promptSync();
 

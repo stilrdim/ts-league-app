@@ -5,18 +5,7 @@ import fetch from "node-fetch";
 import * as cheerio from "cheerio";
 import { keyboard, Key } from "@nut-tree-fork/nut-js";
 import * as fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-// Manually define __dirname and export paths
-const __filename = fileURLToPath(import.meta.url);
-export const __dirname = path.dirname(__filename);
-export const rootDir = __dirname + "/..";
-export const friendsConfigPath = path.join(rootDir, "config", "friends.json");
-export const champsConfigPath = path.join(rootDir, "config", "champs.json");
-export const champPrefsConfigPath = path.join(rootDir, "config", "champ_preferences.json");
-export const recRunesConfigPath = path.join(rootDir, "config", "recommended_runepages.json");
-export const allRunesConfigPath = path.join(rootDir, "data", "all_runepages.json");
-const champNamesConfigPath = path.join(rootDir, "config", "leveler_champs_array.json");
+import { champNamesConfigPath, champPrefsConfigPath, } from "./config/constants.js";
 // CONSTANTS
 let SKILL_ORDER = {
     Q: [],
