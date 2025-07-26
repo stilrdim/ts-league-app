@@ -1,7 +1,11 @@
 import { fileURLToPath } from "url";
 import { ClientState } from "../types/general.js";
 import { ChampPreference } from "../types/ingame.js";
-import { RunePage } from "../types/runes.js";
+import {
+  ChampionRuneRecEntry,
+  RunePage,
+  RuneRecommendation,
+} from "../types/runes.js";
 import { CloseFriends } from "../types/users.js";
 import fs from "fs";
 import ini from "ini";
@@ -69,7 +73,7 @@ const CHAMP_PREFERENCES: ChampPreference[] = JSON.parse(
 const RUNEPAGES: RunePage[] = JSON.parse(
   fs.readFileSync(allRunesConfigPath).toString()
 );
-const RECOMMENDED_RUNES = JSON.parse(
+const RECOMMENDED_RUNES: ChampionRuneRecEntry[] = JSON.parse(
   fs.readFileSync(recRunesConfigPath).toString()
 );
 
