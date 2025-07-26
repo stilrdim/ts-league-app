@@ -10,6 +10,7 @@ import { CloseFriends } from "../types/users.js";
 import fs from "fs";
 import ini from "ini";
 import path from "path";
+import { items } from "../itemLoader.js";
 
 // Manually define __dirname and export paths
 const __filename = fileURLToPath(import.meta.url);
@@ -76,6 +77,7 @@ const RUNEPAGES: RunePage[] = JSON.parse(
 const RECOMMENDED_RUNES: ChampionRuneRecEntry[] = JSON.parse(
   fs.readFileSync(recRunesConfigPath).toString()
 );
+const ITEMS = items;
 
 export const COLLECTIONS = {
   FRIENDS,
@@ -83,6 +85,7 @@ export const COLLECTIONS = {
   CHAMP_PREFERENCES,
   RUNEPAGES,
   RECOMMENDED_RUNES,
+  ITEMS, // .get(itemId)
 };
 
 // Flags

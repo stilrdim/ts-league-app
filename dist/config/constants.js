@@ -2,6 +2,7 @@ import { fileURLToPath } from "url";
 import fs from "fs";
 import ini from "ini";
 import path from "path";
+import { items } from "../itemLoader.js";
 // Manually define __dirname and export paths
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
@@ -34,12 +35,14 @@ const CHAMPS = JSON.parse(fs.readFileSync(champsConfigPath).toString());
 const CHAMP_PREFERENCES = JSON.parse(fs.readFileSync(champPrefsConfigPath).toString());
 const RUNEPAGES = JSON.parse(fs.readFileSync(allRunesConfigPath).toString());
 const RECOMMENDED_RUNES = JSON.parse(fs.readFileSync(recRunesConfigPath).toString());
+const ITEMS = items;
 export const COLLECTIONS = {
     FRIENDS,
     CHAMPS,
     CHAMP_PREFERENCES,
     RUNEPAGES,
     RECOMMENDED_RUNES,
+    ITEMS, // .get(itemId)
 };
 // Flags
 // Flags to avoid unnecessary requests

@@ -1,14 +1,8 @@
 import { ItemLocal } from "./types/index.js";
 import itemsData from "../data/items.json" with {type: "json"};
 
-let _items: Map<string, ItemLocal> | null = null;
+// Convert array to Map entries
+const itemEntries: [string, ItemLocal][] = itemsData.map((item: ItemLocal) => [item.id, item])
 
-export async function getItems(): Promise<Map<string, ItemLocal>> {
-  if (!_items) {
-
-    _items = new Map(itemsData.map((item: ItemLocal) => [item.id, item]));
-  }
-
-  return _items;
-}
-
+// Create map
+export const items = new Map<string, ItemLocal>(itemEntries);
