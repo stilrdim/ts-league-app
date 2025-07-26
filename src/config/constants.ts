@@ -1,5 +1,5 @@
 import { fileURLToPath } from "url";
-import { ClientState } from "../types/general.js";
+import { ClientState, GameMode } from "../types/general.js";
 import { ChampPreference } from "../types/ingame.js";
 import {
   ChampionRuneRecEntry,
@@ -103,6 +103,7 @@ export const FLAGS = {
   isPartyLeader: false, // If you can't start a game, don't even bother trying
   canStartGame: false, // If we can start at all, someone might have penalty, etc
   isLobbyFull: false, // If lobby is full to avoid inviting even if more people are online
+  isInLowPrioQueue: false, //
 };
 
 // STATE VARIABLES
@@ -110,6 +111,7 @@ export const STATES = {
   lastChampId: null as number | null, // Track champion changes during ChampSelect stage
   honorVotesRemaining: -1 as number,
   clientState: "Disconnected" as ClientState,
+  gameMode: "UNKNOWN" as GameMode,
 };
 
 export const HONOR = {

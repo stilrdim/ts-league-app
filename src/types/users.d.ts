@@ -1,33 +1,95 @@
-export interface Party {
+export interface LobbyResponse {
+  canStartActivity: boolean;
   gameConfig: {
+    allowablePremadeSizes: number[];
+    customLobbyName: string;
+    customMutatorName: string;
+    customRewardsDisabledReasons: string[];
+    customSpectatorPolicy: string;
+    customSpectators: any[];
+    customTeam100: any[];
+    customTeam200: any[];
+    gameMode: string;
     isCustom: boolean;
     isLobbyFull: boolean;
+    isTeamBuilderManaged: boolean;
     mapId: number;
     maxHumanPlayers: number;
+    maxLobbySize: number;
+    maxLobbySpectatorCount: number;
+    maxTeamSize: number;
+    numPlayersPerTeam: number;
+    numberOfTeamsInLobby: number;
     pickType: string;
+    premadeSizeAllowed: boolean;
     queueId: number;
+    shouldForceScarcePositionSelection: boolean;
     showPositionSelector: boolean;
+    showQuickPlaySlotSelection: boolean;
   };
-  localMember: {
-    summonerId: number;
-    puuid: string;
-    summonerName: string;
-    isLeader: boolean;
-    ready: boolean;
-    teamId: number;
+  invitations: Invitation[];
+  localMember: LobbyMember;
+  members: LobbyMember[];
+  mucJwtDto: {
+    channelClaim: string;
+    domain: string;
+    jwt: string;
+    targetRegion: string;
   };
-  members: PartyMember[];
-  canStartActivity: boolean;
+  multiUserChatId: string;
+  multiUserChatPassword: string;
+  partyId: string;
+  partyType: string;
+  popularChampions: any[];
+  restrictions: any[];
+  scarcePositions: any[];
+  warnings: any[];
 }
 
-export interface PartyMember {
-  summonerId: number;
-  puuid: string;
-  summonerName: string;
-  ready: boolean;
+export interface Invitation {
+  invitationId: string;
+  invitationType: string;
+  state: "Accepted" | string;
+  timestamp: string;
+  toSummonerId: number;
+  toSummonerName: string;
+}
+
+export interface LobbyMember {
+  allowedChangeActivity: boolean;
+  allowedInviteOthers: boolean;
+  allowedKickOthers: boolean;
+  allowedStartActivity: boolean;
+  allowedToggleInvite: boolean;
+  autoFillEligible: boolean;
+  autoFillProtectedForPromos: boolean;
+  autoFillProtectedForRemedy: boolean;
+  autoFillProtectedForSoloing: boolean;
+  autoFillProtectedForStreaking: boolean;
+  botChampionId: number;
+  botDifficulty: string;
+  botId: string;
+  botPosition: string;
+  botUuid: string;
+  firstPositionPreference: string;
+  intraSubteamPosition: null;
+  isBot: boolean;
   isLeader: boolean;
+  isSpectator: boolean;
+  memberData: any;
+  playerSlots: any[];
+  puuid: string;
+  ready: boolean;
+  secondPositionPreference: string;
+  showGhostedBanner: boolean;
+  strawberryMapId: null;
+  subteamIndex: null;
+  summonerIconId: number;
+  summonerId: number;
+  summonerInternalName: string;
+  summonerLevel: number;
+  summonerName: string;
   teamId: number;
-  // Only the necessary props
 }
 
 export interface FriendlistFriend {

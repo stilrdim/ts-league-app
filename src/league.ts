@@ -1,7 +1,6 @@
 import { HttpStatusCode, isAxiosError } from "axios";
-import { connectToLeagueClient, leagueRequest } from "./connection.js";
+import { connectToLeagueClient } from "./connection.js";
 import { handleLeveling, hasReachedMaxLevel } from "./leveler_module.js";
-import { GameFlowSession } from "./types/index.js";
 import { CONFIG, FLAGS, STATES } from "./config/constants.js";
 import {
   handleAcceptQueue,
@@ -9,15 +8,12 @@ import {
   handleHonorPlayers,
   handleInAnActiveGame,
   handleInQueue,
-  handleLobby,
 } from "./gameflowHandler.js";
 
 const {
   AUTO_ACCEPT_QUEUE,
   AUTO_HONOR_FRIENDS,
-  AUTO_INVITE_FRIENDS,
   AUTO_LEVEL_ABILITIES,
-  AUTO_QUEUE_UP,
   POLLING_INTERVAL_IN_SECONDS,
   SKIP_ENDGAME_SCREEN,
 } = CONFIG;
@@ -57,16 +53,11 @@ export async function poll() {
         break;
 
       case "Lobby":
-        const { data: gameflow } = await leagueRequest.get<GameFlowSession>(
-          "/lol-gameflow/v1/session"
-        );
         // Reset necessary flags to avoid useless requests
         if (FLAGS.playAgainTriggered) FLAGS.playAgainTriggered = false;
         if (FLAGS.honorTriggered) FLAGS.honorTriggered = false;
-        if (AUTO_QUEUE_UP) await handleLobby(gameflow, AUTO_INVITE_FRIENDS);
 
         // Poll again until we are no longer in lobby
-        setTimeout(poll, POLLING_INTERVAL_IN_SECONDS * 1000);
         break;
 
       case "Matchmaking":

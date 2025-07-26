@@ -1,4 +1,4 @@
-import { isAxiosError } from "axios";
+import { HttpStatusCode, isAxiosError } from "axios";
 import { COLLECTIONS, FLAGS } from "./config/constants.js";
 import { leagueRequest } from "./connection.js";
 const { FRIENDS } = COLLECTIONS;
@@ -52,6 +52,11 @@ export const tryInviteFriends = async (partyMembers, isLobbyFull) => {
     }
     catch (err) {
         if (isAxiosError(err)) {
+            if (err.response?.status === HttpStatusCode.BadRequest) {
+                console.error("[Axios] Queue up error (probably a low priority queue): ", err.response?.data || err.message);
+                if (!FLAGS.isInLowPrioQueue)
+                    FLAGS.isInLowPrioQueue = true;
+            }
             console.error("[Axios] Inviting friends error: ", err.response?.data || err.message);
         }
         else {

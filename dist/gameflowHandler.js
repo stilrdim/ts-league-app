@@ -4,7 +4,7 @@ import { HttpStatusCode, isAxiosError } from "axios";
 import { resetLevelingFlags } from "./leveler_module.js";
 import { handleRunepage } from "./runepageHandler.js";
 import { tryInviteFriends } from "./inviteHandler.js";
-const { AUTO_LEVEL_ABILITIES, ONLY_FOR_ARAMS } = CONFIG;
+const { AUTO_LEVEL_ABILITIES, ONLY_FOR_ARAMS, AUTO_INVITE_FRIENDS } = CONFIG;
 export const handleChampSelect = async (event) => {
     if (!FLAGS.isInChampSelect)
         FLAGS.isInChampSelect = true;
@@ -123,26 +123,29 @@ export const handleBackToLobby = async () => {
         }
     }
 };
-export const handleLobby = async (gameflow, isAutoInviting) => {
+export const handleLobby = async (res) => {
     // When we first go to lobby this triggers only once
     if (!FLAGS.isInLobby) {
         FLAGS.isInLobby = true;
         FLAGS.inviteTriggered = false;
         FLAGS.isQueuedUp = false;
+        const { data: gameflow } = await leagueRequest.get("/lol-gameflow/v1/session");
+        STATES.gameMode = gameflow.gameData.queue.gameMode;
         if (AUTO_LEVEL_ABILITIES)
             resetLevelingFlags(); // Ensure we still get auto-leveling next game
     }
-    if (ONLY_FOR_ARAMS && gameflow.gameData.queue.gameMode !== "ARAM")
+    if ((ONLY_FOR_ARAMS && STATES.gameMode !== "ARAM") || FLAGS.isInLowPrioQueue)
         return;
     try {
-        const { data: res } = await leagueRequest.get("/lol-lobby/v2/lobby");
         FLAGS.isLobbyFull = res.gameConfig.isLobbyFull;
         FLAGS.isPartyLeader = res.localMember.isLeader;
         FLAGS.canStartGame = res.canStartActivity;
         const members = res.members;
         const allReady = members.every((m) => m.ready === true);
-        if (allReady) {
-            if (isAutoInviting &&
+        const invitations = res.invitations;
+        const allInvitesAccepted = invitations.every((inv) => inv.state === "Accepted");
+        if (allReady && allInvitesAccepted) {
+            if (AUTO_INVITE_FRIENDS &&
                 !FLAGS.inviteTriggered &&
                 FLAGS.isPartyLeader &&
                 FLAGS.canStartGame) {
@@ -180,6 +183,8 @@ export const handleAcceptQueue = async () => {
     // Avoid unnecessary extra requests
     if (FLAGS.isGameAccepted)
         return;
+    if (FLAGS.isInLowPrioQueue)
+        FLAGS.isInLowPrioQueue = false;
     try {
         const { data: res } = await leagueRequest.get("/lol-matchmaking/v1/ready-check");
         if (res.state === "InProgress") {

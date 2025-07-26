@@ -5,7 +5,7 @@ export interface ChampionRuneRecEntry {
 }
 
 interface RuneRecommendation {
-  position: string; // e.g. "NONE", "TOP"
+  position: "NONE" | "TOP" | "MIDDLE" | "UTILITY" | string; // e.g. "NONE", "TOP"
   mapId: number; // 12 = Howling Abyss
   isDefaultPosition: boolean;
   minSummonerLevel: number;

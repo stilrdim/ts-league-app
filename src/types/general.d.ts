@@ -70,7 +70,8 @@ export type GameMode =
   | "URF"
   | "ONEFORALL"
   | "NEXUSBLITZ"
-  | "ULTBOOK";
+  | "ULTBOOK"
+  | "UNKNOWN";
 
 export type QueueType =
   | "NORMAL"

@@ -56,12 +56,14 @@ export const FLAGS = {
     isPartyLeader: false, // If you can't start a game, don't even bother trying
     canStartGame: false, // If we can start at all, someone might have penalty, etc
     isLobbyFull: false, // If lobby is full to avoid inviting even if more people are online
+    isInLowPrioQueue: false, //
 };
 // STATE VARIABLES
 export const STATES = {
     lastChampId: null, // Track champion changes during ChampSelect stage
     honorVotesRemaining: -1,
     clientState: "Disconnected",
+    gameMode: "UNKNOWN",
 };
 export const HONOR = {
     priorityList: [

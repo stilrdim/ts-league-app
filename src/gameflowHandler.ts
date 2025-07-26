@@ -8,16 +8,17 @@ import {
   Ballot,
   HonorRequestBody,
   GameFlowSession,
-  Party,
-  PartyMember,
+  LobbyResponse,
+  LobbyMember,
   ReadyCheck,
   HonorType,
+  Invitation,
 } from "./types/index.js";
 import { resetLevelingFlags } from "./leveler_module.js";
 import { handleRunepage } from "./runepageHandler.js";
 import { tryInviteFriends } from "./inviteHandler.js";
 
-const { AUTO_LEVEL_ABILITIES, ONLY_FOR_ARAMS } = CONFIG;
+const { AUTO_LEVEL_ABILITIES, ONLY_FOR_ARAMS, AUTO_INVITE_FRIENDS } = CONFIG;
 
 export const handleChampSelect = async (event: ChampSelectSession) => {
   if (!FLAGS.isInChampSelect) FLAGS.isInChampSelect = true;
@@ -172,36 +173,40 @@ export const handleBackToLobby = async () => {
   }
 };
 
-export const handleLobby = async (
-  gameflow: GameFlowSession,
-  isAutoInviting: boolean
-) => {
+export const handleLobby = async (res: LobbyResponse) => {
   // When we first go to lobby this triggers only once
   if (!FLAGS.isInLobby) {
     FLAGS.isInLobby = true;
     FLAGS.inviteTriggered = false;
     FLAGS.isQueuedUp = false;
+    const { data: gameflow } = await leagueRequest.get<GameFlowSession>(
+      "/lol-gameflow/v1/session"
+    );
+    STATES.gameMode = gameflow.gameData.queue.gameMode;
 
     if (AUTO_LEVEL_ABILITIES) resetLevelingFlags(); // Ensure we still get auto-leveling next game
   }
 
-  if (ONLY_FOR_ARAMS && gameflow.gameData.queue.gameMode !== "ARAM") return;
+  if ((ONLY_FOR_ARAMS && STATES.gameMode !== "ARAM") || FLAGS.isInLowPrioQueue)
+    return;
 
   try {
-    const { data: res } = await leagueRequest.get<Party>("/lol-lobby/v2/lobby");
-
     FLAGS.isLobbyFull = res.gameConfig.isLobbyFull;
 
     FLAGS.isPartyLeader = res.localMember.isLeader;
 
     FLAGS.canStartGame = res.canStartActivity;
 
-    const members: PartyMember[] = res.members;
+    const members: LobbyMember[] = res.members;
     const allReady = members.every((m) => m.ready === true);
+    const invitations: Invitation[] = res.invitations;
+    const allInvitesAccepted = invitations.every(
+      (inv) => inv.state === "Accepted"
+    );
 
-    if (allReady) {
+    if (allReady && allInvitesAccepted) {
       if (
-        isAutoInviting &&
+        AUTO_INVITE_FRIENDS &&
         !FLAGS.inviteTriggered &&
         FLAGS.isPartyLeader &&
         FLAGS.canStartGame
@@ -236,6 +241,8 @@ export const handleInQueue = async () => {
 export const handleAcceptQueue = async () => {
   // Avoid unnecessary extra requests
   if (FLAGS.isGameAccepted) return;
+
+  if (FLAGS.isInLowPrioQueue) FLAGS.isInLowPrioQueue = false;
 
   try {
     const { data: res } = await leagueRequest.get<ReadyCheck>(

@@ -3,7 +3,8 @@ import axios from "axios";
 import { Agent } from "https";
 import { CONFIG, STATES } from "./config/constants.js";
 import { poll } from "./league.js";
-import { handleChampSelect } from "./gameflowHandler.js";
+import { handleChampSelect, handleLobby } from "./gameflowHandler.js";
+const { AUTO_INVITE_FRIENDS, AUTO_SELECT_RUNES, AUTO_QUEUE_UP } = CONFIG;
 export let leagueRequest;
 let ws;
 let sleep = async (secs) => new Promise((r) => setTimeout(r, secs * 1000));
@@ -53,10 +54,17 @@ const subscribeToWebSocketEvents = async () => {
         await poll();
     });
     // Handle ChampSelect
-    if (CONFIG.AUTO_SELECT_RUNES)
+    if (AUTO_SELECT_RUNES)
         ws.subscribe("/lol-champ-select/v1/session", async (event) => {
             if (!event)
                 return;
             await handleChampSelect(event);
         });
+    if (AUTO_QUEUE_UP) {
+        ws.subscribe("/lol-lobby/v2/lobby", async (event) => {
+            if (!event)
+                return;
+            await handleLobby(event);
+        });
+    }
 };

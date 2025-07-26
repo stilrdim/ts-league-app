@@ -1,11 +1,11 @@
-import { isAxiosError } from "axios";
+import { HttpStatusCode, isAxiosError } from "axios";
 import { COLLECTIONS, FLAGS } from "./config/constants.js";
 import { leagueRequest } from "./connection.js";
-import { FriendlistFriend, PartyMember } from "./types/index.js";
+import { FriendlistFriend, LobbyMember } from "./types/index.js";
 
 const { FRIENDS } = COLLECTIONS;
 
-const findUninvitedFriends = async (partyMembers: PartyMember[]) => {
+const findUninvitedFriends = async (partyMembers: LobbyMember[]) => {
   // Get the summoner IDs of people already in our lobby
   const partyMembersIds = partyMembers.map((p) => p.summonerId);
 
@@ -41,7 +41,7 @@ const queueUp = async () => {
 };
 
 export const tryInviteFriends = async (
-  partyMembers: PartyMember[],
+  partyMembers: LobbyMember[],
   isLobbyFull: boolean
 ) => {
   // Ensure we havent already invited people
@@ -79,6 +79,14 @@ export const tryInviteFriends = async (
     }
   } catch (err) {
     if (isAxiosError(err)) {
+      if (err.response?.status === HttpStatusCode.BadRequest) {
+        console.error(
+          "[Axios] Queue up error (probably a low priority queue): ",
+          err.response?.data || err.message
+        );
+
+        if (!FLAGS.isInLowPrioQueue) FLAGS.isInLowPrioQueue = true;
+      }
       console.error(
         "[Axios] Inviting friends error: ",
         err.response?.data || err.message

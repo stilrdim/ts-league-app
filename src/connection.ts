@@ -8,8 +8,10 @@ import { Agent } from "https";
 import { ClientState } from "./types/general.js";
 import { CONFIG, STATES } from "./config/constants.js";
 import { poll } from "./league.js";
-import { handleChampSelect } from "./gameflowHandler.js";
-import { ChampSelectSession } from "./types/users.js";
+import { handleChampSelect, handleLobby } from "./gameflowHandler.js";
+import { ChampSelectSession, LobbyResponse } from "./types/users.js";
+
+const { AUTO_INVITE_FRIENDS, AUTO_SELECT_RUNES, AUTO_QUEUE_UP } = CONFIG;
 
 export let leagueRequest: AxiosInstance;
 let ws: LeagueWebSocket;
@@ -83,7 +85,7 @@ const subscribeToWebSocketEvents = async () => {
   );
 
   // Handle ChampSelect
-  if (CONFIG.AUTO_SELECT_RUNES)
+  if (AUTO_SELECT_RUNES)
     ws.subscribe(
       "/lol-champ-select/v1/session",
       async (event: ChampSelectSession | null) => {
@@ -92,4 +94,11 @@ const subscribeToWebSocketEvents = async () => {
         await handleChampSelect(event);
       }
     );
+
+  if (AUTO_QUEUE_UP) {
+    ws.subscribe("/lol-lobby/v2/lobby", async (event: LobbyResponse | null) => {
+      if (!event) return;
+      await handleLobby(event);
+    });
+  }
 };
