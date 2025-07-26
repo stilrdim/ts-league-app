@@ -109,6 +109,11 @@ export interface Item {
   slot: number;
 }
 
+export interface ItemLocal {
+  id: string;
+  name: string;
+}
+
 export interface Runes {
   generalRunes: Rune[];
   keystone: Rune;

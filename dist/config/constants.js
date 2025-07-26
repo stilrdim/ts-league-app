@@ -80,11 +80,6 @@ export const HONOR = {
         FRIENDS.maidcafe,
     ],
 };
-export var HttpStatus;
-(function (HttpStatus) {
-    HttpStatus[HttpStatus["NO_CONTENT"] = 204] = "NO_CONTENT";
-    HttpStatus[HttpStatus["NOT_FOUND"] = 404] = "NOT_FOUND";
-})(HttpStatus || (HttpStatus = {}));
 export var RuneStyle;
 (function (RuneStyle) {
     RuneStyle[RuneStyle["PRECISION"] = 8000] = "PRECISION";

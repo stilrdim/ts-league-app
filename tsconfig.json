@@ -27,7 +27,8 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "declaration": false,
-    "sourceMap": false // Enable for debugging
+    "sourceMap": false, // Enable for debugging
+    "resolveJsonModule": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "src/types"]
