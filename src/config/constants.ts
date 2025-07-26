@@ -130,10 +130,6 @@ export const HONOR = {
   ],
 };
 
-export enum HttpStatus {
-  NO_CONTENT = 204,
-  NOT_FOUND = 404,
-}
 export enum RuneStyle {
   PRECISION = 8000,
   DOMINATION = 8100,
