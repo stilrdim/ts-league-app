@@ -4,10 +4,14 @@
 
 ## Made only as a fun personal project for now for me and a couple of friends to use together
 
-Uses a mixture of **Websockets** and **Polling** to automate certain things in the league client. The customizable features are listed [below](#customizable-features).
+
+Uses a mixture of **Websockets** and **Polling** to automate certain things in the league client. 
+
+The customizable features are listed [below](#customizable-features).
 
  
- Additionally can automatically level your abilities based on suggested order for your current champion on U.GG.
+ Additionally can automatically level your abilities while in an active game based on suggested order for your current champion on U.GG.
+
 
 #### Config files inside `config/` can be used to:
 - Customize ability priority order for the auto-leveler
@@ -31,3 +35,10 @@ Uses a mixture of **Websockets** and **Polling** to automate certain things in t
   ONLY_FOR_ARAMS=true
   POLLING_INTERVAL_IN_SECONDS=1
 ```
+
+## Build:
+Inside project folder:
+
+`npm i`
+
+`npm run league`  or  `node dist/league.js`
