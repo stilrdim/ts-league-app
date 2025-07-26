@@ -10,7 +10,7 @@ import path from "path";
 // Manually define __dirname and export paths
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
-export const rootDir = __dirname + "/../..";
+export const rootDir = path.join(__dirname, "..", "..");
 
 export const friendsConfigPath = path.join(rootDir, "config", "friends.json");
 export const champsConfigPath = path.join(rootDir, "config", "champs.json");
@@ -54,7 +54,7 @@ export const CONFIG = {
   ),
   ONLY_FOR_ARAMS: Boolean(parsedConfigData.ONLY_FOR_ARAMS ?? true),
   POLLING_INTERVAL_IN_SECONDS: Number(
-    parsedConfigData.POLLING_INTERVAL_IN_SECONDS
+    parsedConfigData.POLLING_INTERVAL_IN_SECONDS ?? 1
   ),
 };
 
