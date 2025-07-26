@@ -4,7 +4,7 @@ export interface GameFlowSession {
     gameId: number;
     queue: {
       id: number;
-      gameMode: string;
+      gameMode: GameMode;
       gameTypeConfigId: number;
       name: string;
     };

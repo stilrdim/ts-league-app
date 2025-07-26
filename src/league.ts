@@ -1,4 +1,4 @@
-import { isAxiosError } from "axios";
+import { HttpStatusCode, isAxiosError } from "axios";
 import {
   CLIENT,
   connectToLeagueClient,
@@ -131,7 +131,7 @@ const poll = async () => {
     }
   } catch (error) {
     if (isAxiosError(error)) {
-      if (error.response?.status === 404) {
+      if (error.response?.status === HttpStatusCode.NotFound) {
         // Probably in League's Home screen
         if (FLAGS.isInLobby) FLAGS.isInLobby = false;
         if (FLAGS.isInGame) FLAGS.isInGame = false; // Might need it for custom games or practice tool

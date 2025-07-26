@@ -1,6 +1,6 @@
 import { CONFIG, STATE_VARS, FLAGS, HONOR } from "./config/constants.js";
 import { leagueRequest } from "./connection.js";
-import { isAxiosError } from "axios";
+import { HttpStatusCode, isAxiosError } from "axios";
 import {
   ChampSelectSession,
   ChampInfo,
@@ -11,6 +11,7 @@ import {
   Party,
   PartyMember,
   ReadyCheck,
+  HonorType,
 } from "./types/index.js";
 import { resetLevelingFlags } from "./leveler_module.js";
 import { handleRunepage } from "./runepageHandler.js";
@@ -114,12 +115,12 @@ export const handleHonorPlayers = async () => {
 
           const payload: HonorRequestBody = {
             recipientPuuid: targetPlayer.puuid,
-            honorType: "HEART",
+            honorType: "HEART" as HonorType, // Only HEART is known to work on allies
           };
 
           // Send the honor
           const res = await leagueRequest.post("/lol-honor/v1/honor", payload);
-          if (res.status === 204) {
+          if (res.status === HttpStatusCode.NoContent) {
             STATE_VARS.honorVotesRemaining--;
             console.log(`[Honor] Honored ${friend.name}\n`);
           } else {
@@ -249,7 +250,7 @@ export const handleAcceptQueue = async () => {
     }
   } catch (err) {
     if (isAxiosError(err)) {
-      if (err.response?.status !== 404) {
+      if (err.response?.status !== HttpStatusCode.NotFound) {
         console.error(
           "[Axios] ReadyCheck error: ",
           err.response?.data || err.message

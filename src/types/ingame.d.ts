@@ -1,3 +1,5 @@
+import { GameMode } from "./general.js";
+
 export interface ChampPreference {
   name: string;
   prio: string;
@@ -150,7 +152,7 @@ export interface GameEvent {
 }
 
 export interface GameData {
-  gameMode: string;
+  gameMode: GameMode;
   gameTime: number;
   mapName: string;
   mapNumber: number;

@@ -13,6 +13,7 @@ import {
   GameData,
   SkillKey,
 } from "./types/ingame.js";
+import { GameMode } from "./types/general.js";
 
 // Manually define __dirname and export paths
 const __filename = fileURLToPath(import.meta.url);
@@ -66,7 +67,7 @@ export let hasReachedMaxLevel = false;
 
 let champNameFetched = false;
 
-let GAMEMODE = "";
+let GAMEMODE: GameMode | "" = "";
 let CHAMP_NAME = "";
 
 const httpsAgent = new Agent({
@@ -115,14 +116,14 @@ const normalizeChampionName = (champName: string): string | undefined => {
   return champFound;
 };
 
-const getSkillOrder = async (champName: string, gameMode: string) => {
+const getSkillOrder = async (champName: string, gameMode: GameMode) => {
   isSkillOrderReceived = true;
   let url;
 
   // Filter out useless symbols in name
   let matchedChampName: string | undefined = normalizeChampionName(champName);
 
-  if (matchedChampName && gameMode.toLowerCase() === "aram") {
+  if (matchedChampName && gameMode === "ARAM") {
     console.log("Getting ARAM skill order");
     url = `https://u.gg/lol/champions/aram/${matchedChampName}-aram`;
   } else {
@@ -158,7 +159,7 @@ const getSkillOrder = async (champName: string, gameMode: string) => {
     .catch((err) => console.error("Error while fetching skill order: ", err));
 };
 
-const fetchGamemode = (gameData: GameData, champName: string): string => {
+const fetchGamemode = (gameData: GameData, champName: string): GameMode => {
   isGamemodeFetched = true;
 
   const gameMode = gameData.gameMode;

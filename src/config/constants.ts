@@ -106,9 +106,3 @@ export enum SummonerSpell {
   SMITE = 11,
   TELEPORT = 12,
 }
-export enum LobbyMemberState {
-  NOT_READY = "NotReady",
-  READY = "Ready",
-  IN_GAME = "InGame",
-  AFK = "Afk",
-}
