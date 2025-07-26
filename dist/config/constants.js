@@ -20,15 +20,15 @@ console.log(`rawConfigData: `, rawConfigData);
 console.log(`parsedConfigData`, parsedConfigData);
 // CONFIG
 export const CONFIG = {
-    AUTO_LEVEL_ABILITIES: Boolean(parsedConfigData.AUTO_LEVEL_ABILITIES),
-    SKIP_ENDGAME_SCREEN: Boolean(parsedConfigData.SKIP_ENDGAME_SCREEN),
-    AUTO_HONOR_FRIENDS: Boolean(parsedConfigData.AUTO_HONOR_FRIENDS),
-    AUTO_QUEUE_UP: Boolean(parsedConfigData.AUTO_QUEUE_UP),
-    AUTO_ACCEPT_QUEUE: Boolean(parsedConfigData.AUTO_ACCEPT_QUEUE),
-    AUTO_INVITE_FRIENDS: Boolean(parsedConfigData.AUTO_INVITE_FRIENDS),
-    AUTO_SELECT_RUNES: Boolean(parsedConfigData.AUTO_SELECT_RUNES),
-    AUTO_SELECT_RECOMMENDED_RUNES: Boolean(parsedConfigData.AUTO_SELECT_RECOMMENDED_RUNES),
-    ONLY_FOR_ARAMS: Boolean(parsedConfigData.ONLY_FOR_ARAMS),
+    AUTO_LEVEL_ABILITIES: Boolean(parsedConfigData.AUTO_LEVEL_ABILITIES ?? true),
+    SKIP_ENDGAME_SCREEN: Boolean(parsedConfigData.SKIP_ENDGAME_SCREEN ?? true),
+    AUTO_HONOR_FRIENDS: Boolean(parsedConfigData.AUTO_HONOR_FRIENDS ?? true),
+    AUTO_QUEUE_UP: Boolean(parsedConfigData.AUTO_QUEUE_UP ?? true),
+    AUTO_ACCEPT_QUEUE: Boolean(parsedConfigData.AUTO_ACCEPT_QUEUE ?? true),
+    AUTO_INVITE_FRIENDS: Boolean(parsedConfigData.AUTO_INVITE_FRIENDS ?? true),
+    AUTO_SELECT_RUNES: Boolean(parsedConfigData.AUTO_SELECT_RUNES ?? true),
+    AUTO_SELECT_RECOMMENDED_RUNES: Boolean(parsedConfigData.AUTO_SELECT_RECOMMENDED_RUNES ?? true),
+    ONLY_FOR_ARAMS: Boolean(parsedConfigData.ONLY_FOR_ARAMS ?? true),
     POLLING_INTERVAL_IN_SECONDS: Number(parsedConfigData.POLLING_INTERVAL_IN_SECONDS),
 };
 // Collections

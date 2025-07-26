@@ -34,14 +34,13 @@ export const champNamesConfigPath = path.join(
   "config",
   "leveler_champs_array.json"
 );
+
+// Handle CONFIG.ini
 const configFilePath = path.join(rootDir, "config", "CONFIG.ini");
 
 const rawConfigData = fs.readFileSync(configFilePath, "utf-8");
 const parsedConfigData = ini.parse(rawConfigData);
-console.log(`configfilepath: `, configFilePath);
-console.log(`rawConfigData: `, rawConfigData);
-console.log(`parsedConfigData`, parsedConfigData);
-// CONFIG
+
 export const CONFIG = {
   AUTO_LEVEL_ABILITIES: Boolean(parsedConfigData.AUTO_LEVEL_ABILITIES ?? true),
   SKIP_ENDGAME_SCREEN: Boolean(parsedConfigData.SKIP_ENDGAME_SCREEN ?? true),
