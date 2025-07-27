@@ -15,7 +15,7 @@ const cDragonRequest = axios.create({
   httpsAgent,
 });
 
-const updateRecommendedRunes = async () => {
+const updateRecommendedRunes = async (): Promise<void> => {
   const res = await cDragonRequest.get(URL);
   const payload = JSON.stringify(res.data, null, 2);
 

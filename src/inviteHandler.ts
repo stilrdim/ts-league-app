@@ -5,7 +5,9 @@ import { FriendlistFriend, LobbyMember } from "./types/index.js";
 
 const { FRIENDS } = COLLECTIONS;
 
-const findUninvitedFriends = async (partyMembers: LobbyMember[]) => {
+const findUninvitedFriends = async (
+  partyMembers: LobbyMember[]
+): Promise<FriendlistFriend[] | []> => {
   // Get the summoner IDs of people already in our lobby
   const partyMembersIds = partyMembers.map((p) => p.summonerId);
 
@@ -33,7 +35,7 @@ const findUninvitedFriends = async (partyMembers: LobbyMember[]) => {
   return uninvitedFriends;
 };
 
-const queueUp = async () => {
+const queueUp = async (): Promise<void> => {
   console.log(
     "No new friends to invite and everybody seems ready, queueing up..."
   );
@@ -43,7 +45,7 @@ const queueUp = async () => {
 export const tryInviteFriends = async (
   partyMembers: LobbyMember[],
   isLobbyFull: boolean
-) => {
+): Promise<void> => {
   // Ensure we havent already invited people
   if (FLAGS.inviteTriggered) return;
 

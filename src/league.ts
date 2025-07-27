@@ -25,7 +25,7 @@ await connectToLeagueClient();
 
 // #region Polling
 
-export async function poll() {
+export async function poll(): Promise<void> {
   try {
     switch (STATES.clientState) {
       case "ChampSelect":

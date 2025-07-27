@@ -57,7 +57,7 @@ const liveClientData = axios.create({
 
 let prevChampLevel: number | null = null;
 
-const addPoint = (key: SkillKey, skill: string) => {
+const addPoint = (key: SkillKey, skill: string): void => {
   SKILL_ORDER[key].push(skill);
 };
 
@@ -92,7 +92,10 @@ const normalizeChampionName = (champName: string): string | undefined => {
   return champFound;
 };
 
-const getSkillOrder = async (champName: string, gameMode: GameMode) => {
+const getSkillOrder = async (
+  champName: string,
+  gameMode: GameMode
+): Promise<void> => {
   isSkillOrderFetched = true;
   let url;
 
@@ -145,7 +148,7 @@ const fetchGamemode = (gameData: GameData, champName: string): GameMode => {
   return gameMode;
 };
 
-const ctrlTapKey = async (letter: SkillKey) => {
+const ctrlTapKey = async (letter: SkillKey): Promise<void> => {
   const key = Key[letter]; // Key.Q / Key.W / Key.E / Key.R
   await keyboard.pressKey(Key.LeftControl);
   await keyboard.pressKey(key);
@@ -154,7 +157,7 @@ const ctrlTapKey = async (letter: SkillKey) => {
   await keyboard.releaseKey(key);
 };
 
-const changeSkillPrio = (skillOne: SkillKey, skillTwo: SkillKey) => {
+const changeSkillPrio = (skillOne: SkillKey, skillTwo: SkillKey): void => {
   const firstSkill = SKILL_ORDER[skillOne]; // Ex.          Q:  1, 4,  5,  7,  9
   const secondSkill = SKILL_ORDER[skillTwo]; // Ex.         W:  2, 8, 10, 12, 13
 
@@ -182,7 +185,7 @@ const getChampName = (allGameData: AllGameData): string => {
   return player.championName;
 };
 
-const handleAramStart = async () => {
+const handleAramStart = async (): Promise<void> => {
   const ability1 = Object.entries(SKILL_ORDER).find(([_, levels]) =>
     levels.includes("1")
   )?.[0] as SkillKey | undefined;
@@ -208,7 +211,7 @@ const handleAramStart = async () => {
   await ctrlTapKey(ability3);
 };
 
-const handleSkillPrio = (targetChamp: ChampPreference) => {
+const handleSkillPrio = (targetChamp: ChampPreference): void => {
   // If the R isn't as expected, it's probably a unique champ like udyr jayce etc, just a failsafe
   if (SKILL_ORDER.R.join(",") !== "6,11,16")
     return console.log(
@@ -237,7 +240,7 @@ const handleSkillPrio = (targetChamp: ChampPreference) => {
   console.log(`Rearranged skill prio to ${newSkillOrder.join(" -> ")}`);
 };
 
-const handleSkillSwap = (targetChamp: ChampPreference) => {
+const handleSkillSwap = (targetChamp: ChampPreference): void => {
   // Example: E-Q
   targetChamp.skillSwaps?.forEach((s) => {
     const [fromSkill, toSkill] = s.split("-") as [SkillKey, SkillKey];
@@ -246,7 +249,7 @@ const handleSkillSwap = (targetChamp: ChampPreference) => {
   });
 };
 
-const handleChampPreferences = (champName: string, gameMode: string) => {
+const handleChampPreferences = (champName: string, gameMode: string): void => {
   isInActiveGame = true; // Run all of this only once
 
   console.log(`Checking champ preferences for:\n${champName}`); // Keep this for debugging purposes
@@ -368,7 +371,7 @@ const levelUp = async (champLevel: number): Promise<void> => {
   await ctrlTapKey(abilityToLevel);
 };
 
-export const resetLevelingFlags = () => {
+export const resetLevelingFlags = (): void => {
   isSkillOrderFetched = false;
   isGamemodeFetched = false;
   isInActiveGame = false;
@@ -389,7 +392,7 @@ export const resetLevelingFlags = () => {
   };
 };
 
-export const handleLeveling = async () => {
+export const handleLeveling = async (): Promise<void> => {
   if (!isLaunched) {
     isLaunched = true;
     console.log("League auto-leveler launched!");

@@ -65,7 +65,7 @@ const prompt = promptSync();
     }
   };
 
-  const createRunepages = async (payload: RunePagePayload[]) => {
+  const createRunepages = async (payload: RunePagePayload[]): Promise<void> => {
     try {
       const runePagesAmount = (await leagueRequest.get("/lol-perks/v1/pages"))
         .data.length;
@@ -114,7 +114,7 @@ const prompt = promptSync();
     }
   };
 
-  const deleteRunepages = async (query: string) => {
+  const deleteRunepages = async (query: string): Promise<void> => {
     try {
       const matches = await findRunepagesByName(query);
 

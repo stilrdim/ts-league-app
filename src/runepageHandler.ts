@@ -51,7 +51,7 @@ const selectRecommendedRunepage = async (
   champId: number,
   champName: string,
   autoRunepage: RunePagePayload
-) => {
+): Promise<void> => {
   const pagePayload = getRecommendedRunepage(RECOMMENDED_RUNES, champId);
   if (!pagePayload) return;
 
@@ -86,7 +86,7 @@ export const handleRunepage = async (
   champName: string,
   champId: number,
   runePages: RunePage[]
-) => {
+): Promise<void> => {
   let matched = false;
 
   const categories = [

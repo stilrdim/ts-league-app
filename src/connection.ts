@@ -22,7 +22,7 @@ let sleep = async (secs: number): Promise<void> =>
   new Promise((r) => setTimeout(r, secs * 1000));
 // Client state with getter and setter
 
-export const connectToLeagueClient = async () => {
+export const connectToLeagueClient = async (): Promise<void> => {
   const credentials = await authenticate({ awaitConnection: true });
 
   const httpsAgent = new Agent({ rejectUnauthorized: false });
@@ -69,7 +69,7 @@ export const connectToLeagueClient = async () => {
   await subscribeToWebSocketEvents();
 };
 
-const subscribeToWebSocketEvents = async () => {
+const subscribeToWebSocketEvents = async (): Promise<void> => {
   // Wait 2 sec to avoid vanguard flagging on reconnect
   await sleep(2);
 

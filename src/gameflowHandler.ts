@@ -20,7 +20,9 @@ import { tryInviteFriends } from "./inviteHandler.js";
 
 const { AUTO_LEVEL_ABILITIES, ONLY_FOR_ARAMS, AUTO_INVITE_FRIENDS } = CONFIG;
 
-export const handleChampSelect = async (event: ChampSelectSession) => {
+export const handleChampSelect = async (
+  event: ChampSelectSession
+): Promise<void> => {
   if (!FLAGS.isInChampSelect) FLAGS.isInChampSelect = true;
 
   try {
@@ -65,7 +67,7 @@ export const handleChampSelect = async (event: ChampSelectSession) => {
   }
 };
 // Handles "InProgress"
-export const handleInAnActiveGame = async () => {
+export const handleInAnActiveGame = async (): Promise<void> => {
   if (FLAGS.isInGame) return;
   console.log("\n");
   try {
@@ -77,7 +79,7 @@ export const handleInAnActiveGame = async () => {
 };
 
 // Handle PreEndOfGame
-export const handleHonorPlayers = async () => {
+export const handleHonorPlayers = async (): Promise<void> => {
   // Ensure we only trigger this once
   FLAGS.honorTriggered = true;
 
@@ -153,7 +155,7 @@ export const handleHonorPlayers = async () => {
 };
 
 // Handles EndOfGame
-export const handleBackToLobby = async () => {
+export const handleBackToLobby = async (): Promise<void> => {
   console.log("Post-game screen finished!");
   try {
     if (!FLAGS.playAgainTriggered) {
@@ -173,7 +175,7 @@ export const handleBackToLobby = async () => {
   }
 };
 
-export const handleLobby = async (res: LobbyResponse) => {
+export const handleLobby = async (res: LobbyResponse): Promise<void> => {
   // When we first go to lobby this triggers only once
   if (!FLAGS.isInLobby) {
     FLAGS.isInLobby = true;
@@ -227,7 +229,7 @@ export const handleLobby = async (res: LobbyResponse) => {
 };
 
 // Handles Matchmaking
-export const handleInQueue = async () => {
+export const handleInQueue = async (): Promise<void> => {
   if (FLAGS.isQueuedUp) return;
   try {
     console.log("Looking for a game...");
@@ -238,7 +240,7 @@ export const handleInQueue = async () => {
 };
 
 // Handles ReadyCheck
-export const handleAcceptQueue = async () => {
+export const handleAcceptQueue = async (): Promise<void> => {
   // Avoid unnecessary extra requests
   if (FLAGS.isGameAccepted) return;
 
