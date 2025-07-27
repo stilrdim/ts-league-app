@@ -19,14 +19,12 @@ import {
 } from "./config/constants.js";
 
 // CONSTANTS
-let SKILL_ORDER: Record<string, string[]> = {
+let SKILL_ORDER: Record<SkillKey, string[]> = {
   Q: [],
   W: [],
   E: [],
   R: [],
 };
-
-let RECOMMENDED_ITEMS = [];
 
 const CHAMP_PREFERENCES: ChampPreference[] = JSON.parse(
   fs.readFileSync(champPrefsConfigPath).toString()
@@ -59,7 +57,7 @@ const liveClientData = axios.create({
 
 let prevChampLevel: number | null = null;
 
-const addPoint = (key: string, skill: string) => {
+const addPoint = (key: SkillKey, skill: string) => {
   SKILL_ORDER[key].push(skill);
 };
 
@@ -231,7 +229,7 @@ const handleSkillPrio = (targetChamp: ChampPreference) => {
     );
   }
 
-  const newSkillOrder = targetChamp.prio.split("-");
+  const newSkillOrder = targetChamp.prio.split("-") as SkillKey[];
   SKILL_ORDER[newSkillOrder[0]] = firstPrio;
   SKILL_ORDER[newSkillOrder[1]] = secondPrio;
   SKILL_ORDER[newSkillOrder[2]] = thirdPrio;
@@ -355,6 +353,21 @@ const fetchRecommendedItems = async (
   }
 };
 
+const levelUp = async (champLevel: number): Promise<void> => {
+  const resultForAbility = Object.entries(SKILL_ORDER).find(([_, levels]) =>
+    levels.includes(champLevel.toString())
+  );
+
+  const abilityToLevel = resultForAbility
+    ? (resultForAbility[0] as SkillKey)
+    : null;
+  if (!abilityToLevel) return;
+
+  console.log(`[${champLevel}] -> [${abilityToLevel}]`);
+
+  await ctrlTapKey(abilityToLevel);
+};
+
 export const resetLevelingFlags = () => {
   isSkillOrderFetched = false;
   isGamemodeFetched = false;
@@ -429,18 +442,7 @@ export const handleLeveling = async () => {
       return await handleAramStart();
 
     // Grab current ability to upgrade based on our new level
-    const resultForAbility = Object.entries(SKILL_ORDER).find(([_, levels]) =>
-      levels.includes(champLevel.toString())
-    );
-
-    const abilityToLevel = resultForAbility
-      ? (resultForAbility[0] as SkillKey)
-      : null;
-    if (!abilityToLevel) return;
-
-    console.log(`[${champLevel}] -> [${abilityToLevel}]`);
-
-    await ctrlTapKey(abilityToLevel);
+    await levelUp(champLevel);
 
     if (champLevel === 18) {
       hasReachedMaxLevel = true;

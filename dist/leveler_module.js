@@ -17,7 +17,7 @@ const CHAMP_PREFERENCES = JSON.parse(fs.readFileSync(champPrefsConfigPath).toStr
 const CHAMP_NAMES = JSON.parse(fs.readFileSync(champNamesConfigPath).toString());
 // FLAGS
 let isLaunched = false; // If the auto-leveling script itself has been launched
-let isSkillOrderReceived = false; // Skill order from U.GG
+let isSkillOrderFetched = false; // Skill order from U.GG
 let isRecItemsFetched = false; // Recommended items from OP.GG
 let isGamemodeFetched = false;
 let isInActiveGame = false;
@@ -58,7 +58,7 @@ const normalizeChampionName = (champName) => {
     return champFound;
 };
 const getSkillOrder = async (champName, gameMode) => {
-    isSkillOrderReceived = true;
+    isSkillOrderFetched = true;
     let url;
     // Filter out useless symbols in name
     let matchedChampName = normalizeChampionName(champName);
@@ -114,7 +114,6 @@ const ctrlTapKey = async (letter) => {
     await keyboard.pressKey(key);
     await keyboard.releaseKey(Key.LeftControl);
     await keyboard.releaseKey(key);
-    console.log(`Sent Ctrl+${letter}`);
 };
 const changeSkillPrio = (skillOne, skillTwo) => {
     const firstSkill = SKILL_ORDER[skillOne]; // Ex.          Q:  1, 4,  5,  7,  9
@@ -217,7 +216,7 @@ const fetchRecommendedItems = async (champName, gameMode) => {
         const itemsSection = itemsHeading.closest("section");
         const itemsTable = itemsSection.find("tbody");
         const rows = itemsTable.children("tr");
-        // Loop over 15 rows or the rows.length if the rows are less in total
+        // Loop over 15 rows or the rows.length if the rows are less than 15
         for (let i = 0; i < Math.min(15, rows.length); i++) {
             const $row = $(rows[i]);
             const name = $row.find("strong.text-gray-900").text().trim();
@@ -253,8 +252,18 @@ const fetchRecommendedItems = async (champName, gameMode) => {
         }
     }
 };
+const levelUp = async (champLevel) => {
+    const resultForAbility = Object.entries(SKILL_ORDER).find(([_, levels]) => levels.includes(champLevel.toString()));
+    const abilityToLevel = resultForAbility
+        ? resultForAbility[0]
+        : null;
+    if (!abilityToLevel)
+        return;
+    console.log(`[${champLevel}] -> [${abilityToLevel}]`);
+    await ctrlTapKey(abilityToLevel);
+};
 export const resetLevelingFlags = () => {
-    isSkillOrderReceived = false;
+    isSkillOrderFetched = false;
     isGamemodeFetched = false;
     isInActiveGame = false;
     hasReachedMaxLevel = false;
@@ -302,7 +311,7 @@ export const handleLeveling = async () => {
         if (!GAMEMODE)
             return;
         // Fetch our skill order from U.GG
-        if (!isSkillOrderReceived)
+        if (!isSkillOrderFetched)
             await getSkillOrder(CHAMP_NAME, GAMEMODE);
         // Fetch our recommended items from OP.GG
         if (!isRecItemsFetched)
@@ -314,14 +323,7 @@ export const handleLeveling = async () => {
         if (GAMEMODE?.toLowerCase() === "aram" && champLevel === 3)
             return await handleAramStart();
         // Grab current ability to upgrade based on our new level
-        const resultForAbility = Object.entries(SKILL_ORDER).find(([_, levels]) => levels.includes(champLevel.toString()));
-        const abilityToLevel = resultForAbility
-            ? resultForAbility[0]
-            : null;
-        if (!abilityToLevel)
-            return;
-        console.log(`Level [${champLevel}] Putting points into your [${abilityToLevel}]`);
-        await ctrlTapKey(abilityToLevel);
+        await levelUp(champLevel);
         if (champLevel === 18) {
             hasReachedMaxLevel = true;
             console.log(`Level 18 reached. Turning off auto-leveler!\n`);
