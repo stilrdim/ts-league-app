@@ -6,6 +6,7 @@
   "main": "index.ts",
   "scripts": {
     "test": "node dist/test.js",
+    "test_league": "node dist/test_league.js",
     "league": "node dist/league.js"
   },
   "keywords": [],
