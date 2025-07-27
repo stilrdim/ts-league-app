@@ -18,7 +18,6 @@ const CHAMP_NAMES = JSON.parse(fs.readFileSync(champNamesConfigPath).toString())
 // FLAGS
 let isLaunched = false; // If the auto-leveling script itself has been launched
 let isSkillOrderFetched = false; // Skill order from U.GG
-let isRecItemsFetched = false; // Recommended items from OP.GG
 let isGamemodeFetched = false;
 let isInActiveGame = false;
 export let hasReachedMaxLevel = false;
@@ -197,7 +196,6 @@ const handleChampPreferences = (champName, gameMode) => {
     console.log("\n\n");
 };
 const fetchRecommendedItems = async (champName, gameMode) => {
-    isRecItemsFetched = true;
     try {
         const matchedChampName = normalizeChampionName(champName);
         let url;
@@ -314,11 +312,11 @@ export const handleLeveling = async () => {
         if (!isSkillOrderFetched)
             await getSkillOrder(CHAMP_NAME, GAMEMODE);
         // Fetch our recommended items from OP.GG
-        if (!isRecItemsFetched)
-            await fetchRecommendedItems(CHAMP_NAME, GAMEMODE);
-        if (!isInActiveGame)
-            // Know we're in an active game and check if the user has special preferences for this champ
+        // Run only once in an active game and check if the user has special preferences for this champ
+        if (!isInActiveGame) {
             handleChampPreferences(CHAMP_NAME, GAMEMODE);
+            await fetchRecommendedItems(CHAMP_NAME, GAMEMODE);
+        }
         // Level all first 3 skills
         if (GAMEMODE?.toLowerCase() === "aram" && champLevel === 3)
             return await handleAramStart();
