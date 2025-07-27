@@ -49,7 +49,7 @@ export interface LobbyResponse {
 export interface Invitation {
   invitationId: string;
   invitationType: string;
-  state: "Accepted" | string;
+  state: "Accepted" | "OnHold" | string;
   timestamp: string;
   toSummonerId: number;
   toSummonerName: string;
