@@ -109,10 +109,8 @@ const fetchGamemode = (gameData, champName) => {
 };
 const ctrlTapKey = async (letter) => {
     const key = Key[letter]; // Key.Q / Key.W / Key.E / Key.R
-    await keyboard.pressKey(Key.LeftControl);
-    await keyboard.pressKey(key);
-    await keyboard.releaseKey(Key.LeftControl);
-    await keyboard.releaseKey(key);
+    await keyboard.pressKey(Key.LeftControl, key);
+    await keyboard.releaseKey(Key.LeftControl, key);
 };
 const changeSkillPrio = (skillOne, skillTwo) => {
     const firstSkill = SKILL_ORDER[skillOne]; // Ex.          Q:  1, 4,  5,  7,  9
