@@ -67,7 +67,6 @@ export const handleHonorPlayers = async () => {
                 continue;
             if (STATES.honorVotesRemaining > 0) {
                 try {
-                    console.log(`[Honor] Attempting to honor ${friend.name}`);
                     const payload = {
                         recipientPuuid: targetPlayer.puuid,
                         honorType: "HEART", // Only HEART is known to work on allies
