@@ -38,330 +38,327 @@ const RECOMMENDED_RUNES: ChampionRuneRecEntry[] = JSON.parse(
   fs.readFileSync(recRunesConfigPath).toString()
 );
 
-(async () => {
-  const credentials = await authenticate({ awaitConnection: true });
+const credentials = await authenticate({ awaitConnection: true });
 
-  // League uses self-signed certs
-  const httpsAgent = new Agent({
-    rejectUnauthorized: false,
-  });
+// League uses self-signed certs
+const httpsAgent = new Agent({
+  rejectUnauthorized: false,
+});
 
-  const leagueRequest = axios.create({
-    baseURL: `https://127.0.0.1:${credentials.port}`,
-    httpsAgent,
-    headers: {
-      Authorization: `Basic ${Buffer.from(
-        `riot:${credentials.password}`
-      ).toString("base64")}`,
-    },
-  });
+const leagueRequest = axios.create({
+  baseURL: `https://127.0.0.1:${credentials.port}`,
+  httpsAgent,
+  headers: {
+    Authorization: `Basic ${Buffer.from(
+      `riot:${credentials.password}`
+    ).toString("base64")}`,
+  },
+});
 
-  // Interceptor for future debugging
-  if (DEBUGGING_MODE)
-    leagueRequest.interceptors.request.use(
-      (request) => {
-        console.log(
-          `➡️ Request: ${(request.method ?? "UNKNOWN").toUpperCase()} ${
-            request.url ?? "<no-url>"
-          }`
-        );
-        if (request.data) {
-          console.log("Payload:", JSON.stringify(request.data, null, 2));
-        } else {
-          console.log("Payload: <none>");
-        }
-        return request; // Important to return the request
-      },
-      (error) => {
-        // Log request error if any
-        console.error("Request error:", error);
-        return Promise.reject(error);
+// Interceptor for future debugging
+if (DEBUGGING_MODE)
+  leagueRequest.interceptors.request.use(
+    (request) => {
+      console.log(
+        `➡️ Request: ${(request.method ?? "UNKNOWN").toUpperCase()} ${
+          request.url ?? "<no-url>"
+        }`
+      );
+      if (request.data) {
+        console.log("Payload:", JSON.stringify(request.data, null, 2));
+      } else {
+        console.log("Payload: <none>");
       }
-    );
-
-  const cDragonRequest = axios.create({
-    baseURL: `https://raw.communitydragon.org/pbe`,
-    httpsAgent,
-  });
-
-  console.log(
-    `[DEV TESTING] Connected to league client on port ${credentials.port}\n`
+      return request; // Important to return the request
+    },
+    (error) => {
+      // Log request error if any
+      console.error("Request error:", error);
+      return Promise.reject(error);
+    }
   );
 
-  const sleep = (secs: number) =>
-    new Promise((r) => setTimeout(r, secs * 1000));
+const cDragonRequest = axios.create({
+  baseURL: `https://raw.communitydragon.org/pbe`,
+  httpsAgent,
+});
 
-  const findFriend = async (targetName: string) => {
-    const { data: friends } = await leagueRequest.get<FriendlistFriend[]>(
-      "/lol-chat/v1/friends"
-    );
-    const targetFriend = friends.find((f) => f.gameName === targetName);
+console.log(
+  `[DEV TESTING] Connected to league client on port ${credentials.port}\n`
+);
 
-    // availability: offline   -> Offline
-    // availability: dnd       -> In a game / Champ select
-    // availability: chat      -> Online
-    // availability: away      -> Away
+const sleep = (secs: number) => new Promise((r) => setTimeout(r, secs * 1000));
 
-    return targetFriend;
-  };
+const findFriend = async (targetName: string) => {
+  const { data: friends } = await leagueRequest.get<FriendlistFriend[]>(
+    "/lol-chat/v1/friends"
+  );
+  const targetFriend = friends.find((f) => f.gameName === targetName);
 
-  // List close friends
-  const listCloseFriends = () => {
-    const friends = Object.values(FRIENDS);
-    friends.forEach((friend) => console.log(`${friend.name} (${friend.id})`));
-  };
+  // availability: offline   -> Offline
+  // availability: dnd       -> In a game / Champ select
+  // availability: chat      -> Online
+  // availability: away      -> Away
 
-  // #endregion Implementation Detail
+  return targetFriend;
+};
 
-  // #region Runepage Handling
+// List close friends
+const listCloseFriends = () => {
+  const friends = Object.values(FRIENDS);
+  friends.forEach((friend) => console.log(`${friend.name} (${friend.id})`));
+};
 
-  const findRunepagesByName = (stringToFind: string) => {
-    const fileName = "runepages.json";
-    const runePagesDir = `${rootDir}/${fileName}`;
+// #endregion Implementation Detail
 
-    const runePages: RunePage[] = JSON.parse(
-      fs.readFileSync(runePagesDir).toString()
-    );
+// #region Runepage Handling
 
-    const targetRunePages = runePages.filter((page) =>
-      page.name.includes(stringToFind)
-    );
+const findRunepagesByName = (stringToFind: string) => {
+  const fileName = "runepages.json";
+  const runePagesDir = `${rootDir}/${fileName}`;
 
-    return targetRunePages;
-  };
+  const runePages: RunePage[] = JSON.parse(
+    fs.readFileSync(runePagesDir).toString()
+  );
 
-  const storeRunepages = (
-    fileName = "test",
-    runePages = Object,
-    folder: string
-  ) => {
-    fileName = `${rootDir}/${folder ? folder + "/" : ""}${fileName}.json`;
+  const targetRunePages = runePages.filter((page) =>
+    page.name.includes(stringToFind)
+  );
 
-    fs.writeFileSync(fileName, JSON.stringify(runePages, null, 2));
+  return targetRunePages;
+};
 
-    return console.log(`Rune pages stored at ${fileName}`);
-  };
+const storeRunepages = (
+  fileName = "test",
+  runePages = Object,
+  folder: string
+) => {
+  fileName = `${rootDir}/${folder ? folder + "/" : ""}${fileName}.json`;
 
-  const convertRunepagesToPayload = (runePages: RunePage[]) => {
-    return runePages.map((page) => ({
-      name: page.name,
-      primaryStyleId: page.primaryStyleId,
-      subStyleId: page.subStyleId,
-      selectedPerkIds: page.selectedPerkIds,
-      current: false,
-    }));
-  };
-  // #endregion Runepage Handling
+  fs.writeFileSync(fileName, JSON.stringify(runePages, null, 2));
 
-  const testEndpoints = async () => {
-    if (endpointsWereTested) return;
-    endpointsWereTested = true;
+  return console.log(`Rune pages stored at ${fileName}`);
+};
 
-    // Build our file name and directory
-    let isPlural = false;
-    const pluralSuffix = isPlural ? "s" : "";
-    const attempt = 1;
-    const targetFolder = "./data";
-    const currentTestType = "phase";
+const convertRunepagesToPayload = (runePages: RunePage[]) => {
+  return runePages.map((page) => ({
+    name: page.name,
+    primaryStyleId: page.primaryStyleId,
+    subStyleId: page.subStyleId,
+    selectedPerkIds: page.selectedPerkIds,
+    current: false,
+  }));
+};
+// #endregion Runepage Handling
 
-    // const champId = 22;
+const testEndpoints = async () => {
+  if (endpointsWereTested) return;
+  endpointsWereTested = true;
 
-    let success = false;
+  // Build our file name and directory
+  let isPlural = false;
+  const pluralSuffix = isPlural ? "s" : "";
+  const attempt = 1;
+  const targetFolder = "./data";
+  const currentTestType = "phase";
 
-    const endpoints: string[] = [
-      // ----- CHAMP SELECT ENDPOINTS
-      // "/lol-champ-select/v1/session",
-      // "/lol-lobby-team-builder/champ-select/v1/subset-champion-list", // GET - new cards in ARAM
-      // `/lol-perks/v1/perks-from-backed-recommendations/${champId}/NONE`, // GET - Recommended runes
-      // "/lol-game-data/assets/v1/champions/22.json", // GET - Champ data
-      // "/plugins/rcp-be-lol-game-data/global/default/v1/champion-rune-recommendations.json" // GET - Up to date rune recommendations
-      // ----- TEST SURRENDER ENDPOINTS
-      // "/lol-end-of-game/v1/surrender", // DEAD
-      // "/lol-chat/v1/conversations", // DMS
-      // "/lol-chat/v1/game-messages", // DEAD
-      // ----- HONOR ENDPOINTS
-      // "/lol-honor-v2/v1/ballot",             //   GET   - List of players to honor
-      // "/lol-honor-v2/v1/vote-completion",    //   GET   - Check if voting phase complete
-      // "/lol-honor-v2/v1/config",             //   GET   - Honor system config and flags
-      // "/lol-honor-v2/v1/latest-eligible-game", // GET   - Last league game
-      // "/lol-honor-v2/v1/recognition-history", //  GET   - Previous people who honored you
-      // "/lol-honor-v2/v1/honor-player",       //   POST  - Submit honor vote
-      // "/lol-honor-v2/v1/level-change",
-      // "/lol-honor-v2/v1/profile",
-      // "/lol-honor-v2/v1/reward-granted",
-      // "/lol-honor-v2/v1/team-choices",
-      // "/lol-honor-v2/v1/recognition",        //   GET   - Personal honor progress (Deprecated)
-      // "/lol-honor-v2/v1/recognition-enabled",//   GET   - If honor enabled (Deprecated)
-      // "/lol-honor-v2/v1/profile-summary",    //   GET   - Honor profile summary (Deprecated)
-      // "/lol-honor-v2/v1/full-team-vote",     //   GET   - Full team vote status (Deprecated)
-      // ----- OLD TESTING ENDPOINTS
-      // "/lol-gameflow/v1/session", //              GET   - Session type ChampSelect Lobby etc
-      // "/lol-gameflow/v1/gameflow-phase"           GET   - Only a game phase string
-      // "/lol-end-of-game/v1/eog-stats-block", //   GET   - End of game stats
-      // "/lol-chat/v1/friends", //                  GET   - Friend list
-      // "/lol-chat/v1/me", //                       GET   - My own info
-      // "/lol-summoner/v1/current-summoner", //     GET   - More own info
-      // "/lol-lobby/v2/lobby", //                   GET   - Info about your current party
-      // "/lol-perks/v1/pages", //                   GET   - All rune pages
-    ];
-    // #region Endpoints logic
-    if (endpoints.length === 0) return;
-    // return console.log(`No endpoints to test currently.\n`)
+  // const champId = 22;
 
-    if (endpoints.length > 1) isPlural = true;
+  let success = false;
 
-    let payload: {
-      GET: {
-        successes: { [key: string]: unknown };
-        failures: { [key: string]: unknown };
-      };
-    } = {
-      GET: {
-        successes: {},
-        failures: {},
-      },
+  const endpoints: string[] = [
+    // ----- CHAMP SELECT ENDPOINTS
+    // "/lol-champ-select/v1/session",
+    // "/lol-lobby-team-builder/champ-select/v1/subset-champion-list", // GET - new cards in ARAM
+    // `/lol-perks/v1/perks-from-backed-recommendations/${champId}/NONE`, // GET - Recommended runes
+    // "/lol-game-data/assets/v1/champions/22.json", // GET - Champ data
+    // "/plugins/rcp-be-lol-game-data/global/default/v1/champion-rune-recommendations.json" // GET - Up to date rune recommendations
+    // ----- TEST SURRENDER ENDPOINTS
+    // "/lol-end-of-game/v1/surrender", // DEAD
+    // "/lol-chat/v1/conversations", // DMS
+    // "/lol-chat/v1/game-messages", // DEAD
+    // ----- HONOR ENDPOINTS
+    // "/lol-honor-v2/v1/ballot",             //   GET   - List of players to honor
+    // "/lol-honor-v2/v1/vote-completion",    //   GET   - Check if voting phase complete
+    // "/lol-honor-v2/v1/config",             //   GET   - Honor system config and flags
+    // "/lol-honor-v2/v1/latest-eligible-game", // GET   - Last league game
+    // "/lol-honor-v2/v1/recognition-history", //  GET   - Previous people who honored you
+    // "/lol-honor-v2/v1/honor-player",       //   POST  - Submit honor vote
+    // "/lol-honor-v2/v1/level-change",
+    // "/lol-honor-v2/v1/profile",
+    // "/lol-honor-v2/v1/reward-granted",
+    // "/lol-honor-v2/v1/team-choices",
+    // "/lol-honor-v2/v1/recognition",        //   GET   - Personal honor progress (Deprecated)
+    // "/lol-honor-v2/v1/recognition-enabled",//   GET   - If honor enabled (Deprecated)
+    // "/lol-honor-v2/v1/profile-summary",    //   GET   - Honor profile summary (Deprecated)
+    // "/lol-honor-v2/v1/full-team-vote",     //   GET   - Full team vote status (Deprecated)
+    // ----- OLD TESTING ENDPOINTS
+    // "/lol-gameflow/v1/session", //              GET   - Session type ChampSelect Lobby etc
+    // "/lol-gameflow/v1/gameflow-phase"           GET   - Only a game phase string
+    // "/lol-end-of-game/v1/eog-stats-block", //   GET   - End of game stats
+    // "/lol-chat/v1/friends", //                  GET   - Friend list
+    // "/lol-chat/v1/me", //                       GET   - My own info
+    // "/lol-summoner/v1/current-summoner", //     GET   - More own info
+    // "/lol-lobby/v2/lobby", //                   GET   - Info about your current party
+    // "/lol-perks/v1/pages", //                   GET   - All rune pages
+  ];
+  // #region Endpoints logic
+  if (endpoints.length === 0) return;
+  // return console.log(`No endpoints to test currently.\n`)
+
+  if (endpoints.length > 1) isPlural = true;
+
+  let payload: {
+    GET: {
+      successes: { [key: string]: unknown };
+      failures: { [key: string]: unknown };
     };
+  } = {
+    GET: {
+      successes: {},
+      failures: {},
+    },
+  };
 
-    try {
-      for (const endpoint of endpoints) {
-        try {
-          const res = endpoint.startsWith("/lol")
-            ? await leagueRequest.get(endpoint)
-            : await cDragonRequest.get(endpoint);
-          const data = res.data;
-          payload["GET"]["successes"][endpoint] = { data };
+  try {
+    for (const endpoint of endpoints) {
+      try {
+        const res = endpoint.startsWith("/lol")
+          ? await leagueRequest.get(endpoint)
+          : await cDragonRequest.get(endpoint);
+        const data = res.data;
+        payload["GET"]["successes"][endpoint] = { data };
 
-          console.log(`Successfully scanned endpoint ${endpoint}`);
-        } catch (error) {
-          // Endpoint returned an error
-          if (isAxiosError(error)) {
-            console.log(`Error scanning endpoint ${endpoint}`);
-            payload["GET"]["failures"][endpoint] = {
-              data: {
-                message: error.message ?? "Unknown Error",
-                code: error.code ?? "No code",
-                status: error.status ?? "No status",
+        console.log(`Successfully scanned endpoint ${endpoint}`);
+      } catch (error) {
+        // Endpoint returned an error
+        if (isAxiosError(error)) {
+          console.log(`Error scanning endpoint ${endpoint}`);
+          payload["GET"]["failures"][endpoint] = {
+            data: {
+              message: error.message ?? "Unknown Error",
+              code: error.code ?? "No code",
+              status: error.status ?? "No status",
+            },
+          };
+        }
+      }
+
+      // Sleep for X seconds
+      const sleepDurationInSec = 1;
+      await new Promise((r) => setTimeout(r, sleepDurationInSec * 1000));
+    }
+
+    // Successfully finished scanning all the endpoints
+    success = true;
+  } catch (error) {
+    // Error in the overall block of code
+    console.log(`Unexpected error while scanning endpoints: `, error);
+  }
+
+  if (success) {
+    const fileName = `${targetFolder}/a_${currentTestType}_endpoint${pluralSuffix}${attempt}.json`;
+
+    fs.writeFileSync(fileName, JSON.stringify(payload, null, 2));
+    console.log("Finished scanning endpoints!");
+  }
+  // #endregion Endpoints logic
+};
+await testEndpoints();
+
+// #region Handle honor
+const handleHonorPlayers = async (type: number) => {
+  let honored = false;
+
+  try {
+    const { data: res } = await leagueRequest.get("/lol-honor-v2/v1/ballot");
+
+    const gameId = res.gameId;
+    const availableVotesCount = res.votePool?.votes;
+
+    const eligibleAllies = res.eligibleAllies;
+
+    const formattedPlayers = eligibleAllies.map(
+      (player: AllPlayer) => `${player.championName}: (${player.summonerId})`
+    );
+
+    console.log(
+      `\nGame ID: ${gameId}\nAvailable votes: ${availableVotesCount}\nYour Team:`,
+      formattedPlayers
+    );
+
+    const targetPlayer = eligibleAllies[0];
+    // const targetPlayer = eligibleAllies.find(ally => ally.summonerId === FRIENDS.Jasmy.id)
+
+    if (targetPlayer) {
+      try {
+        console.log(
+          `Attempt to honor ${targetPlayer.summonerId} (${targetPlayer.championName})`
+        );
+
+        console.log(
+          `Target puuid: ${targetPlayer.puuid} (${targetPlayer.championName})`
+        );
+
+        let honorRes;
+        if (type === 1)
+          honorRes = await leagueRequest.post("/lol-honor/v1/ballot", {
+            gameId,
+            honorRequestVotes: [
+              {
+                honorType: "HEART",
+                recipientPuuid: targetPlayer.puuid,
               },
-            };
-          }
+            ],
+          });
+        else
+          honorRes = await leagueRequest.post("/lol-honor-v2/v1/ballot", {
+            honorRequestVotes: [
+              {
+                honorType: "HEART",
+                recipientPuuid: targetPlayer.puuid,
+              },
+            ],
+          });
+
+        console.log(honorRes.data);
+
+        if (honorRes.data === "failed_to_contact_honor_server") {
+          console.warn(`Failed attempt`);
+        } else {
+          console.log(`✅ Honored ${targetPlayer.summonerId}`);
+          honored = true;
         }
-
-        // Sleep for X seconds
-        const sleepDurationInSec = 1;
-        await new Promise((r) => setTimeout(r, sleepDurationInSec * 1000));
-      }
-
-      // Successfully finished scanning all the endpoints
-      success = true;
-    } catch (error) {
-      // Error in the overall block of code
-      console.log(`Unexpected error while scanning endpoints: `, error);
-    }
-
-    if (success) {
-      const fileName = `${targetFolder}/a_${currentTestType}_endpoint${pluralSuffix}${attempt}.json`;
-
-      fs.writeFileSync(fileName, JSON.stringify(payload, null, 2));
-      console.log("Finished scanning endpoints!");
-    }
-    // #endregion Endpoints logic
-  };
-  await testEndpoints();
-
-  // #region Handle honor
-  const handleHonorPlayers = async (type: number) => {
-    let honored = false;
-
-    try {
-      const { data: res } = await leagueRequest.get("/lol-honor-v2/v1/ballot");
-
-      const gameId = res.gameId;
-      const availableVotesCount = res.votePool?.votes;
-
-      const eligibleAllies = res.eligibleAllies;
-
-      const formattedPlayers = eligibleAllies.map(
-        (player: AllPlayer) => `${player.championName}: (${player.summonerId})`
-      );
-
-      console.log(
-        `\nGame ID: ${gameId}\nAvailable votes: ${availableVotesCount}\nYour Team:`,
-        formattedPlayers
-      );
-
-      const targetPlayer = eligibleAllies[0];
-      // const targetPlayer = eligibleAllies.find(ally => ally.summonerId === FRIENDS.Jasmy.id)
-
-      if (targetPlayer) {
-        try {
-          console.log(
-            `Attempt to honor ${targetPlayer.summonerId} (${targetPlayer.championName})`
+      } catch (err) {
+        if (isAxiosError(err)) {
+          console.error(
+            `[Axios] Honor attempt failed:`,
+            err.response?.data || err.message
           );
-
-          console.log(
-            `Target puuid: ${targetPlayer.puuid} (${targetPlayer.championName})`
-          );
-
-          let honorRes;
-          if (type === 1)
-            honorRes = await leagueRequest.post("/lol-honor/v1/ballot", {
-              gameId,
-              honorRequestVotes: [
-                {
-                  honorType: "HEART",
-                  recipientPuuid: targetPlayer.puuid,
-                },
-              ],
-            });
-          else
-            honorRes = await leagueRequest.post("/lol-honor-v2/v1/ballot", {
-              honorRequestVotes: [
-                {
-                  honorType: "HEART",
-                  recipientPuuid: targetPlayer.puuid,
-                },
-              ],
-            });
-
-          console.log(honorRes.data);
-
-          if (honorRes.data === "failed_to_contact_honor_server") {
-            console.warn(`Failed attempt`);
-          } else {
-            console.log(`✅ Honored ${targetPlayer.summonerId}`);
-            honored = true;
-          }
-        } catch (err) {
-          if (isAxiosError(err)) {
-            console.error(
-              `[Axios] Honor attempt failed:`,
-              err.response?.data || err.message
-            );
-          } else {
-            console.error("[Unknown] Honor attempt failed: ", err);
-          }
+        } else {
+          console.error("[Unknown] Honor attempt failed: ", err);
         }
       }
-
-      if (!honored) {
-        console.error(
-          `Failed to honor ${targetPlayer.championName}: (${targetPlayer.summonerId})`
-        );
-      }
-    } catch (err) {
-      if (isAxiosError(err))
-        console.error(
-          "[Axios] PreEndOfGame error: ",
-          err.response?.data || err.message
-        );
-      else console.error("[Unknown] PreEndOfGame error: ", err);
     }
-  };
-  // await handleHonorPlayers(1);
-  // #endregion Handle honor
 
-  console.log("\nFinished all testing");
-})();
+    if (!honored) {
+      console.error(
+        `Failed to honor ${targetPlayer.championName}: (${targetPlayer.summonerId})`
+      );
+    }
+  } catch (err) {
+    if (isAxiosError(err))
+      console.error(
+        "[Axios] PreEndOfGame error: ",
+        err.response?.data || err.message
+      );
+    else console.error("[Unknown] PreEndOfGame error: ", err);
+  }
+};
+// await handleHonorPlayers(1);
+// #endregion Handle honor
+
+console.log("\nFinished all testing");
 
 /*
 Old code
