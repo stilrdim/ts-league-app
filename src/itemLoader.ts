@@ -1,11 +1,11 @@
-import { ItemLocal } from "./types/index.js";
+import { LocalItem } from "./types/index.js";
 import itemsData from "../data/items.json" with {type: "json"};
 
 // Convert array to Map entries
-const itemEntries: [string, ItemLocal][] = itemsData.map((item: ItemLocal) => [item.id, item])
+const itemEntries: [string, LocalItem][] = itemsData.map((item: LocalItem) => [item.id, item])
 
 // Create map
-export const items = new Map<string, ItemLocal>(itemEntries);
+export const items = new Map<string, LocalItem>(itemEntries);
 
 /*
 6 searches: 

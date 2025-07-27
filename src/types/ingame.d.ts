@@ -109,9 +109,15 @@ export interface Item {
   slot: number;
 }
 
-export interface ItemLocal {
+export interface LocalItem {
   id: string;
   name: string;
+}
+export interface LocalItemData {
+  name: string;
+  pickRate: string;
+  winRate: string;
+  gamesPurchased: string;
 }
 
 export interface Runes {

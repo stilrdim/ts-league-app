@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import { Agent } from "https";
 import { activeWindow } from "active-win";
 import fetch from "node-fetch";
@@ -11,6 +11,7 @@ import {
   GameData,
   SkillKey,
   GameMode,
+  LocalItemData,
 } from "./types/index.js";
 import {
   champNamesConfigPath,
@@ -25,6 +26,8 @@ let SKILL_ORDER: Record<string, string[]> = {
   R: [],
 };
 
+let RECOMMENDED_ITEMS = [];
+
 const CHAMP_PREFERENCES: ChampPreference[] = JSON.parse(
   fs.readFileSync(champPrefsConfigPath).toString()
 );
@@ -34,7 +37,8 @@ const CHAMP_NAMES: string[] = JSON.parse(
 
 // FLAGS
 let isLaunched = false; // If the auto-leveling script itself has been launched
-let isSkillOrderReceived = false;
+let isSkillOrderFetched = false; // Skill order from U.GG
+let isRecItemsFetched = false; // Recommended items from OP.GG
 let isGamemodeFetched = false;
 let isInActiveGame = false;
 export let hasReachedMaxLevel = false;
@@ -91,7 +95,7 @@ const normalizeChampionName = (champName: string): string | undefined => {
 };
 
 const getSkillOrder = async (champName: string, gameMode: GameMode) => {
-  isSkillOrderReceived = true;
+  isSkillOrderFetched = true;
   let url;
 
   // Filter out useless symbols in name
@@ -150,8 +154,6 @@ const ctrlTapKey = async (letter: SkillKey) => {
 
   await keyboard.releaseKey(Key.LeftControl);
   await keyboard.releaseKey(key);
-
-  console.log(`Sent Ctrl+${letter}`);
 };
 
 const changeSkillPrio = (skillOne: SkillKey, skillTwo: SkillKey) => {
@@ -281,8 +283,80 @@ const handleChampPreferences = (champName: string, gameMode: string) => {
   console.log("\n\n");
 };
 
+const fetchRecommendedItems = async (
+  champName: string,
+  gameMode: GameMode
+): Promise<void> => {
+  isRecItemsFetched = true;
+  try {
+    const matchedChampName = normalizeChampionName(champName);
+
+    let url;
+    if (gameMode === "ARAM")
+      url = `https://op.gg/lol/modes/aram/${matchedChampName}/items`;
+    else url = `https://op.gg/lol/champions/${matchedChampName}/items`;
+    const { data: html } = await axios.get(url, {
+      headers: { "User-Agent": "Mozilla/5.0" },
+    });
+
+    const items: LocalItemData[] = [];
+    const $ = cheerio.load(html);
+
+    const itemsHeading = $('div:contains("Items")').filter((_, el) => {
+      return $(el).text().trim() === "Items";
+    });
+
+    const itemsSection = itemsHeading.closest("section");
+    const itemsTable = itemsSection.find("tbody");
+
+    const rows = itemsTable.children("tr");
+
+    // Loop over 15 rows or the rows.length if the rows are less than 15
+    for (let i = 0; i < Math.min(15, rows.length); i++) {
+      const $row = $(rows[i]);
+      const name = $row.find("strong.text-gray-900").text().trim();
+      const pickRate = $row
+        .find("td.bg-gray-100 span.font-bold")
+        .first()
+        .text()
+        .trim();
+      const winRate =
+        $row.find("td:last-child strong").text().trim() ?? "Unknown";
+
+      const gamesPurchased = $row
+        .find("td.bg-gray-100 span.text-gray-500")
+        .first()
+        .text()
+        .trim();
+
+      if (name && pickRate) {
+        items.push({ name, pickRate, winRate, gamesPurchased });
+      }
+    }
+
+    console.log(`\n\n\nRecommended items for ${champName}`);
+    console.table(
+      items.map((item) => ({
+        Name: item.name,
+        "Pick Rate %": item.pickRate,
+        "Win Rate %": item.winRate,
+        "Games Purchased": item.gamesPurchased,
+      }))
+    );
+  } catch (err) {
+    if (isAxiosError(err)) {
+      console.error(
+        "[Axios] Error fetching recommended items: ",
+        err.response?.data || err.message
+      );
+    } else {
+      console.error("[Unknown] Error fetching recommended items: ", err);
+    }
+  }
+};
+
 export const resetLevelingFlags = () => {
-  isSkillOrderReceived = false;
+  isSkillOrderFetched = false;
   isGamemodeFetched = false;
   isInActiveGame = false;
   hasReachedMaxLevel = false;
@@ -341,11 +415,13 @@ export const handleLeveling = async () => {
     if (!GAMEMODE) return;
 
     // Fetch our skill order from U.GG
-    if (!isSkillOrderReceived && GAMEMODE)
-      await getSkillOrder(CHAMP_NAME, GAMEMODE);
+    if (!isSkillOrderFetched) await getSkillOrder(CHAMP_NAME, GAMEMODE);
 
-    // Know we're in an active game and check if the user has special preferences for this champ
-    if (!isInActiveGame && GAMEMODE)
+    // Fetch our recommended items from OP.GG
+    if (!isRecItemsFetched) await fetchRecommendedItems(CHAMP_NAME, GAMEMODE);
+
+    if (!isInActiveGame)
+      // Know we're in an active game and check if the user has special preferences for this champ
       handleChampPreferences(CHAMP_NAME, GAMEMODE);
 
     // Level all first 3 skills
@@ -362,9 +438,7 @@ export const handleLeveling = async () => {
       : null;
     if (!abilityToLevel) return;
 
-    console.log(
-      `Level [${champLevel}] Putting points into your [${abilityToLevel}]`
-    );
+    console.log(`[${champLevel}] -> [${abilityToLevel}]`);
 
     await ctrlTapKey(abilityToLevel);
 
