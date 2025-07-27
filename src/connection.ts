@@ -5,13 +5,16 @@ import {
 } from "league-connect";
 import axios, { AxiosInstance } from "axios";
 import { Agent } from "https";
-import { ClientState } from "./types/general.js";
 import { CONFIG, STATES } from "./config/constants.js";
 import { poll } from "./league.js";
 import { handleChampSelect, handleLobby } from "./gameflowHandler.js";
-import { ChampSelectSession, LobbyResponse } from "./types/users.js";
+import {
+  ChampSelectSession,
+  LobbyResponse,
+  ClientState,
+} from "./types/index.js";
 
-const { AUTO_INVITE_FRIENDS, AUTO_SELECT_RUNES, AUTO_QUEUE_UP } = CONFIG;
+const { AUTO_SELECT_RUNES, AUTO_QUEUE_UP } = CONFIG;
 
 export let leagueRequest: AxiosInstance;
 let ws: LeagueWebSocket;

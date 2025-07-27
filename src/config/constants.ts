@@ -1,12 +1,12 @@
 import { fileURLToPath } from "url";
-import { ClientState, GameMode } from "../types/general.js";
-import { ChampPreference } from "../types/ingame.js";
 import {
   ChampionRuneRecEntry,
   RunePage,
-  RuneRecommendation,
-} from "../types/runes.js";
-import { CloseFriends } from "../types/users.js";
+  CloseFriends,
+  ChampPreference,
+  GameMode,
+  ClientState,
+} from "../types/index.js";
 import fs from "fs";
 import ini from "ini";
 import path from "path";

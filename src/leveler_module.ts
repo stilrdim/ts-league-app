@@ -5,15 +5,13 @@ import fetch from "node-fetch";
 import * as cheerio from "cheerio";
 import { keyboard, Key } from "@nut-tree-fork/nut-js";
 import * as fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 import {
   AllGameData,
   ChampPreference,
   GameData,
   SkillKey,
-} from "./types/ingame.js";
-import { GameMode } from "./types/general.js";
+  GameMode,
+} from "./types/index.js";
 import {
   champNamesConfigPath,
   champPrefsConfigPath,
