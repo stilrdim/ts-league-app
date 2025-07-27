@@ -5,7 +5,7 @@ import fetch from "node-fetch";
 import * as cheerio from "cheerio";
 import { keyboard, Key } from "@nut-tree-fork/nut-js";
 import * as fs from "fs";
-import { champNamesConfigPath, champPrefsConfigPath, } from "./config/constants.js";
+import { champNamesConfigPath, champPrefsConfigPath, CONFIG, } from "./config/constants.js";
 // CONSTANTS
 let SKILL_ORDER = {
     Q: [],
@@ -288,7 +288,7 @@ export const handleLeveling = async () => {
         const summonerInfo = allGameData.activePlayer;
         const gameInfo = allGameData.gameData;
         // Check if game has begun
-        const isInLoadingScreen = gameInfo.gameTime < 15;
+        const isInLoadingScreen = gameInfo.gameTime < CONFIG.CONSIDER_GAME_AS_STARTED_AFTER_X_SECONDS;
         if (isInLoadingScreen)
             return;
         // Figure out the champ name using summoner ID etc...

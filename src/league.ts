@@ -35,10 +35,13 @@ export async function poll(): Promise<void> {
       case "InProgress":
         await handleInAnActiveGame();
 
-        if (AUTO_LEVEL_ABILITIES && !hasReachedMaxLevel) await handleLeveling();
+        if (AUTO_LEVEL_ABILITIES && !hasReachedMaxLevel) {
+          await handleLeveling();
 
-        // Keep checking our level for changes
-        setTimeout(poll, POLLING_INTERVAL_IN_SECONDS * 1000);
+          // Keep checking our level for changes
+          setTimeout(poll, POLLING_INTERVAL_IN_SECONDS * 1000);
+        }
+
         break;
 
       case "PreEndOfGame":

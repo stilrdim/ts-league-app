@@ -16,6 +16,7 @@ import {
 import {
   champNamesConfigPath,
   champPrefsConfigPath,
+  CONFIG,
 } from "./config/constants.js";
 
 // CONSTANTS
@@ -407,7 +408,8 @@ export const handleLeveling = async (): Promise<void> => {
     const gameInfo = allGameData.gameData;
 
     // Check if game has begun
-    const isInLoadingScreen = gameInfo.gameTime < 15;
+    const isInLoadingScreen =
+      gameInfo.gameTime < CONFIG.CONSIDER_GAME_AS_STARTED_AFTER_X_SECONDS;
     if (isInLoadingScreen) return;
 
     // Figure out the champ name using summoner ID etc...

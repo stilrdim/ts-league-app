@@ -6,6 +6,7 @@ import {
   ChampPreference,
   GameMode,
   ClientState,
+  Config,
 } from "../types/index.js";
 import fs from "fs";
 import ini from "ini";
@@ -44,7 +45,7 @@ export const champNamesConfigPath = path.join(
 const configFilePath = path.join(rootDir, "config", "CONFIG.ini");
 
 const rawConfigData = fs.readFileSync(configFilePath, "utf-8");
-const parsedConfigData = ini.parse(rawConfigData);
+const parsedConfigData = ini.parse(rawConfigData) as Config;
 
 export const CONFIG = {
   AUTO_LEVEL_ABILITIES: Boolean(parsedConfigData.AUTO_LEVEL_ABILITIES ?? true),
@@ -60,6 +61,9 @@ export const CONFIG = {
   ONLY_FOR_ARAMS: Boolean(parsedConfigData.ONLY_FOR_ARAMS ?? true),
   POLLING_INTERVAL_IN_SECONDS: Number(
     parsedConfigData.POLLING_INTERVAL_IN_SECONDS ?? 1
+  ),
+  CONSIDER_GAME_AS_STARTED_AFTER_X_SECONDS: Number(
+    parsedConfigData.CONSIDER_GAME_AS_STARTED_AFTER_X_SECONDS ?? 15
   ),
 };
 

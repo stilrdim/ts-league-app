@@ -99,3 +99,17 @@ export type ItemCategory =
   | "Consumable";
 
 export type LobbyMemberState = "NotReady" | "Ready" | "InGame" | "Afk";
+
+export interface Config {
+  AUTO_LEVEL_ABILITIES: boolean;
+  SKIP_ENDGAME_SCREEN: boolean;
+  AUTO_HONOR_FRIENDS: boolean;
+  AUTO_QUEUE_UP: boolean;
+  AUTO_ACCEPT_QUEUE: boolean;
+  AUTO_INVITE_FRIENDS: boolean;
+  AUTO_SELECT_RUNES: boolean;
+  AUTO_SELECT_RECOMMENDED_RUNES: boolean;
+  ONLY_FOR_ARAMS: boolean;
+  POLLING_INTERVAL_IN_SECONDS: number;
+  CONSIDER_GAME_AS_STARTED_AFTER_X_SECONDS: number;
+}

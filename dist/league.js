@@ -17,10 +17,11 @@ export async function poll() {
                 break;
             case "InProgress":
                 await handleInAnActiveGame();
-                if (AUTO_LEVEL_ABILITIES && !hasReachedMaxLevel)
+                if (AUTO_LEVEL_ABILITIES && !hasReachedMaxLevel) {
                     await handleLeveling();
-                // Keep checking our level for changes
-                setTimeout(poll, POLLING_INTERVAL_IN_SECONDS * 1000);
+                    // Keep checking our level for changes
+                    setTimeout(poll, POLLING_INTERVAL_IN_SECONDS * 1000);
+                }
                 break;
             case "PreEndOfGame":
                 if (AUTO_HONOR_FRIENDS && !FLAGS.honorTriggered)

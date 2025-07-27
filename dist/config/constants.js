@@ -28,6 +28,7 @@ export const CONFIG = {
     AUTO_SELECT_RECOMMENDED_RUNES: Boolean(parsedConfigData.AUTO_SELECT_RECOMMENDED_RUNES ?? true),
     ONLY_FOR_ARAMS: Boolean(parsedConfigData.ONLY_FOR_ARAMS ?? true),
     POLLING_INTERVAL_IN_SECONDS: Number(parsedConfigData.POLLING_INTERVAL_IN_SECONDS ?? 1),
+    CONSIDER_GAME_AS_STARTED_AFTER_X_SECONDS: Number(parsedConfigData.CONSIDER_GAME_AS_STARTED_AFTER_X_SECONDS ?? 15),
 };
 // Collections
 const FRIENDS = JSON.parse(fs.readFileSync(friendsConfigPath).toString());
