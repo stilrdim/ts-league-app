@@ -68,6 +68,8 @@ export const STATES = {
     honorVotesRemaining: -1,
     clientState: "Disconnected",
     gameMode: "UNKNOWN",
+    gameInitialized: false,
+    initialLevelSent: false,
 };
 export const HONOR = {
     priorityList: [

@@ -119,6 +119,8 @@ export const STATES = {
   honorVotesRemaining: -1 as number,
   clientState: "Disconnected" as ClientState,
   gameMode: "UNKNOWN" as GameMode,
+  gameInitialized: false,
+  initialLevelSent: false,
 };
 
 export const HONOR = {

@@ -125,9 +125,9 @@ export const handleHonorPlayers = async (): Promise<void> => {
           const res = await leagueRequest.post("/lol-honor/v1/honor", payload);
           if (res.status === HttpStatusCode.NoContent) {
             STATES.honorVotesRemaining--;
-            console.log(`[Honor] Honored ${friend.name}\n`);
+            console.log(`[Honor] Honored ${friend.name}`);
           } else {
-            console.log(`[Honor] Failed honoring ${friend.name}\n`);
+            console.log(`[Honor] Failed honoring ${friend.name}`);
           }
         } catch (err) {
           if (isAxiosError(err)) {
@@ -156,7 +156,7 @@ export const handleHonorPlayers = async (): Promise<void> => {
 
 // Handles EndOfGame
 export const handleBackToLobby = async (): Promise<void> => {
-  console.log("Post-game screen finished!");
+  console.log("\nPost-game screen finished!");
   try {
     if (!FLAGS.playAgainTriggered) {
       await leagueRequest.post("/lol-lobby/v2/play-again");

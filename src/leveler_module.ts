@@ -9,6 +9,8 @@ import {
   champNamesConfigPath,
   champPrefsConfigPath,
   CONFIG,
+  FLAGS,
+  STATES,
 } from "./config/constants.js";
 import {
   AllGameData,
@@ -18,6 +20,7 @@ import {
   LocalItemData,
   SkillKey,
 } from "./types/index.js";
+import readline from "readline";
 
 // CONSTANTS
 let SKILL_ORDER: Record<SkillKey, string[]> = {
@@ -37,8 +40,6 @@ const CHAMP_NAMES: string[] = JSON.parse(
 // FLAGS
 export let hasReachedMaxLevel = false;
 
-let gameInitialized = false;
-
 let GAMEMODE: GameMode | "" = "";
 let CHAMP_NAME = "";
 
@@ -52,6 +53,15 @@ const liveClientData = axios.create({
   baseURL: "https://127.0.0.1:2999/liveclientdata",
   httpsAgent,
 });
+
+const overwriteConsoleLine = (level: number, msg: string) => {
+  if (level < 3) return;
+  if (STATES.initialLevelSent) {
+    readline.clearLine(process.stdout, 0);
+    readline.moveCursor(process.stdout, -msg.length, 0);
+  }
+  process.stdout.write(msg);
+};
 
 const addPoint = (key: SkillKey, skill: string): void => {
   SKILL_ORDER[key].push(skill);
@@ -196,6 +206,8 @@ const handleAramStart = async (): Promise<void> => {
   await ctrlTapKey(ability1);
   await ctrlTapKey(ability2);
   await ctrlTapKey(ability3);
+
+  if (!STATES.initialLevelSent) STATES.initialLevelSent = true;
 };
 
 const handleSkillPrio = (targetChamp: ChampPreference): void => {
@@ -349,13 +361,20 @@ const levelUp = async (champLevel: number): Promise<void> => {
     : null;
   if (!abilityToLevel) return;
 
-  console.log(`[${champLevel}] -> [${abilityToLevel}]`);
+  const msg = `[${champLevel}] -> [${abilityToLevel}]`;
+
+  overwriteConsoleLine(champLevel, msg);
 
   await ctrlTapKey(abilityToLevel);
+
+  if (!STATES.initialLevelSent) STATES.initialLevelSent = true;
 };
 
 export const resetLevelingFlags = (): void => {
   hasReachedMaxLevel = false;
+  FLAGS.isInGame = false;
+  STATES.gameInitialized = false;
+  STATES.initialLevelSent = false;
 
   GAMEMODE = "";
   CHAMP_NAME = "";
@@ -371,7 +390,7 @@ export const resetLevelingFlags = (): void => {
 };
 
 export const initializeGame = async (): Promise<void> => {
-  if (gameInitialized) return;
+  if (STATES.gameInitialized) return;
   const retries = 20;
   const retryDelayInSecs = 5;
 
@@ -395,7 +414,7 @@ export const initializeGame = async (): Promise<void> => {
       handleChampPreferences(CHAMP_NAME, GAMEMODE);
       await fetchRecommendedItems(CHAMP_NAME, GAMEMODE);
 
-      gameInitialized = true;
+      STATES.gameInitialized = true;
       return; // Finish the loop
     } catch (err) {
       if (isAxiosError(err)) {
@@ -434,20 +453,21 @@ export const handleLeveling = async (): Promise<void> => {
 
     prevChampLevel = champLevel;
 
-    // Level all first 3 skills
-    if (GAMEMODE === "ARAM" && champLevel === 3) return await handleAramStart();
+    if (GAMEMODE === "ARAM" && champLevel === 3)
+      // Level all first 3 skills
+      return await handleAramStart();
 
     // Grab current ability to upgrade based on our new level
     await levelUp(champLevel);
 
     if (champLevel === 18) {
       hasReachedMaxLevel = true;
-      console.log(`Level 18 reached. Turning off auto-leveler!\n`);
+      console.log(`\nLevel 18 reached. Turning off auto-leveler!\n`);
     }
   } catch (err) {
     // Most likely just haven't started a game yet, might be a port issue or more
     console.log("Not in an active game.");
-    if (!gameInitialized) await initializeGame();
+    if (!STATES.gameInitialized) await initializeGame();
     else setTimeout(() => handleLeveling(), 1000);
   }
 };
