@@ -1,27 +1,27 @@
-import { CONFIG, STATES, FLAGS, HONOR } from "./config/constants.js";
-import { leagueRequest } from "./connection.js";
 import { HttpStatusCode, isAxiosError } from "axios";
-import {
-  ChampSelectSession,
-  ChampInfo,
-  RunePage,
-  Ballot,
-  HonorRequestBody,
-  GameFlowSession,
-  LobbyResponse,
-  LobbyMember,
-  ReadyCheck,
-  HonorType,
-  Invitation,
-} from "./types/index.js";
+import { CONFIG, FLAGS, HONOR, STATES } from "./config/constants.js";
+import { leagueRequest } from "./connection.js";
+import { tryInviteFriends } from "./inviteHandler.js";
 import { resetLevelingFlags } from "./leveler_module.js";
 import { handleRunepage } from "./runepageHandler.js";
-import { tryInviteFriends } from "./inviteHandler.js";
+import {
+  Ballot,
+  ChampInfo,
+  ChampSelectSession,
+  GameFlowSession,
+  HonorRequestBody,
+  HonorType,
+  Invitation,
+  LobbyMember,
+  LobbyResponse,
+  ReadyCheck,
+  RunePage,
+} from "./types/index.js";
 
 const { AUTO_LEVEL_ABILITIES, ONLY_FOR_ARAMS, AUTO_INVITE_FRIENDS } = CONFIG;
 
 export const handleChampSelect = async (
-  event: ChampSelectSession
+  event: ChampSelectSession,
 ): Promise<void> => {
   if (!FLAGS.isInChampSelect) FLAGS.isInChampSelect = true;
 
@@ -45,10 +45,10 @@ export const handleChampSelect = async (
     STATES.lastChampId = currentChampId;
 
     const { data: champInfo } = await leagueRequest.get<ChampInfo>(
-      `/lol-game-data/assets/v1/champions/${currentChampId}.json`
+      `/lol-game-data/assets/v1/champions/${currentChampId}.json`,
     );
     const { data: allRunePages } = await leagueRequest.get<RunePage[]>(
-      "/lol-perks/v1/pages"
+      "/lol-perks/v1/pages",
     );
 
     const champName = champInfo.name;
@@ -59,7 +59,7 @@ export const handleChampSelect = async (
     if (isAxiosError(err)) {
       console.error(
         `[Axios] Error handling ChampSelect: `,
-        err.response?.data || err.message
+        err.response?.data || err.message,
       );
     } else {
       console.error(`[Unknown] Error handling ChampSelect: `, err);
@@ -85,7 +85,7 @@ export const handleHonorPlayers = async (): Promise<void> => {
 
   try {
     const { data: res } = await leagueRequest.get<Ballot>(
-      "/lol-honor-v2/v1/ballot"
+      "/lol-honor-v2/v1/ballot",
     );
 
     const { gameId } = res;
@@ -94,19 +94,19 @@ export const handleHonorPlayers = async (): Promise<void> => {
     const eligibleAllies = res.eligibleAllies;
 
     const formattedPlayers = eligibleAllies.map(
-      (player) => `${player.championName}: (${player.summonerId})`
+      (player) => `${player.championName}: (${player.summonerId})`,
     );
 
     console.log(
       `\nGame ID: ${gameId}\nAvailable votes: ${STATES.honorVotesRemaining}\nYour Team:`,
-      formattedPlayers
+      formattedPlayers,
     );
 
     const priorityList = HONOR.priorityList;
 
     for (const friend of priorityList) {
       const targetPlayer = eligibleAllies.find(
-        (ally) => ally.summonerId === friend.summonerId
+        (ally) => ally.summonerId === friend.summonerId,
       );
 
       // If the friend isn't available, check for the next one
@@ -131,7 +131,7 @@ export const handleHonorPlayers = async (): Promise<void> => {
           if (isAxiosError(err)) {
             console.error(
               `[Axios] Couldn't honor ${friend.name}: `,
-              err.response?.data || err.message
+              err.response?.data || err.message,
             );
           } else {
             console.error(`[Unknown] Couldn't honor ${friend.name}: `, err);
@@ -146,7 +146,7 @@ export const handleHonorPlayers = async (): Promise<void> => {
     if (isAxiosError(err))
       console.error(
         "[Axios] PreEndOfGame error: ",
-        err.response?.data || err.message
+        err.response?.data || err.message,
       );
     else console.error("[Unknown] PreEndOfGame error: ", err);
   }
@@ -165,7 +165,7 @@ export const handleBackToLobby = async (): Promise<void> => {
     if (isAxiosError(err)) {
       console.error(
         "[Axios] Play Again error: ",
-        err.response?.data || err.message
+        err.response?.data || err.message,
       );
     } else {
       console.error("[Unknown] Play Again Error: ", err);
@@ -180,7 +180,7 @@ export const handleLobby = async (res: LobbyResponse): Promise<void> => {
     FLAGS.inviteTriggered = false;
     FLAGS.isQueuedUp = false;
     const { data: gameflow } = await leagueRequest.get<GameFlowSession>(
-      "/lol-gameflow/v1/session"
+      "/lol-gameflow/v1/session",
     );
     STATES.gameMode = gameflow.gameData.queue.gameMode;
 
@@ -201,7 +201,7 @@ export const handleLobby = async (res: LobbyResponse): Promise<void> => {
     const allReady = members.every((m) => m.ready === true);
     const invitations: Invitation[] = res.invitations;
     const allInvitesAccepted = invitations.every(
-      (inv) => inv.state === "Accepted"
+      (inv) => inv.state === "Accepted",
     );
 
     if (allReady && allInvitesAccepted) {
@@ -246,7 +246,7 @@ export const handleAcceptQueue = async (): Promise<void> => {
 
   try {
     const { data: res } = await leagueRequest.get<ReadyCheck>(
-      "/lol-matchmaking/v1/ready-check"
+      "/lol-matchmaking/v1/ready-check",
     );
 
     if (res.state === "InProgress") {
@@ -260,7 +260,7 @@ export const handleAcceptQueue = async (): Promise<void> => {
       if (err.response?.status !== HttpStatusCode.NotFound) {
         console.error(
           "[Axios] ReadyCheck error: ",
-          err.response?.data || err.message
+          err.response?.data || err.message,
         );
       }
     } else {

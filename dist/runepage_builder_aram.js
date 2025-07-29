@@ -1,8 +1,8 @@
-import { authenticate } from "league-connect";
 import axios, { isAxiosError } from "axios";
 import fs from "fs";
-import promptSync from "prompt-sync";
 import { Agent } from "https";
+import { authenticate } from "league-connect";
+import promptSync from "prompt-sync";
 import { rootDir } from "./config/constants.js";
 const prompt = promptSync();
 (async () => {

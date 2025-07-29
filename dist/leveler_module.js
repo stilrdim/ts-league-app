@@ -1,10 +1,10 @@
-import axios, { isAxiosError } from "axios";
-import { Agent } from "https";
+import { Key, keyboard } from "@nut-tree-fork/nut-js";
 import { activeWindow } from "active-win";
-import fetch from "node-fetch";
+import axios, { isAxiosError } from "axios";
 import * as cheerio from "cheerio";
-import { keyboard, Key } from "@nut-tree-fork/nut-js";
 import * as fs from "fs";
+import { Agent } from "https";
+import fetch from "node-fetch";
 import { champNamesConfigPath, champPrefsConfigPath, CONFIG, } from "./config/constants.js";
 // CONSTANTS
 let SKILL_ORDER = {

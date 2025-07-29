@@ -1,6 +1,6 @@
 import axios from "axios";
-import { Agent } from "https";
 import fs from "fs";
+import { Agent } from "https";
 import { recRunesConfigPath } from "./config/constants.js";
 
 const URL =

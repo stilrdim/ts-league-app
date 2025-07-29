@@ -1,7 +1,7 @@
-import { fileURLToPath } from "url";
 import fs from "fs";
 import ini from "ini";
 import path from "path";
+import { fileURLToPath } from "url";
 import { items } from "../itemLoader.js";
 // Manually define __dirname and export paths
 const __filename = fileURLToPath(import.meta.url);

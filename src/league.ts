@@ -1,7 +1,6 @@
 import { HttpStatusCode, isAxiosError } from "axios";
-import { connectToLeagueClient } from "./connection.js";
-import { handleLeveling, hasReachedMaxLevel } from "./leveler_module.js";
 import { CONFIG, FLAGS, STATES } from "./config/constants.js";
+import { connectToLeagueClient } from "./connection.js";
 import {
   handleAcceptQueue,
   handleBackToLobby,
@@ -9,6 +8,7 @@ import {
   handleInAnActiveGame,
   handleInQueue,
 } from "./gameflowHandler.js";
+import { handleLeveling, hasReachedMaxLevel } from "./leveler_module.js";
 
 const {
   AUTO_ACCEPT_QUEUE,

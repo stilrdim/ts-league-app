@@ -1,7 +1,14 @@
-import { authenticate } from "league-connect";
 import axios, { isAxiosError } from "axios";
 import fs from "fs";
 import { Agent } from "https";
+import { authenticate } from "league-connect";
+import {
+  allRunesConfigPath,
+  champPrefsConfigPath,
+  friendsConfigPath,
+  recRunesConfigPath,
+  rootDir,
+} from "./config/constants.js";
 import {
   AllPlayer,
   ChampionRuneRecEntry,
@@ -10,13 +17,6 @@ import {
   FriendlistFriend,
   RunePage,
 } from "./types/index.js";
-import {
-  allRunesConfigPath,
-  champPrefsConfigPath,
-  friendsConfigPath,
-  recRunesConfigPath,
-  rootDir,
-} from "./config/constants.js";
 
 // #region Implementation Detail
 
@@ -26,16 +26,16 @@ let endpointsWereTested = false;
 const DEBUGGING_MODE = false;
 
 const RUNEPAGES: RunePage[] = JSON.parse(
-  fs.readFileSync(allRunesConfigPath).toString()
+  fs.readFileSync(allRunesConfigPath).toString(),
 );
 const CHAMP_PREFERENCES: ChampPreference[] = JSON.parse(
-  fs.readFileSync(champPrefsConfigPath).toString()
+  fs.readFileSync(champPrefsConfigPath).toString(),
 );
 const FRIENDS: CloseFriends = JSON.parse(
-  fs.readFileSync(friendsConfigPath).toString()
+  fs.readFileSync(friendsConfigPath).toString(),
 );
 const RECOMMENDED_RUNES: ChampionRuneRecEntry[] = JSON.parse(
-  fs.readFileSync(recRunesConfigPath).toString()
+  fs.readFileSync(recRunesConfigPath).toString(),
 );
 
 const credentials = await authenticate({ awaitConnection: true });
@@ -50,7 +50,7 @@ const leagueRequest = axios.create({
   httpsAgent,
   headers: {
     Authorization: `Basic ${Buffer.from(
-      `riot:${credentials.password}`
+      `riot:${credentials.password}`,
     ).toString("base64")}`,
   },
 });
@@ -62,7 +62,7 @@ if (DEBUGGING_MODE)
       console.log(
         `➡️ Request: ${(request.method ?? "UNKNOWN").toUpperCase()} ${
           request.url ?? "<no-url>"
-        }`
+        }`,
       );
       if (request.data) {
         console.log("Payload:", JSON.stringify(request.data, null, 2));
@@ -75,7 +75,7 @@ if (DEBUGGING_MODE)
       // Log request error if any
       console.error("Request error:", error);
       return Promise.reject(error);
-    }
+    },
   );
 
 const cDragonRequest = axios.create({
@@ -84,14 +84,14 @@ const cDragonRequest = axios.create({
 });
 
 console.log(
-  `[DEV TESTING] Connected to league client on port ${credentials.port}\n`
+  `[DEV TESTING] Connected to league client on port ${credentials.port}\n`,
 );
 
 const sleep = (secs: number) => new Promise((r) => setTimeout(r, secs * 1000));
 
 const findFriend = async (targetName: string) => {
   const { data: friends } = await leagueRequest.get<FriendlistFriend[]>(
-    "/lol-chat/v1/friends"
+    "/lol-chat/v1/friends",
   );
   const targetFriend = friends.find((f) => f.gameName === targetName);
 
@@ -118,11 +118,11 @@ const findRunepagesByName = (stringToFind: string) => {
   const runePagesDir = `${rootDir}/${fileName}`;
 
   const runePages: RunePage[] = JSON.parse(
-    fs.readFileSync(runePagesDir).toString()
+    fs.readFileSync(runePagesDir).toString(),
   );
 
   const targetRunePages = runePages.filter((page) =>
-    page.name.includes(stringToFind)
+    page.name.includes(stringToFind),
   );
 
   return targetRunePages;
@@ -131,7 +131,7 @@ const findRunepagesByName = (stringToFind: string) => {
 const storeRunepages = (
   fileName = "test",
   runePages = Object,
-  folder: string
+  folder: string,
 ) => {
   fileName = `${rootDir}/${folder ? folder + "/" : ""}${fileName}.json`;
 
@@ -279,12 +279,12 @@ const handleHonorPlayers = async (type: number) => {
     const eligibleAllies = res.eligibleAllies;
 
     const formattedPlayers = eligibleAllies.map(
-      (player: AllPlayer) => `${player.championName}: (${player.summonerId})`
+      (player: AllPlayer) => `${player.championName}: (${player.summonerId})`,
     );
 
     console.log(
       `\nGame ID: ${gameId}\nAvailable votes: ${availableVotesCount}\nYour Team:`,
-      formattedPlayers
+      formattedPlayers,
     );
 
     const targetPlayer = eligibleAllies[0];
@@ -293,11 +293,11 @@ const handleHonorPlayers = async (type: number) => {
     if (targetPlayer) {
       try {
         console.log(
-          `Attempt to honor ${targetPlayer.summonerId} (${targetPlayer.championName})`
+          `Attempt to honor ${targetPlayer.summonerId} (${targetPlayer.championName})`,
         );
 
         console.log(
-          `Target puuid: ${targetPlayer.puuid} (${targetPlayer.championName})`
+          `Target puuid: ${targetPlayer.puuid} (${targetPlayer.championName})`,
         );
 
         let honorRes;
@@ -333,7 +333,7 @@ const handleHonorPlayers = async (type: number) => {
         if (isAxiosError(err)) {
           console.error(
             `[Axios] Honor attempt failed:`,
-            err.response?.data || err.message
+            err.response?.data || err.message,
           );
         } else {
           console.error("[Unknown] Honor attempt failed: ", err);
@@ -343,14 +343,14 @@ const handleHonorPlayers = async (type: number) => {
 
     if (!honored) {
       console.error(
-        `Failed to honor ${targetPlayer.championName}: (${targetPlayer.summonerId})`
+        `Failed to honor ${targetPlayer.championName}: (${targetPlayer.summonerId})`,
       );
     }
   } catch (err) {
     if (isAxiosError(err))
       console.error(
         "[Axios] PreEndOfGame error: ",
-        err.response?.data || err.message
+        err.response?.data || err.message,
       );
     else console.error("[Unknown] PreEndOfGame error: ", err);
   }

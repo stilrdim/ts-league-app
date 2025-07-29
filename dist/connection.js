@@ -1,14 +1,13 @@
-import { authenticate, createWebSocketConnection, } from "league-connect";
 import axios from "axios";
 import { Agent } from "https";
+import { authenticate, createWebSocketConnection, } from "league-connect";
 import { CONFIG, STATES } from "./config/constants.js";
-import { poll } from "./league.js";
 import { handleChampSelect, handleLobby } from "./gameflowHandler.js";
+import { poll } from "./league.js";
 const { AUTO_SELECT_RUNES, AUTO_QUEUE_UP } = CONFIG;
 export let leagueRequest;
 let ws;
 let sleep = async (secs) => new Promise((r) => setTimeout(r, secs * 1000));
-// Client state with getter and setter
 export const connectToLeagueClient = async () => {
     const credentials = await authenticate({ awaitConnection: true });
     const httpsAgent = new Agent({ rejectUnauthorized: false });
