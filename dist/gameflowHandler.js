@@ -2,7 +2,8 @@ import { HttpStatusCode, isAxiosError } from "axios";
 import { CONFIG, FLAGS, HONOR, STATES } from "./config/constants.js";
 import { leagueRequest } from "./connection.js";
 import { tryInviteFriends } from "./inviteHandler.js";
-import { resetLevelingFlags } from "./leveler_module.js";
+import { initializeGame, resetLevelingFlags } from "./leveler_module.js";
+// import { resetLevelingFlags } from "./leveler_module.js";
 import { handleRunepage } from "./runepageHandler.js";
 const { AUTO_LEVEL_ABILITIES, ONLY_FOR_ARAMS, AUTO_INVITE_FRIENDS } = CONFIG;
 export const handleChampSelect = async (event) => {
@@ -37,12 +38,11 @@ export const handleChampSelect = async (event) => {
 };
 // Handles "InProgress"
 export const handleInAnActiveGame = async () => {
-    if (FLAGS.isInGame)
-        return;
+    FLAGS.isInGame = true;
     console.log("\n");
     try {
         console.log("[InProgress] Game currently in progress...");
-        FLAGS.isInGame = true;
+        await initializeGame();
     }
     catch (err) {
         console.error("InProgress error: ", err);

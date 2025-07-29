@@ -21,13 +21,13 @@ const prompt = promptSync();
     httpsAgent,
     headers: {
       Authorization: `Basic ${Buffer.from(
-        `riot:${credentials.password}`,
+        `riot:${credentials.password}`
       ).toString("base64")}`,
     },
   });
 
   console.log(
-    `[DEV TESTING] Connected to league client on port ${credentials.port}\n`,
+    `[DEV TESTING] Connected to league client on port ${credentials.port}\n`
   );
 
   const sleep = (secs: number) =>
@@ -40,7 +40,7 @@ const prompt = promptSync();
 
     try {
       const { data } = await leagueRequest.get<RunePage[] | RunePage>(
-        "/lol-perks/v1/pages",
+        "/lol-perks/v1/pages"
       );
 
       // Normalize data to always be an array
@@ -49,13 +49,13 @@ const prompt = promptSync();
       const loweredQuery = query.toLowerCase();
 
       return runePages.filter((page) =>
-        page.name.toLowerCase().includes(loweredQuery),
+        page.name.toLowerCase().includes(loweredQuery)
       );
     } catch (err) {
       if (isAxiosError(err)) {
         console.error(
           "[Axios] Couldn't fetch rune pages: ",
-          err.response?.data || err.message,
+          err.response?.data || err.message
         );
       } else {
         console.error("[Unknown] Couldn't fetch rune pages: ", err);
@@ -74,7 +74,7 @@ const prompt = promptSync();
       if (payload.length === 1 && payload[0].name && runePagesAmount < 25) {
         const res = await leagueRequest.post("/lol-perks/v1/pages", payload[0]);
         console.log(
-          `Runepage ${res.data.name} created! Page #${res.data.order}`,
+          `Runepage ${res.data.name} created! Page #${res.data.order}`
         );
         return;
       }
@@ -89,7 +89,7 @@ const prompt = promptSync();
             .post("/lol-perks/v1/pages", page)
             .then(async (res: AxiosResponse<RunePage>) => {
               console.log(
-                `Runepage ${res.data.name} created! Page #${res.data.order}`,
+                `Runepage ${res.data.name} created! Page #${res.data.order}`
               );
               await sleep(1);
             });
@@ -97,7 +97,7 @@ const prompt = promptSync();
       } else {
         console.log(`Rune pages limit would be exceeded! (25)`);
         console.log(
-          `Your request: ${runePagesAmount} + ${payload.length} (${finalRunepagesAmount})`,
+          `Your request: ${runePagesAmount} + ${payload.length} (${finalRunepagesAmount})`
         );
         return;
       }
@@ -106,7 +106,7 @@ const prompt = promptSync();
       if (isAxiosError(err)) {
         console.error(
           "Error creating a rune page: ",
-          err.response?.data || err.message,
+          err.response?.data || err.message
         );
       } else {
         console.error();
@@ -136,7 +136,7 @@ const prompt = promptSync();
 
       if (matches.length > 0) {
         console.log(
-          `Finished deleting all runepages with the term [${query}]!`,
+          `Finished deleting all runepages with the term [${query}]!`
         );
         return;
       }
@@ -146,7 +146,7 @@ const prompt = promptSync();
       if (isAxiosError(err)) {
         console.error(
           "[Axios] Error deleting a rune page: ",
-          err.response?.data || err.message,
+          err.response?.data || err.message
         );
       } else {
         console.error("[Unknown] Error deleting a rune page: ", err);

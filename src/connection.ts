@@ -31,7 +31,7 @@ export const connectToLeagueClient = async (): Promise<void> => {
     httpsAgent,
     headers: {
       Authorization: `Basic ${Buffer.from(
-        `riot:${credentials.password}`,
+        `riot:${credentials.password}`
       ).toString("base64")}`,
     },
   });
@@ -58,7 +58,7 @@ export const connectToLeagueClient = async (): Promise<void> => {
   await sleep(2);
 
   const { data: phase } = await leagueRequest.get(
-    "/lol-gameflow/v1/gameflow-phase",
+    "/lol-gameflow/v1/gameflow-phase"
   );
 
   STATES.clientState = phase;
@@ -83,7 +83,7 @@ const subscribeToWebSocketEvents = async (): Promise<void> => {
       console.log(`[STATE] ${STATES.clientState} -> ${state}`);
       STATES.clientState = state;
       await poll();
-    },
+    }
   );
 
   // Handle ChampSelect
@@ -94,7 +94,7 @@ const subscribeToWebSocketEvents = async (): Promise<void> => {
         if (!event) return;
 
         await handleChampSelect(event);
-      },
+      }
     );
 
   if (AUTO_QUEUE_UP) {

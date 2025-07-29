@@ -23,22 +23,22 @@ export const champsConfigPath = path.join(rootDir, "config", "champs.json");
 export const champPrefsConfigPath = path.join(
   rootDir,
   "config",
-  "champ_preferences.json",
+  "champ_preferences.json"
 );
 export const recRunesConfigPath = path.join(
   rootDir,
   "config",
-  "recommended_runepages.json",
+  "recommended_runepages.json"
 );
 export const allRunesConfigPath = path.join(
   rootDir,
   "data",
-  "all_runepages.json",
+  "all_runepages.json"
 );
 export const champNamesConfigPath = path.join(
   rootDir,
   "config",
-  "leveler_champs_array.json",
+  "leveler_champs_array.json"
 );
 
 // Handle CONFIG.ini
@@ -56,30 +56,30 @@ export const CONFIG = {
   AUTO_INVITE_FRIENDS: Boolean(parsedConfigData.AUTO_INVITE_FRIENDS ?? true),
   AUTO_SELECT_RUNES: Boolean(parsedConfigData.AUTO_SELECT_RUNES ?? true),
   AUTO_SELECT_RECOMMENDED_RUNES: Boolean(
-    parsedConfigData.AUTO_SELECT_RECOMMENDED_RUNES ?? true,
+    parsedConfigData.AUTO_SELECT_RECOMMENDED_RUNES ?? true
   ),
   ONLY_FOR_ARAMS: Boolean(parsedConfigData.ONLY_FOR_ARAMS ?? true),
   POLLING_INTERVAL_IN_SECONDS: Number(
-    parsedConfigData.POLLING_INTERVAL_IN_SECONDS ?? 1,
+    parsedConfigData.POLLING_INTERVAL_IN_SECONDS ?? 1
   ),
   CONSIDER_GAME_AS_STARTED_AFTER_X_SECONDS: Number(
-    parsedConfigData.CONSIDER_GAME_AS_STARTED_AFTER_X_SECONDS ?? 15,
+    parsedConfigData.CONSIDER_GAME_AS_STARTED_AFTER_X_SECONDS ?? 15
   ),
 };
 
 // Collections
 const FRIENDS: CloseFriends = JSON.parse(
-  fs.readFileSync(friendsConfigPath).toString(),
+  fs.readFileSync(friendsConfigPath).toString()
 );
 const CHAMPS = JSON.parse(fs.readFileSync(champsConfigPath).toString());
 const CHAMP_PREFERENCES: ChampPreference[] = JSON.parse(
-  fs.readFileSync(champPrefsConfigPath).toString(),
+  fs.readFileSync(champPrefsConfigPath).toString()
 );
 const RUNEPAGES: RunePage[] = JSON.parse(
-  fs.readFileSync(allRunesConfigPath).toString(),
+  fs.readFileSync(allRunesConfigPath).toString()
 );
 const RECOMMENDED_RUNES: ChampionRuneRecEntry[] = JSON.parse(
-  fs.readFileSync(recRunesConfigPath).toString(),
+  fs.readFileSync(recRunesConfigPath).toString()
 );
 const ITEMS = items;
 

@@ -13,15 +13,15 @@ const { AUTO_SELECT_RECOMMENDED_RUNES } = CONFIG;
 
 const getRecommendedRunepage = (
   recommendations: ChampionRuneRecEntry[],
-  champId: number,
+  champId: number
 ): RunePagePayload | undefined => {
   const result: ChampionRuneRecEntry | undefined = recommendations.find(
-    (champ: ChampionRuneRecEntry) => champ.championId === champId,
+    (champ: ChampionRuneRecEntry) => champ.championId === champId
   );
 
   if (!result) {
     console.log(
-      "The champ you've selected doesn't seem to have recommended runes.",
+      "The champ you've selected doesn't seem to have recommended runes."
     );
     return;
   }
@@ -42,7 +42,7 @@ const getRecommendedRunepage = (
   };
 
   console.log(
-    "[RunepageHandler/Get] Recommended runepage retrieved. Selecting...",
+    "[RunepageHandler/Get] Recommended runepage retrieved. Selecting..."
   );
   return pagePayload;
 };
@@ -50,31 +50,31 @@ const getRecommendedRunepage = (
 const selectRecommendedRunepage = async (
   champId: number,
   champName: string,
-  autoRunepage: RunePagePayload,
+  autoRunepage: RunePagePayload
 ): Promise<void> => {
   const pagePayload = getRecommendedRunepage(RECOMMENDED_RUNES, champId);
   if (!pagePayload) return;
 
   try {
     console.log(
-      `[RunepageHandler/Select] Unlisted champ detected: ${champName.toUpperCase()}`,
+      `[RunepageHandler/Select] Unlisted champ detected: ${champName.toUpperCase()}`
     );
 
     console.log(`[RunepageHandler/Select] Editing ${autoRunepage.name}...`);
     // Apply the rune page
     await leagueRequest.put(
       `/lol-perks/v1/pages/${autoRunepage.id}`,
-      pagePayload,
+      pagePayload
     );
 
     return console.log(
-      `[RunepageHandler/Select] Runepage ${autoRunepage.name} edited successfully!\n`,
+      `[RunepageHandler/Select] Runepage ${autoRunepage.name} edited successfully!\n`
     );
   } catch (err) {
     if (isAxiosError(err)) {
       console.error(
         "[Axios] Error setting a recommended runepage: ",
-        err.response?.data || err.message,
+        err.response?.data || err.message
       );
     } else {
       console.error("[Unknown] Error setting a recommended runepage: ", err);
@@ -85,7 +85,7 @@ const selectRecommendedRunepage = async (
 export const handleRunepage = async (
   champName: string,
   champId: number,
-  runePages: RunePage[],
+  runePages: RunePage[]
 ): Promise<void> => {
   let matched = false;
 
@@ -104,15 +104,15 @@ export const handleRunepage = async (
       console.log(
         `[RunepageHandler] ${
           category.categoryName
-        } detected: ${champName.toUpperCase()}`,
+        } detected: ${champName.toUpperCase()}`
       );
 
       const targetRunePage = runePages.find(
-        (p) => p.name === category.runePageName,
+        (p) => p.name === category.runePageName
       );
       if (!targetRunePage) {
         console.warn(
-          `[RunepageHandler] Runepage ${category.runePageName} not found`,
+          `[RunepageHandler] Runepage ${category.runePageName} not found`
         );
         return;
       }
@@ -128,14 +128,14 @@ export const handleRunepage = async (
       if (!targetRunePage.current) {
         await leagueRequest.put(
           `/lol-perks/v1/pages/${targetRunePage.id}`,
-          pagePayload,
+          pagePayload
         );
         console.log(
-          `[RunepageHandler] Applied rune page ${targetRunePage.name}\n`,
+          `[RunepageHandler] Applied rune page ${targetRunePage.name}\n`
         );
       } else {
         console.log(
-          `[RunepageHandler] The ${targetRunePage.name} rune page is already active.\n`,
+          `[RunepageHandler] The ${targetRunePage.name} rune page is already active.\n`
         );
       }
 
@@ -144,11 +144,11 @@ export const handleRunepage = async (
   }
   if (!matched && AUTO_SELECT_RECOMMENDED_RUNES) {
     const autoRunepage = runePages.find(
-      (p) => p.name.toUpperCase() === "AUTORUNEPAGE",
+      (p) => p.name.toUpperCase() === "AUTORUNEPAGE"
     );
     if (!autoRunepage) {
       return console.log(
-        "AutoRunepage not found.\nIf you'd like this feature, create a rune page named AutoRunepage",
+        "AutoRunepage not found.\nIf you'd like this feature, create a rune page named AutoRunepage"
       );
     }
     await selectRecommendedRunepage(champId, champName, autoRunepage);

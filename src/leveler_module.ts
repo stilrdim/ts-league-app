@@ -28,23 +28,21 @@ let SKILL_ORDER: Record<SkillKey, string[]> = {
 };
 
 const CHAMP_PREFERENCES: ChampPreference[] = JSON.parse(
-  fs.readFileSync(champPrefsConfigPath).toString(),
+  fs.readFileSync(champPrefsConfigPath).toString()
 );
 const CHAMP_NAMES: string[] = JSON.parse(
-  fs.readFileSync(champNamesConfigPath).toString(),
+  fs.readFileSync(champNamesConfigPath).toString()
 );
 
 // FLAGS
-let isLaunched = false; // If the auto-leveling script itself has been launched
-let isSkillOrderFetched = false; // Skill order from U.GG
-let isGamemodeFetched = false;
-let isInActiveGame = false;
 export let hasReachedMaxLevel = false;
 
-let champNameFetched = false;
+let gameInitialized = false;
 
 let GAMEMODE: GameMode | "" = "";
 let CHAMP_NAME = "";
+
+let prevChampLevel: number | null = null;
 
 const httpsAgent = new Agent({
   rejectUnauthorized: false, // Disable SSL cert verification
@@ -55,8 +53,6 @@ const liveClientData = axios.create({
   httpsAgent,
 });
 
-let prevChampLevel: number | null = null;
-
 const addPoint = (key: SkillKey, skill: string): void => {
   SKILL_ORDER[key].push(skill);
 };
@@ -65,7 +61,7 @@ const normalizeChampionName = (champName: string): string | undefined => {
   // Store in a new variable clearing all instances of ' and .
   if (champName === "") {
     console.log(
-      "Something went wrong when getting the champion name. Received empty string.",
+      "Something went wrong when getting the champion name. Received empty string."
     );
     return;
   }
@@ -85,7 +81,7 @@ const normalizeChampionName = (champName: string): string | undefined => {
 
   if (!champFound) {
     console.log(
-      "The champion name seems to be undefined or not valid. Is it a new champ release? Add it to config/leveler_champs_array.json!",
+      "The champion name seems to be undefined or not valid. Is it a new champ release? Add it to config/leveler_champs_array.json!"
     );
   }
 
@@ -94,9 +90,8 @@ const normalizeChampionName = (champName: string): string | undefined => {
 
 const getSkillOrder = async (
   champName: string,
-  gameMode: GameMode,
+  gameMode: GameMode
 ): Promise<void> => {
-  isSkillOrderFetched = true;
   let url;
 
   // Filter out useless symbols in name
@@ -139,8 +134,6 @@ const getSkillOrder = async (
 };
 
 const fetchGamemode = (gameData: GameData, champName: string): GameMode => {
-  isGamemodeFetched = true;
-
   const gameMode = gameData.gameMode;
 
   console.log(`[Auto-lvler]\nGamemode: ${gameMode}\nChampion: ${champName}\n`);
@@ -166,8 +159,6 @@ const changeSkillPrio = (skillOne: SkillKey, skillTwo: SkillKey): void => {
 };
 
 const getChampName = (allGameData: AllGameData): string => {
-  champNameFetched = true;
-
   const summonerName = allGameData.activePlayer.riotId;
   const allPlayers = allGameData.allPlayers;
 
@@ -175,7 +166,7 @@ const getChampName = (allGameData: AllGameData): string => {
 
   if (!player) {
     console.log(
-      `Something is wrong with you receiving ingame data.\n Summoner name ${summonerName} not found.`,
+      `Something is wrong with you receiving ingame data.\n Summoner name ${summonerName} not found.`
     );
     return "";
   }
@@ -185,24 +176,24 @@ const getChampName = (allGameData: AllGameData): string => {
 
 const handleAramStart = async (): Promise<void> => {
   const ability1 = Object.entries(SKILL_ORDER).find(([_, levels]) =>
-    levels.includes("1"),
+    levels.includes("1")
   )?.[0] as SkillKey | undefined;
 
   const ability2 = Object.entries(SKILL_ORDER).find(([_, levels]) =>
-    levels.includes("2"),
+    levels.includes("2")
   )?.[0] as SkillKey | undefined;
 
   const ability3 = Object.entries(SKILL_ORDER).find(([_, levels]) =>
-    levels.includes("3"),
+    levels.includes("3")
   )?.[0] as SkillKey | undefined;
 
   if (!ability1 || !ability2 || !ability3) {
     return console.log(
-      "Something went wrong when trying to find where to put your first 3 skillpoints",
+      "Something went wrong when trying to find where to put your first 3 skillpoints"
     );
   }
   console.log(
-    `[ARAM] Putting points into your [${ability1}] [${ability2}] [${ability3}]`,
+    `[ARAM] Putting points into your [${ability1}] [${ability2}] [${ability3}]`
   );
   await ctrlTapKey(ability1);
   await ctrlTapKey(ability2);
@@ -213,20 +204,20 @@ const handleSkillPrio = (targetChamp: ChampPreference): void => {
   // If the R isn't as expected, it's probably a unique champ like udyr jayce etc, just a failsafe
   if (SKILL_ORDER.R.join(",") !== "6,11,16")
     return console.log(
-      "Unique champ detected - [R] leveling isn't as expected.",
+      "Unique champ detected - [R] leveling isn't as expected."
     );
 
   const firstPrio = Object.values(SKILL_ORDER).find((arr) => arr.includes("9"));
   const secondPrio = Object.values(SKILL_ORDER).find((arr) =>
-    arr.includes("13"),
+    arr.includes("13")
   );
   const thirdPrio = Object.values(SKILL_ORDER).find((arr) =>
-    arr.includes("18"),
+    arr.includes("18")
   );
 
   if (!firstPrio || !secondPrio || !thirdPrio) {
     return console.warn(
-      "Failed to find skill levels 9, 13 or 18 in current SKILL_ORDER",
+      "Failed to find skill levels 9, 13 or 18 in current SKILL_ORDER"
     );
   }
 
@@ -248,11 +239,9 @@ const handleSkillSwap = (targetChamp: ChampPreference): void => {
 };
 
 const handleChampPreferences = (champName: string, gameMode: string): void => {
-  isInActiveGame = true; // Run all of this only once
-
   console.log(`Checking champ preferences for:\n${champName}`); // Keep this for debugging purposes
   const targetChamp = CHAMP_PREFERENCES.find(
-    (champ) => champ.name === champName,
+    (champ) => champ.name === champName
   );
 
   if (targetChamp) {
@@ -284,7 +273,7 @@ const handleChampPreferences = (champName: string, gameMode: string): void => {
 
 const fetchRecommendedItems = async (
   champName: string,
-  gameMode: GameMode,
+  gameMode: GameMode
 ): Promise<void> => {
   try {
     const matchedChampName = normalizeChampionName(champName);
@@ -339,13 +328,13 @@ const fetchRecommendedItems = async (
         "Pick Rate %": item.pickRate,
         "Win Rate %": item.winRate,
         "Games Purchased": item.gamesPurchased,
-      })),
+      }))
     );
   } catch (err) {
     if (isAxiosError(err)) {
       console.error(
         "[Axios] Error fetching recommended items: ",
-        err.response?.data || err.message,
+        err.response?.data || err.message
       );
     } else {
       console.error("[Unknown] Error fetching recommended items: ", err);
@@ -355,7 +344,7 @@ const fetchRecommendedItems = async (
 
 const levelUp = async (champLevel: number): Promise<void> => {
   const resultForAbility = Object.entries(SKILL_ORDER).find(([_, levels]) =>
-    levels.includes(champLevel.toString()),
+    levels.includes(champLevel.toString())
   );
 
   const abilityToLevel = resultForAbility
@@ -369,12 +358,7 @@ const levelUp = async (champLevel: number): Promise<void> => {
 };
 
 export const resetLevelingFlags = (): void => {
-  isSkillOrderFetched = false;
-  isGamemodeFetched = false;
-  isInActiveGame = false;
   hasReachedMaxLevel = false;
-
-  champNameFetched = false;
 
   GAMEMODE = "";
   CHAMP_NAME = "";
@@ -389,19 +373,53 @@ export const resetLevelingFlags = (): void => {
   };
 };
 
-export const handleLeveling = async (): Promise<void> => {
-  if (!isLaunched) {
-    isLaunched = true;
-    console.log("League auto-leveler launched!");
-  }
+export const initializeGame = async (): Promise<void> => {
+  if (gameInitialized) return;
+  const retries = 20;
+  const retryDelayInSecs = 5;
 
+  for (let i = 0; i < retries; i++) {
+    try {
+      const { data: allGameData } = await liveClientData.get<AllGameData>(
+        "/allgamedata"
+      );
+
+      console.log("League auto-leveler launched!");
+
+      const gameInfo = allGameData.gameData;
+
+      CHAMP_NAME = getChampName(allGameData);
+      if (!CHAMP_NAME) return;
+
+      GAMEMODE = fetchGamemode(gameInfo, CHAMP_NAME);
+      if (!GAMEMODE) return;
+
+      await getSkillOrder(CHAMP_NAME, GAMEMODE);
+      handleChampPreferences(CHAMP_NAME, GAMEMODE);
+      await fetchRecommendedItems(CHAMP_NAME, GAMEMODE);
+
+      gameInitialized = true;
+      return; // Finish the loop
+    } catch (err) {
+      if (isAxiosError(err)) {
+        console.log("Still loading up game...");
+        await new Promise((r) => setTimeout(r, retryDelayInSecs * 1000));
+      } else {
+        console.error("[InitializeGame] Unexpected error", err);
+      }
+    }
+  }
+};
+
+export const handleLeveling = async (): Promise<void> => {
   // Ensure we're tabbed in, otherwise don't bother doing anything at all
   const activeWin = await activeWindow();
   if (!activeWin?.title.toLowerCase().includes("league of legends")) return;
 
   try {
-    const { data: allGameData } =
-      await liveClientData.get<AllGameData>("/allgamedata");
+    const { data: allGameData } = await liveClientData.get<AllGameData>(
+      "/allgamedata"
+    );
 
     const summonerInfo = allGameData.activePlayer;
     const gameInfo = allGameData.gameData;
@@ -411,10 +429,6 @@ export const handleLeveling = async (): Promise<void> => {
       gameInfo.gameTime < CONFIG.CONSIDER_GAME_AS_STARTED_AFTER_X_SECONDS;
     if (isInLoadingScreen) return;
 
-    // Figure out the champ name using summoner ID etc...
-    if (!champNameFetched) CHAMP_NAME = getChampName(allGameData);
-    if (!CHAMP_NAME) return;
-
     const champLevel = summonerInfo.level;
 
     // Ensure the level has changed compared to the last poll
@@ -422,21 +436,6 @@ export const handleLeveling = async (): Promise<void> => {
       return;
 
     prevChampLevel = champLevel;
-
-    // Fetch our current game mode from the LiveClientData
-    if (!isGamemodeFetched) GAMEMODE = fetchGamemode(gameInfo, CHAMP_NAME);
-    if (!GAMEMODE) return;
-
-    // Fetch our skill order from U.GG
-    if (!isSkillOrderFetched) await getSkillOrder(CHAMP_NAME, GAMEMODE);
-
-    // Fetch our recommended items from OP.GG
-
-    // Run only once in an active game and check if the user has special preferences for this champ
-    if (!isInActiveGame) {
-      handleChampPreferences(CHAMP_NAME, GAMEMODE);
-      await fetchRecommendedItems(CHAMP_NAME, GAMEMODE);
-    }
 
     // Level all first 3 skills
     if (GAMEMODE?.toLowerCase() === "aram" && champLevel === 3)
@@ -451,8 +450,8 @@ export const handleLeveling = async (): Promise<void> => {
     }
   } catch (err) {
     // Most likely just haven't started a game yet, might be a port issue or more
-    if (isInActiveGame) isInActiveGame = false;
-    else return;
     console.log("Not in an active game.");
+    if (!gameInitialized) await initializeGame();
+    else await handleLeveling();
   }
 };

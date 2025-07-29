@@ -16,14 +16,11 @@ let SKILL_ORDER = {
 const CHAMP_PREFERENCES = JSON.parse(fs.readFileSync(champPrefsConfigPath).toString());
 const CHAMP_NAMES = JSON.parse(fs.readFileSync(champNamesConfigPath).toString());
 // FLAGS
-let isLaunched = false; // If the auto-leveling script itself has been launched
-let isSkillOrderFetched = false; // Skill order from U.GG
-let isGamemodeFetched = false;
-let isInActiveGame = false;
 export let hasReachedMaxLevel = false;
-let champNameFetched = false;
+let gameInitialized = false;
 let GAMEMODE = "";
 let CHAMP_NAME = "";
+let prevChampLevel = null;
 const httpsAgent = new Agent({
     rejectUnauthorized: false, // Disable SSL cert verification
 });
@@ -31,7 +28,6 @@ const liveClientData = axios.create({
     baseURL: "https://127.0.0.1:2999/liveclientdata",
     httpsAgent,
 });
-let prevChampLevel = null;
 const addPoint = (key, skill) => {
     SKILL_ORDER[key].push(skill);
 };
@@ -57,7 +53,6 @@ const normalizeChampionName = (champName) => {
     return champFound;
 };
 const getSkillOrder = async (champName, gameMode) => {
-    isSkillOrderFetched = true;
     let url;
     // Filter out useless symbols in name
     let matchedChampName = normalizeChampionName(champName);
@@ -102,7 +97,6 @@ const getSkillOrder = async (champName, gameMode) => {
         .catch((err) => console.error("Error while fetching skill order: ", err));
 };
 const fetchGamemode = (gameData, champName) => {
-    isGamemodeFetched = true;
     const gameMode = gameData.gameMode;
     console.log(`[Auto-lvler]\nGamemode: ${gameMode}\nChampion: ${champName}\n`);
     return gameMode;
@@ -120,7 +114,6 @@ const changeSkillPrio = (skillOne, skillTwo) => {
     console.log(`Swapping priority for abilities [${skillOne}] - [${skillTwo}]`);
 };
 const getChampName = (allGameData) => {
-    champNameFetched = true;
     const summonerName = allGameData.activePlayer.riotId;
     const allPlayers = allGameData.allPlayers;
     const player = allPlayers.find((p) => p.riotId === summonerName);
@@ -167,7 +160,6 @@ const handleSkillSwap = (targetChamp) => {
     });
 };
 const handleChampPreferences = (champName, gameMode) => {
-    isInActiveGame = true; // Run all of this only once
     console.log(`Checking champ preferences for:\n${champName}`); // Keep this for debugging purposes
     const targetChamp = CHAMP_PREFERENCES.find((champ) => champ.name === champName);
     if (targetChamp) {
@@ -259,11 +251,7 @@ const levelUp = async (champLevel) => {
     await ctrlTapKey(abilityToLevel);
 };
 export const resetLevelingFlags = () => {
-    isSkillOrderFetched = false;
-    isGamemodeFetched = false;
-    isInActiveGame = false;
     hasReachedMaxLevel = false;
-    champNameFetched = false;
     GAMEMODE = "";
     CHAMP_NAME = "";
     prevChampLevel = null;
@@ -274,11 +262,40 @@ export const resetLevelingFlags = () => {
         R: [],
     };
 };
-export const handleLeveling = async () => {
-    if (!isLaunched) {
-        isLaunched = true;
-        console.log("League auto-leveler launched!");
+export const initializeGame = async () => {
+    if (gameInitialized)
+        return;
+    const retries = 20;
+    const retryDelayInSecs = 5;
+    for (let i = 0; i < retries; i++) {
+        try {
+            const { data: allGameData } = await liveClientData.get("/allgamedata");
+            console.log("League auto-leveler launched!");
+            const gameInfo = allGameData.gameData;
+            CHAMP_NAME = getChampName(allGameData);
+            if (!CHAMP_NAME)
+                return;
+            GAMEMODE = fetchGamemode(gameInfo, CHAMP_NAME);
+            if (!GAMEMODE)
+                return;
+            await getSkillOrder(CHAMP_NAME, GAMEMODE);
+            handleChampPreferences(CHAMP_NAME, GAMEMODE);
+            await fetchRecommendedItems(CHAMP_NAME, GAMEMODE);
+            gameInitialized = true;
+            return; // Finish the loop
+        }
+        catch (err) {
+            if (isAxiosError(err)) {
+                console.log("Still loading up game...");
+                await new Promise((r) => setTimeout(r, retryDelayInSecs * 1000));
+            }
+            else {
+                console.error("[InitializeGame] Unexpected error", err);
+            }
+        }
     }
+};
+export const handleLeveling = async () => {
     // Ensure we're tabbed in, otherwise don't bother doing anything at all
     const activeWin = await activeWindow();
     if (!activeWin?.title.toLowerCase().includes("league of legends"))
@@ -291,30 +308,11 @@ export const handleLeveling = async () => {
         const isInLoadingScreen = gameInfo.gameTime < CONFIG.CONSIDER_GAME_AS_STARTED_AFTER_X_SECONDS;
         if (isInLoadingScreen)
             return;
-        // Figure out the champ name using summoner ID etc...
-        if (!champNameFetched)
-            CHAMP_NAME = getChampName(allGameData);
-        if (!CHAMP_NAME)
-            return;
         const champLevel = summonerInfo.level;
         // Ensure the level has changed compared to the last poll
         if (!champLevel || prevChampLevel === champLevel || champLevel === 0)
             return;
         prevChampLevel = champLevel;
-        // Fetch our current game mode from the LiveClientData
-        if (!isGamemodeFetched)
-            GAMEMODE = fetchGamemode(gameInfo, CHAMP_NAME);
-        if (!GAMEMODE)
-            return;
-        // Fetch our skill order from U.GG
-        if (!isSkillOrderFetched)
-            await getSkillOrder(CHAMP_NAME, GAMEMODE);
-        // Fetch our recommended items from OP.GG
-        // Run only once in an active game and check if the user has special preferences for this champ
-        if (!isInActiveGame) {
-            handleChampPreferences(CHAMP_NAME, GAMEMODE);
-            await fetchRecommendedItems(CHAMP_NAME, GAMEMODE);
-        }
         // Level all first 3 skills
         if (GAMEMODE?.toLowerCase() === "aram" && champLevel === 3)
             return await handleAramStart();
@@ -327,10 +325,10 @@ export const handleLeveling = async () => {
     }
     catch (err) {
         // Most likely just haven't started a game yet, might be a port issue or more
-        if (isInActiveGame)
-            isInActiveGame = false;
-        else
-            return;
         console.log("Not in an active game.");
+        if (!gameInitialized)
+            await initializeGame();
+        else
+            await handleLeveling();
     }
 };

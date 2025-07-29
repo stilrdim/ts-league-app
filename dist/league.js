@@ -16,7 +16,8 @@ export async function poll() {
                     FLAGS.isGameAccepted = false;
                 break;
             case "InProgress":
-                await handleInAnActiveGame();
+                if (!FLAGS.isInGame)
+                    await handleInAnActiveGame();
                 if (AUTO_LEVEL_ABILITIES && !hasReachedMaxLevel) {
                     await handleLeveling();
                     // Keep checking our level for changes
