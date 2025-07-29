@@ -438,8 +438,7 @@ export const handleLeveling = async (): Promise<void> => {
     prevChampLevel = champLevel;
 
     // Level all first 3 skills
-    if (GAMEMODE?.toLowerCase() === "aram" && champLevel === 3)
-      return await handleAramStart();
+    if (GAMEMODE === "ARAM" && champLevel === 3) return await handleAramStart();
 
     // Grab current ability to upgrade based on our new level
     await levelUp(champLevel);
@@ -452,6 +451,6 @@ export const handleLeveling = async (): Promise<void> => {
     // Most likely just haven't started a game yet, might be a port issue or more
     console.log("Not in an active game.");
     if (!gameInitialized) await initializeGame();
-    else await handleLeveling();
+    else setTimeout(() => handleLeveling(), 1000);
   }
 };

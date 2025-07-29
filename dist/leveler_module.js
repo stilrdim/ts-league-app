@@ -314,7 +314,7 @@ export const handleLeveling = async () => {
             return;
         prevChampLevel = champLevel;
         // Level all first 3 skills
-        if (GAMEMODE?.toLowerCase() === "aram" && champLevel === 3)
+        if (GAMEMODE === "ARAM" && champLevel === 3)
             return await handleAramStart();
         // Grab current ability to upgrade based on our new level
         await levelUp(champLevel);
@@ -329,6 +329,6 @@ export const handleLeveling = async () => {
         if (!gameInitialized)
             await initializeGame();
         else
-            await handleLeveling();
+            setTimeout(() => handleLeveling(), 1000);
     }
 };
