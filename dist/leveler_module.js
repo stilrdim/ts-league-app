@@ -57,11 +57,9 @@ const getSkillOrder = async (champName, gameMode) => {
     // Filter out useless symbols in name
     let matchedChampName = normalizeChampionName(champName);
     if (matchedChampName && gameMode === "ARAM") {
-        console.log("Getting ARAM skill order");
         url = `https://u.gg/lol/champions/aram/${matchedChampName}-aram`;
     }
     else {
-        console.log("Getting normal skill order");
         url = `https://u.gg/lol/champions/${matchedChampName}/build`;
     }
     await fetch(url)
@@ -160,7 +158,6 @@ const handleSkillSwap = (targetChamp) => {
     });
 };
 const handleChampPreferences = (champName, gameMode) => {
-    console.log(`Checking champ preferences for:\n${champName}`); // Keep this for debugging purposes
     const targetChamp = CHAMP_PREFERENCES.find((champ) => champ.name === champName);
     if (targetChamp) {
         // If it has no "mode" field consider it as "ALL"
@@ -182,7 +179,7 @@ const handleChampPreferences = (champName, gameMode) => {
         console.log("No special skill priority preferences detected");
     }
     console.log(`\nSkill priority:`);
-    console.log(SKILL_ORDER); // List separately - avoid [Object object] and keep syntax highlight
+    console.table(SKILL_ORDER); // List separately - avoid [Object object] and keep syntax highlight
     console.log("\n\n");
 };
 const fetchRecommendedItems = async (champName, gameMode) => {
@@ -223,7 +220,7 @@ const fetchRecommendedItems = async (champName, gameMode) => {
                 items.push({ name, pickRate, winRate, gamesPurchased });
             }
         }
-        console.log(`\n\n\nRecommended items for ${champName}`);
+        console.log(`Recommended items for ${champName}`);
         console.table(items.map((item) => ({
             Name: item.name,
             "Pick Rate %": item.pickRate,

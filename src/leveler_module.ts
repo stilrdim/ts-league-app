@@ -98,10 +98,8 @@ const getSkillOrder = async (
   let matchedChampName: string | undefined = normalizeChampionName(champName);
 
   if (matchedChampName && gameMode === "ARAM") {
-    console.log("Getting ARAM skill order");
     url = `https://u.gg/lol/champions/aram/${matchedChampName}-aram`;
   } else {
-    console.log("Getting normal skill order");
     url = `https://u.gg/lol/champions/${matchedChampName}/build`;
   }
   await fetch(url)
@@ -239,7 +237,6 @@ const handleSkillSwap = (targetChamp: ChampPreference): void => {
 };
 
 const handleChampPreferences = (champName: string, gameMode: string): void => {
-  console.log(`Checking champ preferences for:\n${champName}`); // Keep this for debugging purposes
   const targetChamp = CHAMP_PREFERENCES.find(
     (champ) => champ.name === champName
   );
@@ -267,7 +264,7 @@ const handleChampPreferences = (champName: string, gameMode: string): void => {
   }
 
   console.log(`\nSkill priority:`);
-  console.log(SKILL_ORDER); // List separately - avoid [Object object] and keep syntax highlight
+  console.table(SKILL_ORDER); // List separately - avoid [Object object] and keep syntax highlight
   console.log("\n\n");
 };
 
@@ -321,7 +318,7 @@ const fetchRecommendedItems = async (
       }
     }
 
-    console.log(`\n\n\nRecommended items for ${champName}`);
+    console.log(`Recommended items for ${champName}`);
     console.table(
       items.map((item) => ({
         Name: item.name,
