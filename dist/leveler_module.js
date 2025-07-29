@@ -191,7 +191,7 @@ const handleChampPreferences = (champName, gameMode) => {
     }
     console.log(`\nSkill priority:`);
     console.table(SKILL_ORDER); // List separately - avoid [Object object] and keep syntax highlight
-    console.log("\n\n");
+    console.log("");
 };
 const fetchRecommendedItems = async (champName, gameMode) => {
     try {
