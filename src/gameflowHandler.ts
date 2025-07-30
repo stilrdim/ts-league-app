@@ -3,7 +3,6 @@ import { CONFIG, FLAGS, HONOR, STATES } from "./config/constants.js";
 import { leagueRequest } from "./connection.js";
 import { tryInviteFriends } from "./inviteHandler.js";
 import { initializeGame, resetLevelingFlags } from "./leveler_module.js";
-// import { resetLevelingFlags } from "./leveler_module.js";
 import { handleRunepage } from "./runepageHandler.js";
 import {
   Ballot,
