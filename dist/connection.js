@@ -4,7 +4,7 @@ import { authenticate, createWebSocketConnection, } from "league-connect";
 import { CONFIG, FLAGS, STATES } from "./config/constants.js";
 import { handleChampSelect, handleLobby } from "./gameflowHandler.js";
 import { poll } from "./league.js";
-import { queueUp } from "./test_inviteHandler.js";
+import { queueUp } from "./inviteHandler.js";
 const { AUTO_SELECT_RUNES, AUTO_QUEUE_UP } = CONFIG;
 export let leagueRequest;
 let ws;

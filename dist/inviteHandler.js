@@ -22,8 +22,16 @@ export const queueUp = async () => {
     const isUnableToStart = !FLAGS.isPartyLeader || !FLAGS.canStartGame;
     if (FLAGS.isQueuedUp || isUnableToStart)
         return;
+    FLAGS.isQueuedUp = true;
     console.log("No new friends to invite and everybody seems ready, queueing up...");
-    await leagueRequest.post("/lol-lobby/v2/lobby/matchmaking/search");
+    try {
+        await leagueRequest.post("/lol-lobby/v2/lobby/matchmaking/search");
+    }
+    catch (err) {
+        if (isAxiosError(err)) {
+            console.error("[Axios] Error queueing up: ", err.response?.data || err.message);
+        }
+    }
 };
 export const tryInviteFriends = async (partyMembers) => {
     try {

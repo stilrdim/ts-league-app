@@ -14,7 +14,7 @@ import {
   Invitation,
   LobbyResponse,
 } from "./types/index.js";
-import { queueUp } from "./test_inviteHandler.js";
+import { queueUp } from "./inviteHandler.js";
 
 const { AUTO_SELECT_RUNES, AUTO_QUEUE_UP } = CONFIG;
 

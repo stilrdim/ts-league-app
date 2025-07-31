@@ -70,12 +70,17 @@ export async function poll(): Promise<void> {
 
         // Only execute once
         if (FLAGS.isInLobby) FLAGS.isInLobby = false;
+        if (FLAGS.inviteTriggered) FLAGS.inviteTriggered = false;
 
         break;
 
       case "ReadyCheck":
         if (AUTO_ACCEPT_QUEUE) await handleAcceptQueue();
         break;
+
+      case "None":
+        if (FLAGS.isInLobby) FLAGS.isInLobby = false;
+        if (FLAGS.inviteTriggered) FLAGS.inviteTriggered = false;
 
       default:
         if (FLAGS.isInChampSelect) {

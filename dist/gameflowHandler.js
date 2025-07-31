@@ -129,6 +129,7 @@ export const handleLobby = async (wsEvent) => {
         FLAGS.isQueuedUp = false;
         FLAGS.isInLowPrioQueue = false;
         STATES.gameMode = wsEvent.gameConfig.gameMode ?? "UNKNOWN";
+        console.log("Entered lobby and resetting flags");
         if (AUTO_LEVEL_ABILITIES)
             resetLevelingFlags(); // Ensure we still get auto-leveling next game
     }
@@ -139,8 +140,10 @@ export const handleLobby = async (wsEvent) => {
         FLAGS.isInLowPrioQueue ||
         FLAGS.isQueuedUp ||
         !AUTO_INVITE_FRIENDS;
+    console.log("Testing");
     if (shouldSkipLobbyActions)
         return;
+    console.log("Passed testing");
     FLAGS.isLobbyFull = wsEvent.gameConfig.isLobbyFull;
     FLAGS.isPartyLeader = wsEvent.localMember.isLeader;
     FLAGS.canStartGame = wsEvent.canStartActivity;
