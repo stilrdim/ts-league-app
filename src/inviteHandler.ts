@@ -36,9 +36,11 @@ const findUninvitedFriends = async (
   return uninvitedFriends;
 };
 
-const queueUp = async (): Promise<void> => {
-  if (FLAGS.isQueuedUp) return;
-  FLAGS.isQueuedUp = true;
+export const queueUp = async (): Promise<void> => {
+  const isUnableToStart = !FLAGS.isPartyLeader || !FLAGS.canStartGame;
+
+  if (FLAGS.isQueuedUp || isUnableToStart) return;
+
   console.log(
     "No new friends to invite and everybody seems ready, queueing up..."
   );

@@ -203,16 +203,8 @@ export const handleLobby = async (wsEvent: LobbyResponse): Promise<void> => {
   FLAGS.canStartGame = wsEvent.canStartActivity;
 
   const members: LobbyMember[] = wsEvent.members;
-  const allReady = members.every((m) => m.ready === true);
 
-  const isAbleToStart = FLAGS.isPartyLeader && FLAGS.canStartGame;
-
-  if (
-    allReady &&
-    AUTO_INVITE_FRIENDS &&
-    !FLAGS.inviteTriggered &&
-    isAbleToStart
-  ) {
+  if (AUTO_INVITE_FRIENDS && !FLAGS.inviteTriggered) {
     FLAGS.inviteTriggered = true;
     await tryInviteFriends(members);
   }

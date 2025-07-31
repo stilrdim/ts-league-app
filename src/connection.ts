@@ -110,8 +110,9 @@ const subscribeToWebSocketEvents = async (): Promise<void> => {
         const allInvitesAnswered = invitations.every(
           (inv) => inv.state !== "Pending" && inv.state !== "OnHold"
         );
+        const allReady = event.members.every((m) => m.ready === true);
 
-        if (allInvitesAnswered) await queueUp();
+        if (allInvitesAnswered && allReady) await queueUp();
         return;
       }
 
