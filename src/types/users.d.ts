@@ -1,3 +1,5 @@
+import { GameMode } from "./index.js";
+
 export interface LobbyResponse {
   canStartActivity: boolean;
   gameConfig: {
@@ -9,7 +11,7 @@ export interface LobbyResponse {
     customSpectators: any[];
     customTeam100: any[];
     customTeam200: any[];
-    gameMode: string;
+    gameMode: GameMode;
     isCustom: boolean;
     isLobbyFull: boolean;
     isTeamBuilderManaged: boolean;
@@ -49,7 +51,7 @@ export interface LobbyResponse {
 export interface Invitation {
   invitationId: string;
   invitationType: string;
-  state: "Accepted" | "OnHold" | string;
+  state: "Accepted" | "OnHold" | "Declined" | "Pending";
   timestamp: string;
   toSummonerId: number;
   toSummonerName: string;
