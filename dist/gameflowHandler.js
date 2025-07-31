@@ -151,6 +151,7 @@ export const handleLobby = async (wsEvent) => {
         AUTO_INVITE_FRIENDS &&
         !FLAGS.inviteTriggered &&
         isAbleToStart) {
+        FLAGS.inviteTriggered = true;
         await tryInviteFriends(members);
     }
 };

@@ -112,6 +112,7 @@ const subscribeToWebSocketEvents = async (): Promise<void> => {
         );
 
         if (allInvitesAnswered) await queueUp();
+        return;
       }
 
       await handleLobby(event);

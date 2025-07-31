@@ -71,6 +71,7 @@ const subscribeToWebSocketEvents = async () => {
                 const allInvitesAnswered = invitations.every((inv) => inv.state !== "Pending" && inv.state !== "OnHold");
                 if (allInvitesAnswered)
                     await queueUp();
+                return;
             }
             await handleLobby(event);
         });

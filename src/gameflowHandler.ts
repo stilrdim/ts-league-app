@@ -213,6 +213,7 @@ export const handleLobby = async (wsEvent: LobbyResponse): Promise<void> => {
     !FLAGS.inviteTriggered &&
     isAbleToStart
   ) {
+    FLAGS.inviteTriggered = true;
     await tryInviteFriends(members);
   }
 };

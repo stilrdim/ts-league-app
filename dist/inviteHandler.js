@@ -7,10 +7,9 @@ const findUninvitedFriends = async (partyMembers) => {
     const partyMembersIds = partyMembers.map((p) => p.summonerId);
     // Get the username of every friend that matters
     const closeFriendsList = Object.values(FRIENDS).map((f) => f.name);
-    const friendRes = await leagueRequest.get("/lol-chat/v1/friends", {
+    const { data: allFriends } = await leagueRequest.get("/lol-chat/v1/friends", {
         timeout: 3000,
     });
-    const allFriends = friendRes.data || [];
     // Filter through the entire friendlist and obtain the ones that matter
     const closeFriends = allFriends.filter((friend) => closeFriendsList.includes(friend.gameName));
     const unavailableStates = ["offline", "mobile", "dnd"]; // dnd -> ingame
@@ -20,14 +19,13 @@ const findUninvitedFriends = async (partyMembers) => {
     return uninvitedFriends;
 };
 const queueUp = async () => {
+    if (FLAGS.isQueuedUp)
+        return;
+    FLAGS.isQueuedUp = true;
     console.log("No new friends to invite and everybody seems ready, queueing up...");
     await leagueRequest.post("/lol-lobby/v2/lobby/matchmaking/search");
 };
 export const tryInviteFriends = async (partyMembers) => {
-    // Ensure we havent already invited people
-    if (FLAGS.inviteTriggered)
-        return;
-    FLAGS.inviteTriggered = true;
     try {
         // Skip checking for online friends if the lobby has no space for them
         if (FLAGS.isLobbyFull)
@@ -44,7 +42,6 @@ export const tryInviteFriends = async (partyMembers) => {
             }));
             // Send the invite
             await leagueRequest.post("/lol-lobby/v2/lobby/invitations", invitePayload);
-            // Change our flag to avoid spamming invites
         }
         else {
             console.log("No new friends to invite");
