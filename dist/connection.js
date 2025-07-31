@@ -40,8 +40,6 @@ export const connectToLeagueClient = async () => {
     await subscribeToWebSocketEvents();
 };
 const subscribeToWebSocketEvents = async () => {
-    // Wait 2 sec to avoid vanguard flagging on reconnect
-    await sleep(2);
     // Initialize state
     await poll();
     // Handle Client states

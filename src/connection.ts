@@ -71,9 +71,6 @@ export const connectToLeagueClient = async (): Promise<void> => {
 };
 
 const subscribeToWebSocketEvents = async (): Promise<void> => {
-  // Wait 2 sec to avoid vanguard flagging on reconnect
-  await sleep(2);
-
   // Initialize state
   await poll();
 
