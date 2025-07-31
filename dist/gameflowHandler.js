@@ -121,47 +121,37 @@ export const handleBackToLobby = async () => {
         }
     }
 };
-export const handleLobby = async (res) => {
+export const handleLobby = async (wsEvent) => {
     // When we first go to lobby this triggers only once
     if (!FLAGS.isInLobby) {
         FLAGS.isInLobby = true;
         FLAGS.inviteTriggered = false;
         FLAGS.isQueuedUp = false;
-        const { data: gameflow } = await leagueRequest.get("/lol-gameflow/v1/session");
-        STATES.gameMode = gameflow.gameData.queue.gameMode;
+        FLAGS.isInLowPrioQueue = false;
+        STATES.gameMode = wsEvent.gameConfig.gameMode ?? "UNKNOWN";
         if (AUTO_LEVEL_ABILITIES)
             resetLevelingFlags(); // Ensure we still get auto-leveling next game
     }
-    if ((ONLY_FOR_ARAMS && STATES.gameMode !== "ARAM") || FLAGS.isInLowPrioQueue)
+    const isWrongGamemode = ONLY_FOR_ARAMS && STATES.gameMode !== "ARAM" && STATES.gameMode !== "URF";
+    const isInvalidClientState = STATES.clientState !== "Lobby";
+    const shouldSkipLobbyActions = isInvalidClientState ||
+        isWrongGamemode ||
+        FLAGS.isInLowPrioQueue ||
+        FLAGS.isQueuedUp ||
+        !AUTO_INVITE_FRIENDS;
+    if (shouldSkipLobbyActions)
         return;
-    try {
-        FLAGS.isLobbyFull = res.gameConfig.isLobbyFull;
-        FLAGS.isPartyLeader = res.localMember.isLeader;
-        FLAGS.canStartGame = res.canStartActivity;
-        const members = res.members;
-        const allReady = members.every((m) => m.ready === true);
-        const invitations = res.invitations;
-        const allInvitesAccepted = invitations.every((inv) => inv.state === "Accepted");
-        if (allReady && allInvitesAccepted) {
-            if (AUTO_INVITE_FRIENDS &&
-                !FLAGS.inviteTriggered &&
-                FLAGS.isPartyLeader &&
-                FLAGS.canStartGame) {
-                await tryInviteFriends(members, FLAGS.isLobbyFull);
-                return;
-            }
-        }
-        else {
-            console.log("Waiting for players to be ready...");
-        }
-    }
-    catch (err) {
-        if (isAxiosError(err)) {
-            console.error("[Axios] Lobby error: ", err.response?.data || err.message);
-        }
-        else {
-            console.error("[Unknown] Lobby error: ", err);
-        }
+    FLAGS.isLobbyFull = wsEvent.gameConfig.isLobbyFull;
+    FLAGS.isPartyLeader = wsEvent.localMember.isLeader;
+    FLAGS.canStartGame = wsEvent.canStartActivity;
+    const members = wsEvent.members;
+    const allReady = members.every((m) => m.ready === true);
+    const isAbleToStart = FLAGS.isPartyLeader && FLAGS.canStartGame;
+    if (allReady &&
+        AUTO_INVITE_FRIENDS &&
+        !FLAGS.inviteTriggered &&
+        isAbleToStart) {
+        await tryInviteFriends(members);
     }
 };
 // Handles Matchmaking

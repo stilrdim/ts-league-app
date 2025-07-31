@@ -23,13 +23,14 @@ const queueUp = async () => {
     console.log("No new friends to invite and everybody seems ready, queueing up...");
     await leagueRequest.post("/lol-lobby/v2/lobby/matchmaking/search");
 };
-export const tryInviteFriends = async (partyMembers, isLobbyFull) => {
+export const tryInviteFriends = async (partyMembers) => {
     // Ensure we havent already invited people
     if (FLAGS.inviteTriggered)
         return;
+    FLAGS.inviteTriggered = true;
     try {
         // Skip checking for online friends if the lobby has no space for them
-        if (isLobbyFull)
+        if (FLAGS.isLobbyFull)
             return await queueUp();
         const uninvitedFriends = await findUninvitedFriends(partyMembers);
         // Somebody is actually available and not already in lobby
@@ -44,10 +45,10 @@ export const tryInviteFriends = async (partyMembers, isLobbyFull) => {
             // Send the invite
             await leagueRequest.post("/lol-lobby/v2/lobby/invitations", invitePayload);
             // Change our flag to avoid spamming invites
-            FLAGS.inviteTriggered = true;
         }
         else {
-            await queueUp();
+            console.log("No new friends to invite");
+            // await queueUp();
         }
     }
     catch (err) {

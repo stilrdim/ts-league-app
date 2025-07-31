@@ -43,15 +43,15 @@ const queueUp = async (): Promise<void> => {
 };
 
 export const tryInviteFriends = async (
-  partyMembers: LobbyMember[],
-  isLobbyFull: boolean
+  partyMembers: LobbyMember[]
 ): Promise<void> => {
   // Ensure we havent already invited people
   if (FLAGS.inviteTriggered) return;
+  FLAGS.inviteTriggered = true;
 
   try {
     // Skip checking for online friends if the lobby has no space for them
-    if (isLobbyFull) return await queueUp();
+    if (FLAGS.isLobbyFull) return await queueUp();
 
     const uninvitedFriends = await findUninvitedFriends(partyMembers);
 
@@ -73,11 +73,10 @@ export const tryInviteFriends = async (
         "/lol-lobby/v2/lobby/invitations",
         invitePayload
       );
-
       // Change our flag to avoid spamming invites
-      FLAGS.inviteTriggered = true;
     } else {
-      await queueUp();
+      console.log("No new friends to invite");
+      // await queueUp();
     }
   } catch (err) {
     if (isAxiosError(err)) {

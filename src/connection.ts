@@ -5,14 +5,16 @@ import {
   createWebSocketConnection,
   LeagueWebSocket,
 } from "league-connect";
-import { CONFIG, STATES } from "./config/constants.js";
+import { CONFIG, FLAGS, STATES } from "./config/constants.js";
 import { handleChampSelect, handleLobby } from "./gameflowHandler.js";
 import { poll } from "./league.js";
 import {
   ChampSelectSession,
   ClientState,
+  Invitation,
   LobbyResponse,
 } from "./types/index.js";
+import { queueUp } from "./test_inviteHandler.js";
 
 const { AUTO_SELECT_RUNES, AUTO_QUEUE_UP } = CONFIG;
 
@@ -75,6 +77,7 @@ const subscribeToWebSocketEvents = async (): Promise<void> => {
   // Initialize state
   await poll();
 
+  // Handle Client states
   ws.subscribe(
     "/lol-gameflow/v1/gameflow-phase",
     async (state: ClientState | null) => {
@@ -97,9 +100,20 @@ const subscribeToWebSocketEvents = async (): Promise<void> => {
       }
     );
 
+  // Handle Lobby
   if (AUTO_QUEUE_UP) {
     ws.subscribe("/lol-lobby/v2/lobby", async (event: LobbyResponse | null) => {
       if (!event) return;
+      const invitations: Invitation[] = event.invitations;
+
+      if (FLAGS.inviteTriggered) {
+        const allInvitesAnswered = invitations.every(
+          (inv) => inv.state !== "Pending" && inv.state !== "OnHold"
+        );
+
+        if (allInvitesAnswered) await queueUp();
+      }
+
       await handleLobby(event);
     });
   }
