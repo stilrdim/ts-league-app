@@ -121,6 +121,7 @@ export const handleInvites = async (lobby: LobbyResponse): Promise<void> => {
   const isWrongGamemode =
     ONLY_FOR_ARAMS && STATES.gameMode !== "ARAM" && STATES.gameMode !== "URF";
   const isInvalidClientState = STATES.clientState !== "Lobby";
+
   const shouldSkipLobbyActions =
     isInvalidClientState ||
     isWrongGamemode ||

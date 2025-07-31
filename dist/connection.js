@@ -48,7 +48,7 @@ const subscribeToWebSocketEvents = async () => {
             return; // Empty
         if (STATES.clientState === state)
             return; // No change
-        console.log(`[STATE] ${STATES.clientState} -> ${state}\n`);
+        console.log(`\n[STATE] ${STATES.clientState} -> ${state}`);
         STATES.clientState = state;
         await poll();
     });
