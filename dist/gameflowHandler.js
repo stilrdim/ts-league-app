@@ -1,10 +1,9 @@
 import { HttpStatusCode, isAxiosError } from "axios";
-import { CONFIG, FLAGS, HONOR, STATES } from "./config/constants.js";
+import { FLAGS, HONOR, STATES } from "./config/constants.js";
 import { leagueRequest } from "./connection.js";
-import { tryInviteFriends } from "./inviteHandler.js";
-import { initializeGame, resetLevelingFlags } from "./leveler_module.js";
+import { handleInvites, queueUp } from "./inviteHandler.js";
+import { initializeGame } from "./leveler_module.js";
 import { handleRunepage } from "./runepageHandler.js";
-const { AUTO_LEVEL_ABILITIES, ONLY_FOR_ARAMS, AUTO_INVITE_FRIENDS } = CONFIG;
 export const handleChampSelect = async (event) => {
     if (!FLAGS.isInChampSelect)
         FLAGS.isInChampSelect = true;
@@ -122,36 +121,15 @@ export const handleBackToLobby = async () => {
     }
 };
 export const handleLobby = async (wsEvent) => {
-    // When we first go to lobby this triggers only once
-    if (!FLAGS.isInLobby) {
-        FLAGS.isInLobby = true;
-        FLAGS.inviteTriggered = false;
-        FLAGS.isQueuedUp = false;
-        FLAGS.isInLowPrioQueue = false;
-        STATES.gameMode = wsEvent.gameConfig.gameMode ?? "UNKNOWN";
-        console.log("Entered lobby and resetting flags");
-        if (AUTO_LEVEL_ABILITIES)
-            resetLevelingFlags(); // Ensure we still get auto-leveling next game
-    }
-    const isWrongGamemode = ONLY_FOR_ARAMS && STATES.gameMode !== "ARAM" && STATES.gameMode !== "URF";
-    const isInvalidClientState = STATES.clientState !== "Lobby";
-    const shouldSkipLobbyActions = isInvalidClientState ||
-        isWrongGamemode ||
-        FLAGS.isInLowPrioQueue ||
-        FLAGS.isQueuedUp ||
-        !AUTO_INVITE_FRIENDS;
-    console.log("Testing");
-    if (shouldSkipLobbyActions)
+    const invitations = wsEvent.invitations;
+    if (FLAGS.inviteTriggered) {
+        const allInvitesAnswered = invitations.every((inv) => inv.state !== "Pending" && inv.state !== "OnHold");
+        const allReady = wsEvent.members.every((m) => m.ready === true);
+        if (allInvitesAnswered && allReady)
+            await queueUp();
         return;
-    console.log("Passed testing");
-    FLAGS.isLobbyFull = wsEvent.gameConfig.isLobbyFull;
-    FLAGS.isPartyLeader = wsEvent.localMember.isLeader;
-    FLAGS.canStartGame = wsEvent.canStartActivity;
-    const members = wsEvent.members;
-    if (AUTO_INVITE_FRIENDS && !FLAGS.inviteTriggered) {
-        FLAGS.inviteTriggered = true;
-        await tryInviteFriends(members);
     }
+    await handleInvites(wsEvent);
 };
 // Handles Matchmaking
 export const handleInQueue = async () => {

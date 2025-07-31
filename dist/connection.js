@@ -1,10 +1,10 @@
 import axios from "axios";
 import { Agent } from "https";
 import { authenticate, createWebSocketConnection, } from "league-connect";
-import { CONFIG, FLAGS, STATES } from "./config/constants.js";
-import { handleChampSelect, handleLobby } from "./gameflowHandler.js";
+import { CONFIG, STATES } from "./config/constants.js";
+import { handleChampSelect } from "./gameflowHandler.js";
 import { poll } from "./league.js";
-import { queueUp } from "./inviteHandler.js";
+import { handleLobby } from "./gameflowHandler.js";
 const { AUTO_SELECT_RUNES, AUTO_QUEUE_UP } = CONFIG;
 export let leagueRequest;
 let ws;
@@ -64,14 +64,6 @@ const subscribeToWebSocketEvents = async () => {
         ws.subscribe("/lol-lobby/v2/lobby", async (event) => {
             if (!event)
                 return;
-            const invitations = event.invitations;
-            if (FLAGS.inviteTriggered) {
-                const allInvitesAnswered = invitations.every((inv) => inv.state !== "Pending" && inv.state !== "OnHold");
-                const allReady = event.members.every((m) => m.ready === true);
-                if (allInvitesAnswered && allReady)
-                    await queueUp();
-                return;
-            }
             await handleLobby(event);
         });
     }

@@ -1,7 +1,9 @@
 import { HttpStatusCode, isAxiosError } from "axios";
-import { COLLECTIONS, FLAGS } from "./config/constants.js";
+import { COLLECTIONS, FLAGS, STATES, CONFIG } from "./config/constants.js";
 import { leagueRequest } from "./connection.js";
+import { resetLevelingFlags } from "./leveler_module.js";
 const { FRIENDS } = COLLECTIONS;
+const { AUTO_INVITE_FRIENDS, AUTO_LEVEL_ABILITIES, ONLY_FOR_ARAMS } = CONFIG;
 const findUninvitedFriends = async (partyMembers) => {
     // Get the summoner IDs of people already in our lobby
     const partyMembersIds = partyMembers.map((p) => p.summonerId);
@@ -23,7 +25,7 @@ export const queueUp = async () => {
     if (FLAGS.isQueuedUp || isUnableToStart)
         return;
     FLAGS.isQueuedUp = true;
-    console.log("No new friends to invite and everybody seems ready, queueing up...");
+    console.log("Everybody seems ready, queueing up...");
     try {
         await leagueRequest.post("/lol-lobby/v2/lobby/matchmaking/search");
     }
@@ -33,7 +35,7 @@ export const queueUp = async () => {
         }
     }
 };
-export const tryInviteFriends = async (partyMembers) => {
+const tryInviteFriends = async (partyMembers) => {
     try {
         // Skip checking for online friends if the lobby has no space for them
         if (FLAGS.isLobbyFull)
@@ -53,7 +55,6 @@ export const tryInviteFriends = async (partyMembers) => {
         }
         else {
             console.log("No new friends to invite");
-            // await queueUp();
         }
     }
     catch (err) {
@@ -68,5 +69,34 @@ export const tryInviteFriends = async (partyMembers) => {
         else {
             console.error("[Unknown] Inviting friends error: ", err);
         }
+    }
+};
+export const handleInvites = async (lobby) => {
+    // When we first go to lobby, reset all necessary flags
+    if (!FLAGS.isInLobby) {
+        FLAGS.isInLobby = true;
+        FLAGS.inviteTriggered = false;
+        FLAGS.isQueuedUp = false;
+        FLAGS.isInLowPrioQueue = false;
+        STATES.gameMode = lobby.gameConfig.gameMode ?? "UNKNOWN";
+        if (AUTO_LEVEL_ABILITIES)
+            resetLevelingFlags(); // Ensure we still get auto-leveling next game
+    }
+    const isWrongGamemode = ONLY_FOR_ARAMS && STATES.gameMode !== "ARAM" && STATES.gameMode !== "URF";
+    const isInvalidClientState = STATES.clientState !== "Lobby";
+    const shouldSkipLobbyActions = isInvalidClientState ||
+        isWrongGamemode ||
+        FLAGS.isInLowPrioQueue ||
+        FLAGS.isQueuedUp ||
+        !AUTO_INVITE_FRIENDS;
+    if (shouldSkipLobbyActions)
+        return;
+    FLAGS.isLobbyFull = lobby.gameConfig.isLobbyFull;
+    FLAGS.isPartyLeader = lobby.localMember.isLeader;
+    FLAGS.canStartGame = lobby.canStartActivity;
+    const members = lobby.members;
+    if (AUTO_INVITE_FRIENDS && !FLAGS.inviteTriggered) {
+        FLAGS.inviteTriggered = true;
+        await tryInviteFriends(members);
     }
 };
