@@ -83,9 +83,7 @@ export const handleInvites = async (lobby) => {
             resetLevelingFlags(); // Ensure we still get auto-leveling next game
     }
     const isWrongGamemode = ONLY_FOR_ARAMS && STATES.gameMode !== "ARAM" && STATES.gameMode !== "URF";
-    const isInvalidClientState = STATES.clientState !== "Lobby";
-    const shouldSkipLobbyActions = isInvalidClientState ||
-        isWrongGamemode ||
+    const shouldSkipLobbyActions = isWrongGamemode ||
         FLAGS.isInLowPrioQueue ||
         FLAGS.isQueuedUp ||
         !AUTO_INVITE_FRIENDS;

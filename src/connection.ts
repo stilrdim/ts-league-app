@@ -99,7 +99,9 @@ const subscribeToWebSocketEvents = async (): Promise<void> => {
   // Handle Lobby
   if (AUTO_QUEUE_UP) {
     ws.subscribe("/lol-lobby/v2/lobby", async (event: LobbyResponse | null) => {
+      console.log("[Lobby Update]");
       if (!event) return;
+      if (STATES.clientState !== "Lobby") return;
       await handleLobby(event);
     });
   }

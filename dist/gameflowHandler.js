@@ -122,14 +122,19 @@ export const handleBackToLobby = async () => {
 };
 export const handleLobby = async (wsEvent) => {
     const invitations = wsEvent.invitations;
-    if (FLAGS.inviteTriggered) {
-        const allInvitesAnswered = invitations.every((inv) => inv.state !== "Pending" && inv.state !== "OnHold");
-        const allReady = wsEvent.members.every((m) => m.ready === true);
-        if (allInvitesAnswered && allReady)
-            await queueUp();
-        return;
+    const members = wsEvent.members;
+    const allReady = members.every((m) => m.ready === true);
+    const allInvitesAnswered = invitations.every((inv) => inv.state !== "Pending" && inv.state !== "OnHold");
+    // === Invite logic (once)
+    if (!FLAGS.inviteTriggered) {
+        FLAGS.inviteTriggered = true;
+        await handleInvites(wsEvent); // will send invites
+        return; // wait for update after invites go out
     }
-    await handleInvites(wsEvent);
+    // === Queue logic (on update)
+    if (!FLAGS.isQueuedUp && allReady && allInvitesAnswered) {
+        await queueUp();
+    }
 };
 // Handles Matchmaking
 export const handleInQueue = async () => {

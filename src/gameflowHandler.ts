@@ -171,19 +171,25 @@ export const handleBackToLobby = async (): Promise<void> => {
 };
 
 export const handleLobby = async (wsEvent: LobbyResponse): Promise<void> => {
-  const invitations: Invitation[] = wsEvent.invitations;
+  const invitations = wsEvent.invitations;
+  const members = wsEvent.members;
 
-  if (FLAGS.inviteTriggered) {
-    const allInvitesAnswered = invitations.every(
-      (inv) => inv.state !== "Pending" && inv.state !== "OnHold"
-    );
-    const allReady = wsEvent.members.every((m) => m.ready === true);
+  const allReady = members.every((m) => m.ready === true);
+  const allInvitesAnswered = invitations.every(
+    (inv) => inv.state !== "Pending" && inv.state !== "OnHold"
+  );
 
-    if (allInvitesAnswered && allReady) await queueUp();
-    return;
+  // === Invite logic (once)
+  if (!FLAGS.inviteTriggered) {
+    FLAGS.inviteTriggered = true;
+    await handleInvites(wsEvent); // will send invites
+    return; // wait for update after invites go out
   }
 
-  await handleInvites(wsEvent);
+  // === Queue logic (on update)
+  if (!FLAGS.isQueuedUp && allReady && allInvitesAnswered) {
+    await queueUp();
+  }
 };
 
 // Handles Matchmaking
