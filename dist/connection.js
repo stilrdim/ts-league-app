@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Agent } from "https";
 import { authenticate, createWebSocketConnection, } from "league-connect";
-import { CONFIG, STATES } from "./config/constants.js";
+import { CONFIG, FLAGS, STATES } from "./config/constants.js";
 import { handleChampSelect } from "./gameflowHandler.js";
 import { poll } from "./league.js";
 import { handleLobby } from "./gameflowHandler.js";
@@ -68,6 +68,9 @@ const subscribeToWebSocketEvents = async () => {
             if (STATES.clientState !== "Lobby")
                 return;
             console.log("Calling handleLobby...");
+            FLAGS.isLobbyFull = event.gameConfig.isLobbyFull;
+            FLAGS.isPartyLeader = event.localMember.isLeader;
+            FLAGS.canStartGame = event.canStartActivity;
             await handleLobby(event);
         });
     }

@@ -91,9 +91,7 @@ export const handleInvites = async (lobby) => {
         !AUTO_INVITE_FRIENDS;
     if (shouldSkipLobbyActions)
         return;
-    FLAGS.isLobbyFull = lobby.gameConfig.isLobbyFull;
-    FLAGS.isPartyLeader = lobby.localMember.isLeader;
-    FLAGS.canStartGame = lobby.canStartActivity;
+    console.log(`Handling invites...\t\tisLobbyFull: ${FLAGS.isLobbyFull}\tisPartyLeader: ${FLAGS.isPartyLeader}\tcanStartGame: ${FLAGS.canStartGame}`);
     const members = lobby.members;
     if (AUTO_INVITE_FRIENDS && !FLAGS.inviteTriggered) {
         FLAGS.inviteTriggered = true;
