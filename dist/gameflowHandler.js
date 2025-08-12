@@ -125,17 +125,14 @@ export const handleLobby = async (wsEvent) => {
     const members = wsEvent.members;
     const allReady = members.every((m) => m.ready === true);
     const allInvitesAnswered = invitations.every((inv) => inv.state !== "Pending" && inv.state !== "OnHold");
-    console.log(`allReady, allInvitesAnswered: ${allReady}, ${allInvitesAnswered}`);
     // === Invite logic (once)
     if (!FLAGS.inviteTriggered) {
         FLAGS.inviteTriggered = true;
-        console.log("Calling handleInvites...");
         await handleInvites(wsEvent); // will send invites
         return; // wait for update after invites go out
     }
     // === Queue logic (on update)
     if (!FLAGS.isQueuedUp && allReady && allInvitesAnswered) {
-        console.log("Calling queuedup...");
         await queueUp();
     }
 };

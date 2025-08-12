@@ -179,21 +179,15 @@ export const handleLobby = async (wsEvent: LobbyResponse): Promise<void> => {
     (inv) => inv.state !== "Pending" && inv.state !== "OnHold"
   );
 
-  console.log(
-    `allReady, allInvitesAnswered: ${allReady}, ${allInvitesAnswered}`
-  );
-
   // === Invite logic (once)
   if (!FLAGS.inviteTriggered) {
     FLAGS.inviteTriggered = true;
-    console.log("Calling handleInvites...");
     await handleInvites(wsEvent); // will send invites
     return; // wait for update after invites go out
   }
 
   // === Queue logic (on update)
   if (!FLAGS.isQueuedUp && allReady && allInvitesAnswered) {
-    console.log("Calling queuedup...");
     await queueUp();
   }
 };

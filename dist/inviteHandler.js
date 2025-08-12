@@ -22,8 +22,6 @@ const findUninvitedFriends = async (partyMembers) => {
 };
 export const queueUp = async () => {
     const isUnableToStart = !FLAGS.isPartyLeader || !FLAGS.canStartGame;
-    console.log("Ability to start: ", !isUnableToStart);
-    console.log("Already queued up? ", FLAGS.isQueuedUp);
     if (FLAGS.isQueuedUp || isUnableToStart)
         return;
     FLAGS.isQueuedUp = true;
@@ -91,7 +89,6 @@ export const handleInvites = async (lobby) => {
         !AUTO_INVITE_FRIENDS;
     if (shouldSkipLobbyActions)
         return;
-    console.log(`Handling invites...\t\tisLobbyFull: ${FLAGS.isLobbyFull}\tisPartyLeader: ${FLAGS.isPartyLeader}\tcanStartGame: ${FLAGS.canStartGame}`);
     const members = lobby.members;
     if (AUTO_INVITE_FRIENDS && !FLAGS.inviteTriggered) {
         FLAGS.inviteTriggered = true;

@@ -67,7 +67,6 @@ const subscribeToWebSocketEvents = async () => {
                 return;
             if (STATES.clientState !== "Lobby")
                 return;
-            console.log("Calling handleLobby...");
             FLAGS.isLobbyFull = event.gameConfig.isLobbyFull;
             FLAGS.isPartyLeader = event.localMember.isLeader;
             FLAGS.canStartGame = event.canStartActivity;
