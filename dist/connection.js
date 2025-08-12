@@ -67,6 +67,7 @@ const subscribeToWebSocketEvents = async () => {
                 return;
             if (STATES.clientState !== "Lobby")
                 return;
+            console.log("Calling handleLobby...");
             await handleLobby(event);
         });
     }

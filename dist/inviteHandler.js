@@ -22,6 +22,8 @@ const findUninvitedFriends = async (partyMembers) => {
 };
 export const queueUp = async () => {
     const isUnableToStart = !FLAGS.isPartyLeader || !FLAGS.canStartGame;
+    console.log("Ability to start: ", !isUnableToStart);
+    console.log("Already queued up? ", FLAGS.isQueuedUp);
     if (FLAGS.isQueuedUp || isUnableToStart)
         return;
     FLAGS.isQueuedUp = true;

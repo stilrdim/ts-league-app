@@ -102,6 +102,7 @@ const subscribeToWebSocketEvents = async (): Promise<void> => {
       console.log("[Lobby Update]");
       if (!event) return;
       if (STATES.clientState !== "Lobby") return;
+      console.log("Calling handleLobby...");
       await handleLobby(event);
     });
   }
