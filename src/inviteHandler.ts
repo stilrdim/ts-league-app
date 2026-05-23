@@ -2,13 +2,12 @@ import { HttpStatusCode, isAxiosError } from "axios";
 import { COLLECTIONS, FLAGS, STATES, CONFIG } from "./config/constants.js";
 import { leagueRequest } from "./connection.js";
 import { FriendlistFriend, LobbyMember, LobbyResponse } from "./types/index.js";
-import { resetLevelingFlags } from "./leveler_module.js";
 
 const { FRIENDS } = COLLECTIONS;
-const { AUTO_INVITE_FRIENDS, AUTO_LEVEL_ABILITIES, ONLY_FOR_ARAMS } = CONFIG;
+const { AUTO_INVITE_FRIENDS, ONLY_FOR_ARAMS } = CONFIG;
 
 const findUninvitedFriends = async (
-  partyMembers: LobbyMember[]
+  partyMembers: LobbyMember[],
 ): Promise<FriendlistFriend[] | []> => {
   // Get the summoner IDs of people already in our lobby
   const partyMembersIds = partyMembers.map((p) => p.summonerId);
@@ -20,19 +19,19 @@ const findUninvitedFriends = async (
     "/lol-chat/v1/friends",
     {
       timeout: 3000,
-    }
+    },
   );
 
   // Filter through the entire friendlist and obtain the ones that matter
   const closeFriends = allFriends.filter((friend) =>
-    closeFriendsList.includes(friend.gameName)
+    closeFriendsList.includes(friend.gameName),
   );
 
   const unavailableStates = ["offline", "mobile", "dnd"]; // dnd -> ingame
   const uninvitedFriends = closeFriends.filter(
     (friend) =>
       !partyMembersIds.includes(friend.summonerId) && // They aren't already in our lobby
-      !unavailableStates.includes(friend.availability) // They are available
+      !unavailableStates.includes(friend.availability), // They are available
   );
 
   return uninvitedFriends;
@@ -51,7 +50,7 @@ export const queueUp = async (): Promise<void> => {
     if (isAxiosError(err)) {
       console.error(
         "[Axios] Error queueing up: ",
-        err.response?.data || err.message
+        err.response?.data || err.message,
       );
     }
   }
@@ -70,7 +69,7 @@ const tryInviteFriends = async (partyMembers: LobbyMember[]): Promise<void> => {
       FLAGS.hasFriendsToInvite = true;
 
       uninvitedFriends.forEach((friend) =>
-        console.log(`Inviting ${friend.gameName}...`)
+        console.log(`Inviting ${friend.gameName}...`),
       );
 
       // Format it the way the league client expects it to be
@@ -81,7 +80,7 @@ const tryInviteFriends = async (partyMembers: LobbyMember[]): Promise<void> => {
       // Send the invite
       await leagueRequest.post(
         "/lol-lobby/v2/lobby/invitations",
-        invitePayload
+        invitePayload,
       );
     } else {
       console.log("No new friends to invite");
@@ -91,14 +90,14 @@ const tryInviteFriends = async (partyMembers: LobbyMember[]): Promise<void> => {
       if (err.response?.status === HttpStatusCode.BadRequest) {
         console.error(
           "[Axios] Queue up error (probably a low priority queue): ",
-          err.response?.data || err.message
+          err.response?.data || err.message,
         );
 
         if (!FLAGS.isInLowPrioQueue) FLAGS.isInLowPrioQueue = true;
       }
       console.error(
         "[Axios] Inviting friends error: ",
-        err.response?.data || err.message
+        err.response?.data || err.message,
       );
     } else {
       console.error("[Unknown] Inviting friends error: ", err);
@@ -114,8 +113,6 @@ export const handleInvites = async (lobby: LobbyResponse): Promise<void> => {
     FLAGS.isQueuedUp = false;
     FLAGS.isInLowPrioQueue = false;
     STATES.gameMode = lobby.gameConfig.gameMode ?? "UNKNOWN";
-
-    if (AUTO_LEVEL_ABILITIES) resetLevelingFlags(); // Ensure we still get auto-leveling next game
   }
 
   const isWrongGamemode =

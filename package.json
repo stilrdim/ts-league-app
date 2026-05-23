@@ -7,7 +7,9 @@
   "scripts": {
     "test": "node dist/test.js",
     "test_league": "node dist/test_league.js",
-    "league": "node dist/league.js"
+    "league": "node dist/league.js",
+    "updaterunes": "node dist/recommended_runes_updater.js",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",

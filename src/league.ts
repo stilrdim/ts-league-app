@@ -8,7 +8,11 @@ import {
   handleInAnActiveGame,
   handleInQueue,
 } from "./gameflowHandler.js";
-import { handleLeveling, hasReachedMaxLevel } from "./leveler_module.js";
+import {
+  handleLeveling,
+  hasReachedMaxLevel,
+  resetLevelingFlags,
+} from "./leveler_module.js";
 
 const {
   AUTO_ACCEPT_QUEUE,
@@ -52,6 +56,7 @@ export async function poll(): Promise<void> {
       case "EndOfGame":
         if (SKIP_ENDGAME_SCREEN) await handleBackToLobby();
         FLAGS.isInGame = false;
+        resetLevelingFlags(); // Ensure we still get auto-leveling and recommended items next game
 
         break;
 

@@ -2,7 +2,7 @@ import { HttpStatusCode, isAxiosError } from "axios";
 import { CONFIG, FLAGS, STATES } from "./config/constants.js";
 import { connectToLeagueClient } from "./connection.js";
 import { handleAcceptQueue, handleBackToLobby, handleHonorPlayers, handleInAnActiveGame, handleInQueue, } from "./gameflowHandler.js";
-import { handleLeveling, hasReachedMaxLevel } from "./leveler_module.js";
+import { handleLeveling, hasReachedMaxLevel, resetLevelingFlags, } from "./leveler_module.js";
 const { AUTO_ACCEPT_QUEUE, AUTO_HONOR_FRIENDS, AUTO_LEVEL_ABILITIES, POLLING_INTERVAL_IN_SECONDS, SKIP_ENDGAME_SCREEN, } = CONFIG;
 console.log("League app started!");
 // Create Client
@@ -32,6 +32,7 @@ export async function poll() {
                 if (SKIP_ENDGAME_SCREEN)
                     await handleBackToLobby();
                 FLAGS.isInGame = false;
+                resetLevelingFlags(); // Ensure we still get auto-leveling and recommended items next game
                 break;
             case "Lobby":
                 // Reset necessary flags to avoid useless requests

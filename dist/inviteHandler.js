@@ -1,9 +1,8 @@
 import { HttpStatusCode, isAxiosError } from "axios";
 import { COLLECTIONS, FLAGS, STATES, CONFIG } from "./config/constants.js";
 import { leagueRequest } from "./connection.js";
-import { resetLevelingFlags } from "./leveler_module.js";
 const { FRIENDS } = COLLECTIONS;
-const { AUTO_INVITE_FRIENDS, AUTO_LEVEL_ABILITIES, ONLY_FOR_ARAMS } = CONFIG;
+const { AUTO_INVITE_FRIENDS, ONLY_FOR_ARAMS } = CONFIG;
 const findUninvitedFriends = async (partyMembers) => {
     // Get the summoner IDs of people already in our lobby
     const partyMembersIds = partyMembers.map((p) => p.summonerId);
@@ -16,8 +15,7 @@ const findUninvitedFriends = async (partyMembers) => {
     const closeFriends = allFriends.filter((friend) => closeFriendsList.includes(friend.gameName));
     const unavailableStates = ["offline", "mobile", "dnd"]; // dnd -> ingame
     const uninvitedFriends = closeFriends.filter((friend) => !partyMembersIds.includes(friend.summonerId) && // They aren't already in our lobby
-        !unavailableStates.includes(friend.availability) // They are available
-    );
+        !unavailableStates.includes(friend.availability));
     return uninvitedFriends;
 };
 export const queueUp = async () => {
@@ -79,8 +77,6 @@ export const handleInvites = async (lobby) => {
         FLAGS.isQueuedUp = false;
         FLAGS.isInLowPrioQueue = false;
         STATES.gameMode = lobby.gameConfig.gameMode ?? "UNKNOWN";
-        if (AUTO_LEVEL_ABILITIES)
-            resetLevelingFlags(); // Ensure we still get auto-leveling next game
     }
     const isWrongGamemode = ONLY_FOR_ARAMS && STATES.gameMode !== "ARAM" && STATES.gameMode !== "URF";
     const shouldSkipLobbyActions = isWrongGamemode ||
