@@ -104,7 +104,7 @@ const getSkillOrder = async (champName, gameMode) => {
         .catch((err) => console.error("Error while fetching skill order: ", err));
 };
 const fetchGamemode = (gameData, champName) => {
-    const gameMode = gameData.gameMode;
+    const gameMode = gameData.gameMode.toUpperCase();
     console.log(`[Auto-lvler]\nGamemode: ${gameMode}\nChampion: ${champName}\n`);
     return gameMode;
 };
@@ -197,7 +197,7 @@ const fetchRecommendedItems = async (champName, gameMode) => {
     try {
         const matchedChampName = normalizeChampionName(champName);
         let url;
-        if (gameMode === "ARAM")
+        if (gameMode === "ARAM" || gameMode === "KIWI")
             url = `https://op.gg/lol/modes/aram/${matchedChampName}/items`;
         else
             url = `https://op.gg/lol/champions/${matchedChampName}/items`;
@@ -216,22 +216,15 @@ const fetchRecommendedItems = async (champName, gameMode) => {
         for (let i = 0; i < Math.min(15, rows.length); i++) {
             const $row = $(rows[i]);
             const name = $row.find("strong.text-gray-900").text().trim();
-            const pickRate = $row
-                .find("td.bg-gray-100 span.font-bold")
-                .first()
-                .text()
-                .trim();
-            const winRate = $row.find("td:last-child strong").text().trim() ?? "Unknown";
-            const gamesPurchased = $row
-                .find("td.bg-gray-100 span.text-gray-500")
-                .first()
-                .text()
-                .trim();
+            const pickRate = $row.find("td.bg-gray-100 span.font-bold").first().text().trim() ?? "-";
+            const winRate = $row.find("td:last-child strong").text().trim() ?? "-";
+            const gamesPurchased = $row.find("td.bg-gray-100 span.text-gray-500").first().text().trim() ??
+                "-";
             if (name && pickRate) {
                 items.push({ name, pickRate, winRate, gamesPurchased });
             }
         }
-        console.log(`Recommended items for ${champName}`);
+        console.log(`[${gameMode}] Recommended items for ${champName}`);
         console.table(items.map((item) => ({
             Name: item.name,
             "Pick Rate %": item.pickRate,

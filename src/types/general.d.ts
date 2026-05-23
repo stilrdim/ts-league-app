@@ -71,6 +71,7 @@ export type GameMode =
   | "ONEFORALL"
   | "NEXUSBLITZ"
   | "ULTBOOK"
+  | "KIWI" // ARAM Mayhem
   | "UNKNOWN";
 
 export type QueueType =
