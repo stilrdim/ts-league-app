@@ -4,6 +4,7 @@ import { Agent } from "https";
 import { authenticate } from "league-connect";
 import promptSync from "prompt-sync";
 import { rootDir } from "./config/constants.js";
+import { sleep } from "./connection.js";
 const prompt = promptSync();
 (async () => {
     const credentials = await authenticate({ awaitConnection: true });
@@ -19,7 +20,6 @@ const prompt = promptSync();
         },
     });
     console.log(`[DEV TESTING] Connected to league client on port ${credentials.port}\n`);
-    const sleep = (secs) => new Promise((r) => setTimeout(r, secs * 1000));
     // #region Runepage Handling
     const findRunepagesByName = async (query) => {
         if (!query.trim())

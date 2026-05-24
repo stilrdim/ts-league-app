@@ -17,6 +17,7 @@ import {
   FriendlistFriend,
   RunePage,
 } from "./types/index.js";
+import { sleep } from "./connection.js";
 
 // #region Implementation Detail
 
@@ -86,8 +87,6 @@ const cDragonRequest = axios.create({
 console.log(
   `[DEV TESTING] Connected to league client on port ${credentials.port}\n`,
 );
-
-const sleep = (secs: number) => new Promise((r) => setTimeout(r, secs * 1000));
 
 const findFriend = async (targetName: string) => {
   const { data: friends } = await leagueRequest.get<FriendlistFriend[]>(
@@ -246,7 +245,7 @@ const testEndpoints = async () => {
 
       // Sleep for X seconds
       const sleepDurationInSec = 1;
-      await new Promise((r) => setTimeout(r, sleepDurationInSec * 1000));
+      await sleep(sleepDurationInSec);
     }
 
     // Successfully finished scanning all the endpoints

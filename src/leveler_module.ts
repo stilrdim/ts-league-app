@@ -21,6 +21,7 @@ import {
   SkillKey,
 } from "./types/index.js";
 import readline from "readline";
+import { sleep } from "./connection.js";
 
 // CONSTANTS
 let SKILL_ORDER: Record<SkillKey, string[]> = {
@@ -398,10 +399,10 @@ export const initializeGame = async (): Promise<void> => {
       const gameInfo = allGameData.gameData;
 
       CHAMP_NAME = getChampName(allGameData);
-      if (!CHAMP_NAME) return;
+      if (!CHAMP_NAME) continue;
 
       GAMEMODE = fetchGamemode(gameInfo, CHAMP_NAME) as GameMode;
-      if (!GAMEMODE) return;
+      if (!GAMEMODE) continue;
 
       await getSkillOrder(CHAMP_NAME, GAMEMODE);
       handleChampPreferences(CHAMP_NAME, GAMEMODE);
@@ -412,7 +413,7 @@ export const initializeGame = async (): Promise<void> => {
     } catch (err) {
       if (isAxiosError(err)) {
         console.log("Still loading up game...");
-        await new Promise((r) => setTimeout(r, retryDelayInSecs * 1000));
+        await sleep(retryDelayInSecs);
       } else {
         console.error("[InitializeGame] Unexpected error", err);
       }

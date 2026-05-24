@@ -19,7 +19,7 @@ const { AUTO_SELECT_RUNES, AUTO_QUEUE_UP } = CONFIG;
 
 export let leagueRequest: AxiosInstance;
 let ws: LeagueWebSocket;
-let sleep = async (secs: number): Promise<void> =>
+export const sleep = async (secs: number): Promise<void> =>
   new Promise((r) => setTimeout(r, secs * 1000));
 
 export const connectToLeagueClient = async (): Promise<void> => {
@@ -32,7 +32,7 @@ export const connectToLeagueClient = async (): Promise<void> => {
     httpsAgent,
     headers: {
       Authorization: `Basic ${Buffer.from(
-        `riot:${credentials.password}`
+        `riot:${credentials.password}`,
       ).toString("base64")}`,
     },
   });
@@ -59,7 +59,7 @@ export const connectToLeagueClient = async (): Promise<void> => {
   await sleep(2);
 
   const { data: phase } = await leagueRequest.get(
-    "/lol-gameflow/v1/gameflow-phase"
+    "/lol-gameflow/v1/gameflow-phase",
   );
 
   STATES.clientState = phase;
@@ -82,7 +82,7 @@ const subscribeToWebSocketEvents = async (): Promise<void> => {
       console.log(`\n[STATE] ${STATES.clientState} -> ${state}`);
       STATES.clientState = state;
       await poll();
-    }
+    },
   );
 
   // Handle ChampSelect
@@ -93,7 +93,7 @@ const subscribeToWebSocketEvents = async (): Promise<void> => {
         if (!event) return;
 
         await handleChampSelect(event);
-      }
+      },
     );
 
   // Handle Lobby

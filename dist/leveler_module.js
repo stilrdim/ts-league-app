@@ -7,6 +7,7 @@ import { Agent } from "https";
 import fetch from "node-fetch";
 import { champNamesConfigPath, champPrefsConfigPath, CONFIG, FLAGS, STATES, } from "./config/constants.js";
 import readline from "readline";
+import { sleep } from "./connection.js";
 // CONSTANTS
 let SKILL_ORDER = {
     Q: [],
@@ -281,10 +282,10 @@ export const initializeGame = async () => {
             const gameInfo = allGameData.gameData;
             CHAMP_NAME = getChampName(allGameData);
             if (!CHAMP_NAME)
-                return;
+                continue;
             GAMEMODE = fetchGamemode(gameInfo, CHAMP_NAME);
             if (!GAMEMODE)
-                return;
+                continue;
             await getSkillOrder(CHAMP_NAME, GAMEMODE);
             handleChampPreferences(CHAMP_NAME, GAMEMODE);
             await fetchRecommendedItems(CHAMP_NAME, GAMEMODE);
@@ -294,7 +295,7 @@ export const initializeGame = async () => {
         catch (err) {
             if (isAxiosError(err)) {
                 console.log("Still loading up game...");
-                await new Promise((r) => setTimeout(r, retryDelayInSecs * 1000));
+                await sleep(retryDelayInSecs);
             }
             else {
                 console.error("[InitializeGame] Unexpected error", err);

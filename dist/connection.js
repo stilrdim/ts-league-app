@@ -8,7 +8,7 @@ import { handleLobby } from "./gameflowHandler.js";
 const { AUTO_SELECT_RUNES, AUTO_QUEUE_UP } = CONFIG;
 export let leagueRequest;
 let ws;
-let sleep = async (secs) => new Promise((r) => setTimeout(r, secs * 1000));
+export const sleep = async (secs) => new Promise((r) => setTimeout(r, secs * 1000));
 export const connectToLeagueClient = async () => {
     const credentials = await authenticate({ awaitConnection: true });
     const httpsAgent = new Agent({ rejectUnauthorized: false });
