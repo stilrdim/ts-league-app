@@ -24,6 +24,7 @@ export interface ActivePlayer {
   riotId: string;
   summonerName: string;
   team: string;
+  error?: string;
 }
 
 export interface Ability {

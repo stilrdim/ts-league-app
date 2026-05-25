@@ -123,7 +123,11 @@ const changeSkillPrio = (skillOne, skillTwo) => {
 };
 const getChampName = (allGameData) => {
     const summonerName = allGameData.activePlayer.riotId;
-    const allPlayers = allGameData.allPlayers;
+    // Account for spectating games
+    if (!summonerName) {
+        return allGameData.activePlayer.error ? "SPECTATOR_MODE" : "";
+    }
+    const { allPlayers } = allGameData;
     const player = allPlayers.find((p) => p.riotId === summonerName);
     if (!player) {
         console.log(`Something is wrong with you receiving ingame data.\n Summoner name ${summonerName} not found.`);
@@ -283,6 +287,8 @@ export const initializeGame = async () => {
             CHAMP_NAME = getChampName(allGameData);
             if (!CHAMP_NAME)
                 continue;
+            else if (CHAMP_NAME === "SPECTATOR_MODE")
+                return;
             GAMEMODE = fetchGamemode(gameInfo, CHAMP_NAME);
             if (!GAMEMODE)
                 continue;
