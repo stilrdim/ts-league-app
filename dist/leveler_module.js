@@ -300,7 +300,7 @@ export const initializeGame = async () => {
         }
         catch (err) {
             if (isAxiosError(err)) {
-                console.log("Still loading up game...");
+                console.log("Loading up game...");
                 await sleep(retryDelayInSecs);
             }
             else {

@@ -419,7 +419,7 @@ export const initializeGame = async (): Promise<void> => {
       return; // Finish the loop
     } catch (err) {
       if (isAxiosError(err)) {
-        console.log("Still loading up game...");
+        console.log("Loading up game...");
         await sleep(retryDelayInSecs);
       } else {
         console.error("[InitializeGame] Unexpected error", err);
