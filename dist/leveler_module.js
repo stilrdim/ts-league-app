@@ -277,7 +277,7 @@ export const resetLevelingFlags = () => {
 export const initializeGame = async () => {
     if (STATES.gameInitialized)
         return;
-    const retries = 20;
+    const retries = 100;
     const retryDelayInSecs = 5;
     for (let i = 0; i < retries; i++) {
         try {
