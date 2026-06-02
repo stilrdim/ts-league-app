@@ -309,6 +309,27 @@ const fetchRecommendedItems = async (
       return $(el).text().trim() === "Items";
     });
 
+    let champWinRate = "UNKNOWN";
+    let champPickRate = "UNKNOWN";
+
+    // Fetch champ win rate
+    $("li").each((_, el) => {
+      const label = $(el).find("span").text().trim();
+
+      if (label === "Win rate") {
+        champWinRate = $(el).find("b").text().trim();
+      }
+    });
+
+    // Fetch champ pick rate
+    $("li").each((_, el) => {
+      const label = $(el).find("span").text().trim();
+
+      if (label === "Pick rate") {
+        champPickRate = $(el).find("b").text().trim();
+      }
+    });
+
     const itemsSection = itemsHeading.closest("section");
     const itemsTable = itemsSection.find("tbody");
 
@@ -331,7 +352,9 @@ const fetchRecommendedItems = async (
       }
     }
 
-    console.log(`[${gameMode}] Recommended items for ${champName}`);
+    console.log(
+      `[${gameMode}] Recommended items for ${champName}\nWR/PR: [${champWinRate}] / [${champPickRate}]`,
+    );
     console.table(
       items.map((item) => ({
         Name: item.name,

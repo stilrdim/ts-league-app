@@ -214,6 +214,22 @@ const fetchRecommendedItems = async (champName, gameMode) => {
         const itemsHeading = $('div:contains("Items")').filter((_, el) => {
             return $(el).text().trim() === "Items";
         });
+        let champWinRate = "UNKNOWN";
+        let champPickRate = "UNKNOWN";
+        // Fetch champ win rate
+        $("li").each((_, el) => {
+            const label = $(el).find("span").text().trim();
+            if (label === "Win rate") {
+                champWinRate = $(el).find("b").text().trim();
+            }
+        });
+        // Fetch champ pick rate
+        $("li").each((_, el) => {
+            const label = $(el).find("span").text().trim();
+            if (label === "Pick rate") {
+                champPickRate = $(el).find("b").text().trim();
+            }
+        });
         const itemsSection = itemsHeading.closest("section");
         const itemsTable = itemsSection.find("tbody");
         const rows = itemsTable.children("tr");
@@ -229,7 +245,7 @@ const fetchRecommendedItems = async (champName, gameMode) => {
                 items.push({ name, pickRate, winRate, gamesPurchased });
             }
         }
-        console.log(`[${gameMode}] Recommended items for ${champName}`);
+        console.log(`[${gameMode}] Recommended items for ${champName}\nWR/PR: [${champWinRate}] / [${champPickRate}]`);
         console.table(items.map((item) => ({
             Name: item.name,
             "Pick Rate %": item.pickRate,
