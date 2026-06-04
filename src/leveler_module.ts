@@ -78,9 +78,13 @@ const normalizeChampionName = (champName: string): string | undefined => {
   }
 
   const normalizedName = champName.toLowerCase().replace(/[.'"]/g, "");
-  const firstName = normalizedName.split(" ")[0];
+  let firstName = normalizedName.split(" ")[0];
 
   if (!firstName) return;
+
+  if (firstName === "wukong") {
+    firstName = "monkeyking";
+  }
 
   // Try to find exact match --- in case of "vi" returning "sivir"
   let champFound = CHAMP_NAMES.find((champ) => champ === firstName);
@@ -92,7 +96,7 @@ const normalizeChampionName = (champName: string): string | undefined => {
 
   if (!champFound) {
     console.log(
-      "The champion name seems to be undefined or not valid. Is it a new champ release? Add it to config/leveler_champs_array.json!",
+      "The champion name seems to be undefined or not valid. Is it a new champ release? Add it to config/leveler_champs_array.json!\n\nAlternatively, run champs_array_updater.js",
     );
   }
 
