@@ -5,10 +5,11 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "test": "node dist/test.js",
+    "test": "tsc && node dist/test_2.js",
     "test_league": "node dist/test_league.js",
     "league": "node dist/league.js",
     "updaterunes": "node dist/recommended_runes_updater.js",
+    "updatechamps": "node dist/champ_array_updater.js",
     "build": "tsc"
   },
   "keywords": [],
