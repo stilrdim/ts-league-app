@@ -9,7 +9,7 @@
     "test_league": "node dist/test_league.js",
     "league": "node dist/league.js",
     "updaterunes": "node dist/recommended_runes_updater.js",
-    "updatechamps": "node dist/champ_array_updater.js",
+    "updatechamps": "node dist/champs_array_updater.js",
     "build": "tsc"
   },
   "keywords": [],

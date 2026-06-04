@@ -1,17 +1,8 @@
 import axios from "axios";
-import { Agent } from "https";
 import * as cheerio from "cheerio";
 import { champNamesConfigPath } from "./config/constants.js";
-
-// Self-signed cert
-const httpsAgent = new Agent({
-  rejectUnauthorized: false,
-});
-
-const opggRequest = axios.create({
-  baseURL: `https://op.gg/lol/`,
-  httpsAgent,
-});
+import fs from "fs";
+import path from "path";
 
 async function loadChampPage(): Promise<string> {
   try {
@@ -24,6 +15,8 @@ async function loadChampPage(): Promise<string> {
 }
 
 function getChampNames(html: string): string[] {
+  if (!html) return [];
+
   const $ = cheerio.load(html);
 
   // Element holding all champ names
@@ -49,7 +42,11 @@ async function main() {
 
   const result = getChampNames(html);
 
-  result.forEach((c) => console.log(c));
+  fs.writeFileSync(champNamesConfigPath, JSON.stringify(result, null, 2), {
+    encoding: "utf-8",
+  });
+
+  console.log(`Updated ${path.basename(champNamesConfigPath)}`);
 }
 
 main();
