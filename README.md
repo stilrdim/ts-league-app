@@ -75,7 +75,7 @@ And runs automation logic depending on the current state.
 
 ## Demo image
 
-![Demo image showcasing output of state changes, recommended items and skill prioritization](https://cdn.discordapp.com/attachments/453189142009085961/1515358198700179536/image.png?ex=6a2eb6cc&is=6a2d654c&hm=6adc14b268de9e09aa1a6dd4c9572882d68daf8e06da2188b5f566a773b8404e&)
+![Demo image showcasing output of state changes, recommended items and skill prioritization](https://i.ibb.co/MDYPwXr0/league-app.png)
 
 ---
 
