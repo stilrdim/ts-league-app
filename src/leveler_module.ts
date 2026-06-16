@@ -283,7 +283,7 @@ const handleChampPreferences = (champName: string, gameMode: string): void => {
       }
     }
   } else {
-    console.log("No special skill priority preferences detected");
+    console.log("No custom skill priority preferences detected");
   }
 
   console.log(`\nSkill priority:`);
@@ -348,8 +348,12 @@ const fetchRecommendedItems = async (
       const winRate = $row.find("td:last-child strong").text().trim() ?? "-";
 
       const gamesPurchased =
-        $row.find("td.bg-gray-100 span.text-gray-500").first().text().trim() ??
-        "-";
+        $row
+          .find("td.bg-gray-100 span.text-gray-500")
+          .first()
+          .text()
+          .trim()
+          .split(" ")[0] ?? "-";
 
       if (name && pickRate) {
         items.push({ name, pickRate, winRate, gamesPurchased });

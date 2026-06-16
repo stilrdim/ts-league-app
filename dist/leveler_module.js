@@ -195,7 +195,7 @@ const handleChampPreferences = (champName, gameMode) => {
         }
     }
     else {
-        console.log("No special skill priority preferences detected");
+        console.log("No custom skill priority preferences detected");
     }
     console.log(`\nSkill priority:`);
     console.table(SKILL_ORDER); // List separately - avoid [Object object] and keep syntax highlight
@@ -242,8 +242,12 @@ const fetchRecommendedItems = async (champName, gameMode) => {
             const name = $row.find("strong.text-gray-900").text().trim();
             const pickRate = $row.find("td.bg-gray-100 span.font-bold").first().text().trim() ?? "-";
             const winRate = $row.find("td:last-child strong").text().trim() ?? "-";
-            const gamesPurchased = $row.find("td.bg-gray-100 span.text-gray-500").first().text().trim() ??
-                "-";
+            const gamesPurchased = $row
+                .find("td.bg-gray-100 span.text-gray-500")
+                .first()
+                .text()
+                .trim()
+                .split(" ")[0] ?? "-";
             if (name && pickRate) {
                 items.push({ name, pickRate, winRate, gamesPurchased });
             }
