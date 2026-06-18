@@ -288,7 +288,7 @@ export const initializeGame = async () => {
     if (STATES.gameInitialized)
         return;
     const retries = 100;
-    const retryDelayInSecs = 5;
+    const retryDelayInSecs = 15;
     for (let i = 0; i < retries; i++) {
         try {
             const { data: allGameData } = await liveClientData.get("/allgamedata");
@@ -310,7 +310,7 @@ export const initializeGame = async () => {
         }
         catch (err) {
             if (isAxiosError(err)) {
-                console.log("Loading up game...");
+                console.log("Fetching game info...");
                 await sleep(retryDelayInSecs);
             }
             else {

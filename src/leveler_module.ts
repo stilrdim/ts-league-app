@@ -417,7 +417,7 @@ export const resetLevelingFlags = (): void => {
 export const initializeGame = async (): Promise<void> => {
   if (STATES.gameInitialized) return;
   const retries = 100;
-  const retryDelayInSecs = 5;
+  const retryDelayInSecs = 15;
 
   for (let i = 0; i < retries; i++) {
     try {
@@ -443,7 +443,7 @@ export const initializeGame = async (): Promise<void> => {
       return; // Finish the loop
     } catch (err) {
       if (isAxiosError(err)) {
-        console.log("Loading up game...");
+        console.log("Fetching game info...");
         await sleep(retryDelayInSecs);
       } else {
         console.error("[InitializeGame] Unexpected error", err);
