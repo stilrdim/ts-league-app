@@ -9,6 +9,7 @@ import { champNamesConfigPath, champPrefsConfigPath, CONFIG, FLAGS, STATES, } fr
 import readline from "readline";
 import { sleep } from "./connection.js";
 // CONSTANTS
+const SKILL_KEYS = ["Q", "W", "E", "R"];
 let SKILL_ORDER = {
     Q: [],
     W: [],
@@ -69,39 +70,25 @@ const getSkillOrder = async (champName, gameMode) => {
     let url;
     // Filter out useless symbols in name
     let matchedChampName = normalizeChampionName(champName);
-    if (matchedChampName && gameMode === "ARAM") {
-        url = `https://u.gg/lol/champions/aram/${matchedChampName}-aram`;
+    if (matchedChampName && (gameMode === "ARAM" || gameMode === "KIWI")) {
+        url = `https://blitz.gg/lol/champions/${matchedChampName}/aram`;
     }
     else {
-        url = `https://u.gg/lol/champions/${matchedChampName}/build`;
+        url = `https://blitz.gg/lol/champions/${matchedChampName}/build`;
     }
     await fetch(url)
         .then((res) => res.text())
         .then((body) => {
         const $ = cheerio.load(body);
-        const skillOrderDiv = $("div.skill-order");
-        const children = skillOrderDiv.children();
-        children.each((i, el) => {
-            const level = i + 1;
-            const skill = $(el).text().trim();
-            // U.GG returns the entire html element including all the boxes for each level
-            // + 1 for passive (73 total)
-            // Sort out skills by order
-            if (level >= 1 && level <= 18) {
-                if (skill)
-                    addPoint("Q", skill);
-            }
-            else if (level >= 19 && level <= 36) {
-                if (skill)
-                    addPoint("W", skill);
-            }
-            else if (level >= 37 && level <= 54) {
-                if (skill)
-                    addPoint("E", skill);
-            }
-            else if (level >= 55 && level <= 72) {
-                if (skill)
-                    addPoint("R", skill);
+        const children = $("div.skill-order-grid").children("div").toArray();
+        let currentLvl = 1;
+        children.slice(5).forEach((el, index) => {
+            if ($(el).hasClass("level"))
+                return;
+            const text = $(el).text().trim();
+            if (text && SKILL_KEYS.includes(text)) {
+                addPoint(text, currentLvl.toString());
+                currentLvl++;
             }
         });
     })

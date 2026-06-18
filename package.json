@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "test": "tsc && node dist/test_2.js",
+    "test": "tsc && node dist/test_3.js",
     "test_league": "node dist/test_league.js",
     "league": "node dist/league.js",
     "updaterunes": "node dist/recommended_runes_updater.js",
