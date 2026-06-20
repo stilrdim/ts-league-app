@@ -20,6 +20,13 @@ It uses a combination of **WebSockets** and **polling** to react to game state c
 
 ---
 
+## Demo image
+
+![Demo image showcasing output of state changes, recommended items and skill prioritization, Part 1](https://i.ibb.co/pjcXQTSr/1.png)
+![Demo image showcasing output of state changes, recommended items and skill prioritization, Part 2](https://i.ibb.co/VsDzyQk/2.png)
+
+---
+
 ## Config
 
 All main behavior is controlled through `config/CONFIG.ini`:
@@ -70,12 +77,6 @@ It listens for states like:
 - InGame
 
 And runs automation logic depending on the current state.
-
----
-
-## Demo image
-
-![Demo image showcasing output of state changes, recommended items and skill prioritization](https://i.ibb.co/MDYPwXr0/league-app.png)
 
 ---
 
