@@ -316,6 +316,11 @@ export const initializeGame = async () => {
             else {
                 console.error("[InitializeGame] Unexpected error", err);
             }
+            if (STATES.clientState === "None" ||
+                STATES.clientState === "Disconnected") {
+                console.log("Game has shut down");
+                break;
+            }
         }
     }
 };
