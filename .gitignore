@@ -2,8 +2,9 @@ node_modules/
 *.exe
 *.bat
 *.rar
-test*.js
-test_*.ts
+test*
+test_*
+*.html
 output*/
 dist/types
 *.js.map
