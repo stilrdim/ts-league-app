@@ -32,16 +32,17 @@ It uses a combination of **WebSockets** and **polling** to react to game state c
 All main behavior is controlled through `config/CONFIG.ini`:
 
 ```ini
-AUTO_LEVEL_ABILITIES=true
+AUTO_LEVEL_ABILITIES=false
 SKIP_ENDGAME_SCREEN=false
-AUTO_HONOR_FRIENDS=true
-AUTO_QUEUE_UP=true
+AUTO_HONOR_FRIENDS=false
+AUTO_QUEUE_UP=false
 AUTO_ACCEPT_QUEUE=true
-AUTO_INVITE_FRIENDS=true
-AUTO_SELECT_RUNES=true
-AUTO_SELECT_RECOMMENDED_RUNES=true
-ONLY_FOR_ARAMS=true
-POLLING_INTERVAL_IN_SECONDS=1
+AUTO_INVITE_FRIENDS=false
+AUTO_SELECT_RUNES=false
+AUTO_SELECT_RECOMMENDED_RUNES=false
+ONLY_FOR_ARAMS=false
+DISPLAY_RECOMMENDED_AUGMENTS_ARAM_MAYHEM=false
+POLLING_INTERVAL_IN_SECONDS=15
 ```
 
 You can toggle features on/off without touching code.
