@@ -60,7 +60,7 @@ export const CONFIG = {
   ),
   ONLY_FOR_ARAMS: Boolean(parsedConfigData.ONLY_FOR_ARAMS ?? false),
   POLLING_INTERVAL_IN_SECONDS: Number(
-    parsedConfigData.POLLING_INTERVAL_IN_SECONDS ?? 1,
+    parsedConfigData.POLLING_INTERVAL_IN_SECONDS ?? 0.3,
   ),
   DISPLAY_RECOMMENDED_ITEMS_ARAM_MAYHEM: Boolean(
     parsedConfigData.DISPLAY_RECOMMENDED_AUGMENTS_ARAM_MAYHEM ?? false,
