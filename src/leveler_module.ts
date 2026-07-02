@@ -139,6 +139,64 @@ const getSkillOrder = async (
     .catch((err) => console.error("Error while fetching skill order: ", err));
 };
 
+async function fetchRecommendedAugments(champName: string) {
+  try {
+    let normalizedChampName: string | undefined =
+      normalizeChampionName(champName);
+
+    if (!normalizedChampName) return;
+
+    const res = await axios.get(
+      `https://arammayhem.com/build/${normalizedChampName}/`,
+    );
+
+    const $ = cheerio.load(res.data);
+    const augmentEls = $(".group.flex.items-start.gap-3.p-3.rounded-lg");
+
+    const tiers = [
+      "PRISMATIC",
+      "PRISMATIC",
+      "PRISMATIC",
+      "PRISMATIC",
+      "PRISMATIC",
+      "PRISMATIC",
+      "GOLD",
+      "GOLD",
+      "GOLD",
+      "GOLD",
+      "GOLD",
+      "GOLD",
+      "SILVER",
+      "SILVER",
+      "SILVER",
+      "SILVER",
+      "SILVER",
+      "SILVER",
+    ];
+
+    const augments = [...augmentEls].map((elmt, i) => {
+      const $el = $(elmt);
+      const name = $el.children().eq(1).children().eq(0).text().trim();
+      const winrateRaw = $el.children().eq(1).children().eq(1).text().trim();
+      const winrate = winrateRaw.split("Win rate: ")[1] ?? "-"; // - if it's missing Winrate (likely old/removed augment or "QUEST" description making it glitch out)
+
+      return {
+        Tier: tiers[i],
+        Name: name,
+        "Win Rate": winrate,
+      };
+    });
+
+    if (augments.length > 2) {
+      console.log(`Recommended augments for ${champName}, sorted by pick rate`);
+      console.table(augments);
+    }
+  } catch (err) {
+    console.error("Something went wrong while retrieving augments");
+    console.log(`champName: ${champName}`);
+  }
+}
+
 const fetchGamemode = (gameData: GameData, champName: string): string => {
   const gameMode = gameData.gameMode.toUpperCase();
 
@@ -438,6 +496,9 @@ export const initializeGame = async (): Promise<void> => {
       await getSkillOrder(CHAMP_NAME, GAMEMODE);
       handleChampPreferences(CHAMP_NAME, GAMEMODE);
       await fetchRecommendedItems(CHAMP_NAME, GAMEMODE);
+
+      if (CONFIG.DISPLAY_RECOMMENDED_ITEMS_ARAM_MAYHEM)
+        await fetchRecommendedAugments(CHAMP_NAME);
 
       STATES.gameInitialized = true;
       return; // Finish the loop

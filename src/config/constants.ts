@@ -23,22 +23,22 @@ export const champsConfigPath = path.join(rootDir, "config", "champs.json");
 export const champPrefsConfigPath = path.join(
   rootDir,
   "config",
-  "champ_preferences.json"
+  "champ_preferences.json",
 );
 export const recRunesConfigPath = path.join(
   rootDir,
   "config",
-  "recommended_runepages.json"
+  "recommended_runepages.json",
 );
 export const allRunesConfigPath = path.join(
   rootDir,
   "data",
-  "all_runepages.json"
+  "all_runepages.json",
 );
 export const champNamesConfigPath = path.join(
   rootDir,
   "config",
-  "leveler_champs_array.json"
+  "leveler_champs_array.json",
 );
 
 // Handle CONFIG.ini
@@ -48,38 +48,41 @@ const rawConfigData = fs.readFileSync(configFilePath, "utf-8");
 const parsedConfigData = ini.parse(rawConfigData) as Config;
 
 export const CONFIG = {
-  AUTO_LEVEL_ABILITIES: Boolean(parsedConfigData.AUTO_LEVEL_ABILITIES ?? true),
-  SKIP_ENDGAME_SCREEN: Boolean(parsedConfigData.SKIP_ENDGAME_SCREEN ?? true),
-  AUTO_HONOR_FRIENDS: Boolean(parsedConfigData.AUTO_HONOR_FRIENDS ?? true),
-  AUTO_QUEUE_UP: Boolean(parsedConfigData.AUTO_QUEUE_UP ?? true),
+  AUTO_LEVEL_ABILITIES: Boolean(parsedConfigData.AUTO_LEVEL_ABILITIES ?? false),
+  SKIP_ENDGAME_SCREEN: Boolean(parsedConfigData.SKIP_ENDGAME_SCREEN ?? false),
+  AUTO_HONOR_FRIENDS: Boolean(parsedConfigData.AUTO_HONOR_FRIENDS ?? false),
+  AUTO_QUEUE_UP: Boolean(parsedConfigData.AUTO_QUEUE_UP ?? false),
   AUTO_ACCEPT_QUEUE: Boolean(parsedConfigData.AUTO_ACCEPT_QUEUE ?? true),
-  AUTO_INVITE_FRIENDS: Boolean(parsedConfigData.AUTO_INVITE_FRIENDS ?? true),
-  AUTO_SELECT_RUNES: Boolean(parsedConfigData.AUTO_SELECT_RUNES ?? true),
+  AUTO_INVITE_FRIENDS: Boolean(parsedConfigData.AUTO_INVITE_FRIENDS ?? false),
+  AUTO_SELECT_RUNES: Boolean(parsedConfigData.AUTO_SELECT_RUNES ?? false),
   AUTO_SELECT_RECOMMENDED_RUNES: Boolean(
-    parsedConfigData.AUTO_SELECT_RECOMMENDED_RUNES ?? true
+    parsedConfigData.AUTO_SELECT_RECOMMENDED_RUNES ?? false,
   ),
-  ONLY_FOR_ARAMS: Boolean(parsedConfigData.ONLY_FOR_ARAMS ?? true),
+  ONLY_FOR_ARAMS: Boolean(parsedConfigData.ONLY_FOR_ARAMS ?? false),
   POLLING_INTERVAL_IN_SECONDS: Number(
-    parsedConfigData.POLLING_INTERVAL_IN_SECONDS ?? 1
+    parsedConfigData.POLLING_INTERVAL_IN_SECONDS ?? 1,
+  ),
+  DISPLAY_RECOMMENDED_ITEMS_ARAM_MAYHEM: Boolean(
+    parsedConfigData.DISPLAY_RECOMMENDED_AUGMENTS_ARAM_MAYHEM ?? false,
   ),
   CONSIDER_GAME_AS_STARTED_AFTER_X_SECONDS: Number(
-    parsedConfigData.CONSIDER_GAME_AS_STARTED_AFTER_X_SECONDS ?? 15
+    parsedConfigData.CONSIDER_GAME_AS_STARTED_AFTER_X_SECONDS ?? 15,
   ),
 };
 
 // Collections
 const FRIENDS: CloseFriends = JSON.parse(
-  fs.readFileSync(friendsConfigPath).toString()
+  fs.readFileSync(friendsConfigPath).toString(),
 );
 const CHAMPS = JSON.parse(fs.readFileSync(champsConfigPath).toString());
 const CHAMP_PREFERENCES: ChampPreference[] = JSON.parse(
-  fs.readFileSync(champPrefsConfigPath).toString()
+  fs.readFileSync(champPrefsConfigPath).toString(),
 );
 const RUNEPAGES: RunePage[] = JSON.parse(
-  fs.readFileSync(allRunesConfigPath).toString()
+  fs.readFileSync(allRunesConfigPath).toString(),
 );
 const RECOMMENDED_RUNES: ChampionRuneRecEntry[] = JSON.parse(
-  fs.readFileSync(recRunesConfigPath).toString()
+  fs.readFileSync(recRunesConfigPath).toString(),
 );
 const ITEMS = items;
 
