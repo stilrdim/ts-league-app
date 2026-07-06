@@ -24,6 +24,7 @@ It uses a combination of **WebSockets** and **polling** to react to game state c
 
 ![Demo image showcasing output of state changes, recommended items and skill prioritization, Part 1](https://i.ibb.co/pjcXQTSr/1.png)
 ![Demo image showcasing output of state changes, recommended items and skill prioritization, Part 2](https://i.ibb.co/VsDzyQk/2.png)
+![Demo image shocasing output of an immediately established connection when the game is already opened, also including Augment recommendations for ARAM Mayhem](https://i.ibb.co/p69pQg4x/image.png)
 
 ---
 
