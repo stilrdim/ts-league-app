@@ -350,9 +350,12 @@ const fetchRecommendedItems = async (
     const matchedChampName = normalizeChampionName(champName);
 
     let url;
-    if (gameMode === "ARAM" || gameMode === "KIWI")
+    if (gameMode === "ARAM" || gameMode === "KIWI") {
       url = `https://op.gg/lol/modes/aram/${matchedChampName}/items`;
-    else url = `https://op.gg/lol/champions/${matchedChampName}/items`;
+    } else if (gameMode === "KIWI_JADE") {
+      url = `https://op.gg/lol/modes/aram-mayhem-classic/${matchedChampName}/items`;
+    } else url = `https://op.gg/lol/champions/${matchedChampName}/items`;
+
     const { data: html } = await axios.get(url, {
       headers: { "User-Agent": "Mozilla/5.0" },
     });
